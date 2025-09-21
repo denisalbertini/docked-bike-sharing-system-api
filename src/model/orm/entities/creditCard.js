@@ -1,15 +1,22 @@
-import BaseModel from './baseModel.js';
+import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
 import Biker from './biker.js';
 
-export default class Passport extends BaseModel {
+export default class CreditCard extends BaseModel {
   static modelAttributes = {
     number: {
-      type: DataTypes.STRING( 9 ), 
+      type: DataTypes.CHAR( 19 ), 
       allowNull: false, 
       unique: true, 
       validate: {
-        is: /^[A-Za-z0-9]{6,9}$/
+        is: /\b\d{19}\b/
+      }
+    }, 
+    holderName: {
+      type: DataTypes.STRING, 
+      allowNull: false, 
+      validate: {
+        is: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b/
       }
     }, 
     expirationDate: {
@@ -19,17 +26,17 @@ export default class Passport extends BaseModel {
         isDate: true
       }
     }, 
-    countryCode: {
+    cvv: {
       type: DataTypes.CHAR( 3 ), 
       allowNull: false, 
       validate: {
-        is: /\b[A-Z]{3}\b/
+        is: /\b\d{3}\b/
       }
     }
   }
 
   static defineAssociations() {
-    this.belongsTo(
+    this.hasMany(
       Biker, 
       { foreignKey: { allowNull: false } }
     );

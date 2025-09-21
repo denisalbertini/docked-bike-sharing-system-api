@@ -1,9 +1,9 @@
-import BaseModel from './baseModel.js';
+import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
+import Bike from './bike.js';
 import Dock from './dock.js';
-import Employee from './employee.js';
 
-export default class DockRemoval extends BaseModel {
+export default class BikeAdmission extends BaseModel {
   static modelAttributes = {
     requestedAt: {
       type: DataTypes.DATE, 
@@ -14,11 +14,11 @@ export default class DockRemoval extends BaseModel {
 
   static defineAssociations() {
     this.belongsTo(
-      Dock, 
+      Bike, 
       { foreignKey: { allowNull: false } }
     );
     this.belongsTo(
-      Employee, 
+      Dock, 
       { foreignKey: { allowNull: false } }
     );
   }
