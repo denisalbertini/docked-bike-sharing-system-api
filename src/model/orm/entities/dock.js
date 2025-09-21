@@ -1,6 +1,6 @@
-import BaseModel from './baseModel.js';
+import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
-import { dockStatus } from './status.js';
+import status from '../../enum/dockStatus.js';
 import BikeAdmission from './bikeAdmission.js';
 import DockAdmission from './dockAdmission.js';
 import DockRemoval from './dockRemoval.js';
@@ -31,11 +31,11 @@ export default class Dock extends BaseModel {
     }, 
     status: {
       type: DataTypes.ENUM(), 
-      values: dockStatus, 
+      values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: 'OPERATIONAL', 
+      defaultValue: status.operational, 
       validate: {
-        isIn: [ dockStatus ]
+        isIn: [ Object.values( status ) ]
       }
     }
   }
