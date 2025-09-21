@@ -1,0 +1,164 @@
+Table biker {
+  id uuid [pk]
+  cpf char(11) [not null, unique]
+  name varchar(255) [not null]
+  birth_date date [not null]
+  email varchar(255) [not null, unique]
+  password char(60) [not null]
+  foreigner boolean [not null]
+  status biker_status [not null]
+  credit_card_id uuid [not null]
+}
+
+enum biker_status {
+  PENDING
+  ACTIVE
+}
+
+Table credit_card {
+  id uuid [pk]
+  number char(19) [not null]
+  holder_name varchar(255) [not null]
+  expiration_date date [not null]
+  cvv char(3) [not null]
+}
+
+Table passport {
+  id uuid [pk]
+  number varchar(9) [not null, unique]
+  expiration_date date [not null]
+  country_code char(3) [not null]
+  biker_id uuid
+}
+
+Table employee {
+  id uuid [pk]
+  registration char(6) [not null, unique]
+  cpf varchar(11) [not null, unique]
+  name varchar(255) [not null]
+  birth_date date [not null]
+  role employee_role [not null]
+}
+
+enum employee_role {
+  ADMIN
+  OPERATOR
+}
+
+Table bike {
+  id uuid [pk]
+  serial_number char(6) [not null]
+  brand varchar(100) [not null]
+  model varchar(100) [not null]
+  manufacture_year integer [not null]
+  status bike_status [not null, default: 'NEW']
+}
+
+enum bike_status {
+  NEW
+  AVAILABLE
+  RENTED
+  MAINTENANCE_REQUESTED
+  UNDER_MAINTENANCE
+  RETIRED
+}
+
+Table bike_admission {
+  id uuid [pk]
+  requested_at timestamp [not null, default: `now()`]
+  bike_id uuid [not null]
+  dock_id uuid [not null]
+}
+
+Table bike_removal {
+  id uuid [pk]
+  requested_at timestamp [not null, default: `now()`]
+  bike_id uuid [not null]
+  employee_id uuid [not null]
+}
+
+Table dock {
+  id uuid [pk]
+  serial_number char(6) [not null, unique]
+  model varchar(100) [not null]
+  manufacture_date date [not null]
+  status dock_status [not null, default: 'OPERATIONAL']
+  station_id uuid
+  bike_id uuid
+}
+
+enum dock_status {
+  OPERATIONAL
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE_REQUESTED
+  UNDER_MAINTENANCE
+  DECOMMISSIONED
+}
+
+Table dock_admission {
+  id uuid [pk]
+  requested_at timestamp [not null, default: `now()`]
+  dock_id uuid [not null]
+  employee_id uuid [not null]
+}
+
+Table dock_removal {
+  id uuid [pk]
+  requested_at timestamp [not null, default: `now()`]
+  dock_id uuid [not null]
+  employee_id uuid [not null]
+}
+
+Table station {
+  id uuid [pk]
+  serial_number char(6) [not null, unique]
+  name varchar(255) [not null]
+  location varchar(255) [not null]
+}
+
+Table charge {
+  id uuid [pk]
+  requested_at timestamp [not null, default: `now()`]
+  completed_at timestamp
+  amount decimal(10,2) [not null]
+  biker_id uuid [not null]
+}
+
+Table rental {
+  id uuid [pk]
+  started_at timestamp [not null, default: `now()`]
+  finished_at timestamp
+  biker_id uuid [not null]
+  bike_id uuid [not null]
+  rented_from_dock_id uuid [not null]
+  returned_to_dock_id uuid
+  initial_charge_id uuid [not null]
+  extra_charge_id uuid
+}
+
+Ref: bike.id - dock.bike_id
+Ref: bike.id < bike_admission.bike_id
+Ref: bike.id < bike_removal.bike_id
+Ref: bike.id < rental.bike_id
+
+Ref: biker.id - passport.biker_id
+Ref: biker.id < charge.biker_id
+Ref: biker.id < rental.biker_id
+
+Ref: charge.id < rental.initial_charge_id
+Ref: charge.id < rental.extra_charge_id
+
+Ref: credit_card.id < biker.credit_card_id
+
+Ref: dock.id < bike_admission.dock_id
+Ref: dock.id < dock_admission.dock_id
+Ref: dock.id < dock_removal.dock_id
+Ref: dock.id < rental.rented_from_dock_id
+Ref: dock.id < rental.returned_to_dock_id
+
+Ref: employee.id < bike_removal.employee_id
+Ref: employee.id < dock_admission.employee_id
+Ref: employee.id < dock_removal.employee_id
+
+Ref: station.id < dock.station_id
