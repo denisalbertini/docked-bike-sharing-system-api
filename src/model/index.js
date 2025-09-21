@@ -1,34 +1,31 @@
-import Bike from './bike.js';
-import BikeAdmission from './bikeAdmission.js';
-import BikeRemoval from './bikeRemoval.js';
-import Biker from './biker.js';
-import Charge from './charge.js';
-import CreditCard from './creditCard.js';
-import Dock from './dock.js';
-import DockAdmission from './dockAdmission.js';
-import DockRemoval from './dockRemoval.js';
-import Employee from './employee.js';
-import Passport from './passport.js';
-import Rental from './rental.js';
-import Station from './station.js';
+import { fileURLToPath, pathToFileURL } from 'url';
+import path from 'path';
+import { readdir } from 'fs/promises';
 
-const models = [
-  Bike, 
-  BikeAdmission, 
-  BikeRemoval, 
-  Biker, 
-  Charge, 
-  CreditCard, 
-  Dock, 
-  DockAdmission, 
-  DockRemoval, 
-  Employee, 
-  Passport, 
-  Rental, 
-  Station
-];
+const __filename = fileURLToPath( import.meta.url );
+const __dirname = path.dirname( __filename );
+const entitiesPath = path.join( __dirname, 'orm', 'entities' );
 
-export default function init( sequelize ) {
-  models.forEach( model => model.init( sequelize ) );
-  models.forEach( model => model.defineAssociations() );
+export default async function init( sequelize ) {
+  const files = await readdir( entitiesPath );
+  const modules = [];
+
+  await Promise.all(
+    files.map(
+      async file => {
+        const modulePath = path.join( entitiesPath, file );
+        const moduleUrl = pathToFileURL( modulePath ).href;
+        const module = await import( moduleUrl );
+        modules.push( module );
+      }
+    )
+  );
+
+  await Promise.all(
+    modules.map( module => module.default.init( sequelize ) )
+  );
+
+  await Promise.all(
+    modules.map( module => module.default.defineAssociations() )
+  );
 }
