@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/denis-albertini/docked-bike-sharing-system-api.git"
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/denis-albertini/docked-bike-sharing-system-api#readme",
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.49.1",
     "express": "^5.1.0",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
