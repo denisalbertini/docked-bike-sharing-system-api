@@ -1,12 +1,12 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
+import Passport from './passport.js';
+import Rental from './rental.js';
+import Charge from './charge.js';
+import CreditCard from './creditCard.js';
 
 export default class Biker extends BaseModel {
   static modelAttributes = {
-    id: {
-      type: DataTypes.UUID, 
-      primaryKey: true
-    }, 
     cpf: {
       type: DataTypes.CHAR( 11 ), 
       allowNull: false, 
@@ -44,5 +44,21 @@ export default class Biker extends BaseModel {
         isIn: [ [ true, false ] ]
       }
     }
+  }
+
+  static defineAssociations() {
+    this.hasOne( Passport );
+    this.hasMany(
+      Charge, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      Rental, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.belongsTo(
+      CreditCard, 
+      { foreignKey: { allowNull: false } }
+    );
   }
 }

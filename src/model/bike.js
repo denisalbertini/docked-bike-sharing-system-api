@@ -1,13 +1,13 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
 import { bikeStatus } from './status.js';
+import Dock from './dock.js';
+import BikeAdmission from './bikeAdmission.js';
+import BikeRemoval from './bikeRemoval.js';
+import Rental from './rental.js';
 
 export default class Bike extends BaseModel {
   static modelAttributes = {
-    id: {
-      type: DataTypes.UUID, 
-      primaryKey: true
-    }, 
     serialNumber: {
       type: DataTypes.CHAR( 6 ), 
       allowNull: false, 
@@ -40,5 +40,25 @@ export default class Bike extends BaseModel {
         isIn: [ bikeStatus ]
       }
     }
+  }
+
+  static modelOptions = {
+    paranoid: true
+  }
+
+  static defineAssociations() {
+    this.hasOne( Dock );
+    this.hasMany(
+      BikeAdmission, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany( 
+      BikeRemoval, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      Rental, 
+      { foreignKey: { allowNull: false } }
+    );
   }
 }

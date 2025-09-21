@@ -1,12 +1,9 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
+import Biker from './biker.js';
 
 export default class CreditCard extends BaseModel {
-  static moodelAttributes = {
-    id: {
-      type: DataTypes.UUID, 
-      primaryKey: true
-    }, 
+  static modelAttributes = {
     number: {
       type: DataTypes.CHAR( 19 ), 
       allowNull: false, 
@@ -36,5 +33,12 @@ export default class CreditCard extends BaseModel {
         is: /\b\d{3}\b/
       }
     }
+  }
+
+  static defineAssociations() {
+    this.hasMany(
+      Biker, 
+      { foreignKey: { allowNull: false } }
+    );
   }
 }

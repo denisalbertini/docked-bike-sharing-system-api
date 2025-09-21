@@ -1,13 +1,15 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
 import { dockStatus } from './status.js';
+import BikeAdmission from './bikeAdmission.js';
+import DockAdmission from './dockAdmission.js';
+import DockRemoval from './dockRemoval.js';
+import Rental from './rental.js';
+import Bike from './bike.js';
+import Station from './station.js';
 
 export default class Dock extends BaseModel {
   static modelAttributes = {
-    id: {
-      type: DataTypes.UUID, 
-      primaryKey: true
-    }, 
     serialNumber: {
       type: DataTypes.CHAR( 6 ), 
       allowNull: false, 
@@ -36,5 +38,40 @@ export default class Dock extends BaseModel {
         isIn: [ dockStatus ]
       }
     }
+  }
+
+  static modelOptions = {
+    paranoid: true
+  }
+
+  static defineAssociations() {
+    this.hasMany(
+      BikeAdmission, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      DockAdmission, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      DockRemoval, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      Rental, 
+      {
+        as: 'rentedFromDock', 
+        foreignKey: { name: 'rented_from_dock_id', allowNull: false }
+      }
+    );
+    this.hasMany(
+      Rental, 
+      {
+        as: 'returnedToDock', 
+        foreignKey: { name: 'returned_to_dock_id' }
+      }
+    );
+    this.belongsTo( Bike );
+    this.belongsTo( Station );
   }
 }

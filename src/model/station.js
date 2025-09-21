@@ -1,5 +1,6 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
+import Dock from './dock.js';
 
 export default class Station extends BaseModel {
   static modelAttributes = {
@@ -19,5 +20,9 @@ export default class Station extends BaseModel {
       type: DataTypes.STRING, 
       allowNull: false
     }
+  }
+
+  static defineAssociations() {
+    this.hasMany( Dock );
   }
 }

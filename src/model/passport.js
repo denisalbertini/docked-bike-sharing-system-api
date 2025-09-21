@@ -1,12 +1,9 @@
 import BaseModel from './baseModel.js';
 import { DataTypes } from 'sequelize';
+import Biker from './biker.js';
 
 export default class Passport extends BaseModel {
   static modelAttributes = {
-    id: {
-      type: DataTypes.UUID, 
-      primaryKey: true
-    }, 
     number: {
       type: DataTypes.STRING( 9 ), 
       allowNull: false, 
@@ -29,5 +26,12 @@ export default class Passport extends BaseModel {
         is: /\b[A-Z]{3}\b/
       }
     }
+  }
+
+  static defineAssociations() {
+    this.belongsTo(
+      Biker, 
+      { foreignKey: { allowNull: false } }
+    );
   }
 }
