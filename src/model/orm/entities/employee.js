@@ -1,6 +1,6 @@
-import BaseModel from './baseModel.js'
+import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
-import roles from './employeeRole.js';
+import roles from '../../enum/employeeRole.js';
 import BikeRemoval from './bikeRemoval.js';
 import DockAdmission from './dockAdmission.js';
 import DockRemoval from './dockRemoval.js';
@@ -39,10 +39,10 @@ export default class Employee extends BaseModel {
     }, 
     role: {
       type: DataTypes.ENUM, 
-      values: roles, 
+      values: Object.values( roles ), 
       allowNull: false, 
       validate: {
-        isIn: [ roles ]
+        isIn: [ Object.values( roles ) ]
       }
     }
   }
