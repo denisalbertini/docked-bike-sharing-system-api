@@ -1,6 +1,6 @@
-import BaseModel from './baseModel.js';
+import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
-import { bikeStatus } from './status.js';
+import status from '../../enum/bikeStatus.js';
 import Dock from './dock.js';
 import BikeAdmission from './bikeAdmission.js';
 import BikeRemoval from './bikeRemoval.js';
@@ -33,11 +33,11 @@ export default class Bike extends BaseModel {
     }, 
     status: {
       type: DataTypes.ENUM, 
-      values: bikeStatus, 
+      values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: 'NEW', 
+      defaultValue: status.new, 
       validate: {
-        isIn: [ bikeStatus ]
+        isIn: [ Object.values( status ) ]
       }
     }
   }
