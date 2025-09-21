@@ -13,7 +13,6 @@ export default class BaseModel extends Model {
   static get defaultOptions() {
     return {
       tableName: this.getTableName(), 
-      underscored: true, 
       timestamps: false
     };
   }
