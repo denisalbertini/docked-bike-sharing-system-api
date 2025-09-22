@@ -11,8 +11,8 @@ export default class Result {
     return new Result( true, value, null );
   }
 
-  static failure( error ) {
-    return new Result( false, null, error );
+  static failure( errors ) {
+    return new Result( false, null, errors );
   }
 
   get isFailure() {
