@@ -1,6 +1,6 @@
 import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
-import roles from '../../enum/employeeRole.js';
+import roles from '../enum/employeeRole.js';
 import BikeRemoval from './bikeRemoval.js';
 import DockAdmission from './dockAdmission.js';
 import DockRemoval from './dockRemoval.js';

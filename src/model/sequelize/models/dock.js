@@ -1,41 +1,39 @@
 import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
-import status from '../../enum/bikeStatus.js';
-import Dock from './dock.js';
+import status from '../enum/dockStatus.js';
 import BikeAdmission from './bikeAdmission.js';
-import BikeRemoval from './bikeRemoval.js';
+import DockAdmission from './dockAdmission.js';
+import DockRemoval from './dockRemoval.js';
 import Rental from './rental.js';
+import Bike from './bike.js';
+import Station from './station.js';
 
-export default class Bike extends BaseModel {
+export default class Dock extends BaseModel {
   static modelAttributes = {
     serialNumber: {
       type: DataTypes.CHAR( 6 ), 
       allowNull: false, 
       unique: true, 
       validate: {
-        is: /\bBI-\d{3}\b/
+        is: /\bDO-\d{3}\b/
       }
-    }, 
-    brand: {
-      type: DataTypes.STRING( 100 ), 
-      allowNull: false
     }, 
     model: {
       type: DataTypes.STRING( 100 ), 
       allowNull: false
     }, 
-    manufactureYear: {
-      type: DataTypes.INTEGER, 
+    manufactureDate: {
+      type: DataTypes.DATEONLY, 
       allowNull: false, 
       validate: {
-        is: /\b(19|20)\d{2}\b/
+        isDate: true
       }
     }, 
     status: {
-      type: DataTypes.ENUM, 
+      type: DataTypes.ENUM(), 
       values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: status.new, 
+      defaultValue: status.operational, 
       validate: {
         isIn: [ Object.values( status ) ]
       }
@@ -47,18 +45,33 @@ export default class Bike extends BaseModel {
   }
 
   static defineAssociations() {
-    this.hasOne( Dock );
     this.hasMany(
       BikeAdmission, 
       { foreignKey: { allowNull: false } }
     );
-    this.hasMany( 
-      BikeRemoval, 
+    this.hasMany(
+      DockAdmission, 
+      { foreignKey: { allowNull: false } }
+    );
+    this.hasMany(
+      DockRemoval, 
       { foreignKey: { allowNull: false } }
     );
     this.hasMany(
       Rental, 
-      { foreignKey: { allowNull: false } }
+      {
+        as: 'rentedFromDock', 
+        foreignKey: { name: 'rented_from_dock_id', allowNull: false }
+      }
     );
+    this.hasMany(
+      Rental, 
+      {
+        as: 'returnedToDock', 
+        foreignKey: { name: 'returned_to_dock_id' }
+      }
+    );
+    this.belongsTo( Bike );
+    this.belongsTo( Station );
   }
 }
