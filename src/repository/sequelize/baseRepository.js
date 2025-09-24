@@ -31,18 +31,21 @@ export default class BaseRepository {
     );
   }
 
-  create() {
+  create( attributes ) {
     return this.#handleOperation(
-      () => this.#model.findAll()
+      () => this.#model.create( attributes )
     );
   }
 
   save( modelInstance ) {
     return this.#handleOperation(
-      async () => {
-        await modelInstance.save();
-        return null;
-      }
+      () => modelInstance.save()
+    );
+  }
+
+  deleteById( id ) {
+    return this.#handleOperation(
+      () => this.#model.destroy( { where: { id } } )
     );
   }
 }
