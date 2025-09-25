@@ -1,4 +1,5 @@
 import BaseModel from '../baseModel.js';
+import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import roles from '../enum/employeeRole.js';
 import BikeRemoval from './bikeRemoval.js';
@@ -6,6 +7,10 @@ import DockAdmission from './dockAdmission.js';
 import DockRemoval from './dockRemoval.js';
 
 export default class Employee extends BaseModel {
+  constructor() {
+    throw new Error( errorMessages.modelConstructorMessage );
+  }
+
   static modelAttributes = {
     registration: {
       type: DataTypes.CHAR( 6 ), 

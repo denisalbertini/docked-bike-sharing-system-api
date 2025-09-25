@@ -1,4 +1,5 @@
 import BaseModel from '../baseModel.js';
+import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import status from '../enum/bikeStatus.js';
 import Dock from './dock.js';
@@ -7,6 +8,10 @@ import BikeRemoval from './bikeRemoval.js';
 import Rental from './rental.js';
 
 export default class Bike extends BaseModel {
+  constructor() {
+    throw new Error( errorMessages.modelConstructorMessage );
+  }
+
   static modelAttributes = {
     serialNumber: {
       type: DataTypes.CHAR( 6 ), 

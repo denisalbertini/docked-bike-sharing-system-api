@@ -1,6 +1,11 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes } from 'sequelize';
+import errorMessages from './enum/errorMessages';
 
 export default class BaseModel extends Model {
+  constructor() {
+    throw new Error( errorMessages.baseModelConstructorMessage );
+  }
+
   static get defaultAttributes() {
     return {
       id: {

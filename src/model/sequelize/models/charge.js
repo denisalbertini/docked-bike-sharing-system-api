@@ -1,9 +1,14 @@
 import BaseModel from '../baseModel.js';
+import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import Rental from './rental.js';
 import Biker from './biker.js';
 
 export default class Charge extends BaseModel {
+  constructor() {
+    throw new Error( errorMessages.modelConstructorMessage );
+  }
+
   static modelAttributes = {
     requestedAt: {
       type: DataTypes.DATE, 

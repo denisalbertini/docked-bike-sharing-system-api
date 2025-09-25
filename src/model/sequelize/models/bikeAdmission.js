@@ -1,9 +1,14 @@
 import BaseModel from '../baseModel.js';
+import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import Bike from './bike.js';
 import Dock from './dock.js';
 
 export default class BikeAdmission extends BaseModel {
+  constructor() {
+    throw new Error( errorMessages.modelConstructorMessage );
+  }
+
   static modelAttributes = {
     requestedAt: {
       type: DataTypes.DATE, 
