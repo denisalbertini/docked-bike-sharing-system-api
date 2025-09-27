@@ -1,9 +1,16 @@
 import { Model, DataTypes } from 'sequelize';
-import errorMessages from './enum/errorMessages.js';
+import errorMessages from '../../errorMessages.js';
 
 export default class BaseModel extends Model {
   constructor() {
-    throw new Error( errorMessages.SEQUELIZE_BASE_MODEL_CONSTRUCTOR_MSG );
+    const className = new.target.name;
+
+    const message =
+      className === BaseModel ? 
+      errorMessages.BASE_CLASS_CONSTRUCTOR_MESSAGE( className ) : 
+      errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MESSAGE( className );
+
+    throw new Error( message );
   }
 
   static get defaultAttributes() {

@@ -1,14 +1,15 @@
 import { ValidationError } from 'sequelize';
+import errorMessages from '../../errorMessages.js';
 import Result from '../../model/shared/result.js';
-
-const constructorMessage = 'The base repository class cannot be instantiated.';
 
 export default class BaseRepository {
   #model;
   
   constructor( model ) {
     if ( new.target === BaseRepository )
-      throw new Error( constructorMessage );
+      throw new Error(
+        errorMessages.BASE_CLASS_CONSTRUCTOR_MESSAGE( BaseRepository.name )
+      );
     
     this.#model = model;
   }

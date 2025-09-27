@@ -1,5 +1,4 @@
 import BaseModel from '../baseModel.js';
-import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import status from '../enum/bikerStatus.js';
 import Passport from './passport.js';
@@ -8,10 +7,6 @@ import Charge from './charge.js';
 import CreditCard from './creditCard.js';
 
 export default class Biker extends BaseModel {
-  constructor() {
-    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
-  }
-
   static modelAttributes = {
     cpf: {
       type: DataTypes.CHAR( 11 ), 

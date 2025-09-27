@@ -1,13 +1,8 @@
 import BaseModel from '../baseModel.js';
-import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
 import Biker from './biker.js';
 
 export default class CreditCard extends BaseModel {
-  constructor() {
-    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
-  }
-
   static modelAttributes = {
     number: {
       type: DataTypes.CHAR( 19 ), 
