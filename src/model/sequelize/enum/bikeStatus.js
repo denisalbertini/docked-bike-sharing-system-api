@@ -1,10 +1,10 @@
 const bikeStatus = {
-  new: 'NEW', 
-  available: 'AVAILABLE', 
-  rented: 'RENTED', 
-  maintenanceRequested: 'MAINTENANCE_REQUESTED', 
-  underMaintenance: 'UNDER_MAINTENANCE', 
-  retired: 'RETIRED'
+  NEW: 'NEW', 
+  AVAILABLE: 'AVAILABLE', 
+  RENTED: 'RENTED', 
+  MAINTENANCE_REQUESTED: 'MAINTENANCE_REQUESTED', 
+  UNDER_MAINTENANCE: 'UNDER_MAINTENANCE', 
+  RETIRED: 'RETIRED'
 };
 
 export default bikeStatus;

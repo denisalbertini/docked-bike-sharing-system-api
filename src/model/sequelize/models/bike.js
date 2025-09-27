@@ -9,7 +9,7 @@ import Rental from './rental.js';
 
 export default class Bike extends BaseModel {
   constructor() {
-    throw new Error( errorMessages.modelConstructorMessage );
+    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
   }
 
   static modelAttributes = {
@@ -40,7 +40,7 @@ export default class Bike extends BaseModel {
       type: DataTypes.ENUM, 
       values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: status.new, 
+      defaultValue: status.NEW, 
       validate: {
         isIn: [ Object.values( status ) ]
       }

@@ -8,7 +8,7 @@ import Dock from './dock.js';
 
 export default class Rental extends BaseModel {
   constructor() {
-    throw new Error( errorMessages.modelConstructorMessage );
+    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
   }
 
   static modelAttributes = {

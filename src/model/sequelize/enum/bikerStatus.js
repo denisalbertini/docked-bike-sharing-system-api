@@ -1,6 +1,6 @@
 const bikerStatus = {
-  pending: 'PENDING', 
-  active: 'ACTIVE'
+  PENDING: 'PENDING', 
+  ACTIVE: 'ACTIVE'
 };
 
 export default bikerStatus;

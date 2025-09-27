@@ -11,7 +11,7 @@ import Station from './station.js';
 
 export default class Dock extends BaseModel {
   constructor() {
-    throw new Error( errorMessages.modelConstructorMessage );
+    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
   }
 
   static modelAttributes = {
@@ -38,7 +38,7 @@ export default class Dock extends BaseModel {
       type: DataTypes.ENUM(), 
       values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: status.operational, 
+      defaultValue: status.OPERATIONAL, 
       validate: {
         isIn: [ Object.values( status ) ]
       }

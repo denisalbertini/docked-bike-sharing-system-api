@@ -1,10 +1,10 @@
 const dockStatus = {
-  operational: 'OPERATIONAL', 
-  available: 'AVAILABLE', 
-  occupied: 'OCCUPIED', 
-  maintenanceRequested: 'MAINTENANCE_REQUESTED', 
-  underMaintenance: 'UNDER_MAINTENANCE', 
-  decommissioned: 'DECOMMISSIONED'
+  OPERATIONAL: 'OPERATIONAL', 
+  AVAILABLE: 'AVAILABLE', 
+  OCCUPIED: 'OCCUPIED', 
+  MAINTENANCE_REQUESTED: 'MAINTENANCE_REQUESTED', 
+  UNDER_MAINTENANCE: 'UNDER_MAINTENANCE', 
+  DECOMMISSIONED: 'DECOMMISSIONED'
 };
 
 export default dockStatus;

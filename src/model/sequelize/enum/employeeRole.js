@@ -1,6 +1,6 @@
 const employeeRole = {
-  admin: 'ADMIN', 
-  operator: 'OPERATOR'
+  ADMIN: 'ADMIN', 
+  OPERATOR: 'OPERATOR'
 };
 
 export default employeeRole;

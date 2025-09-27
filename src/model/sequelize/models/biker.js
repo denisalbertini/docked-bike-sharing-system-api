@@ -1,7 +1,7 @@
 import BaseModel from '../baseModel.js';
 import errorMessages from '../enum/errorMessages.js';
 import { DataTypes } from 'sequelize';
-import status from '../enum/bikeStatus.js';
+import status from '../enum/bikerStatus.js';
 import Passport from './passport.js';
 import Rental from './rental.js';
 import Charge from './charge.js';
@@ -9,7 +9,7 @@ import CreditCard from './creditCard.js';
 
 export default class Biker extends BaseModel {
   constructor() {
-    throw new Error( errorMessages.modelConstructorMessage );
+    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
   }
 
   static modelAttributes = {
@@ -61,7 +61,7 @@ export default class Biker extends BaseModel {
       type: DataTypes.ENUM, 
       values: Object.values( status ), 
       allowNull: false, 
-      defaultValue: status.pending, 
+      defaultValue: status.PENDING, 
       validate: {
         isIn: [ Object.values( status ) ]
       }

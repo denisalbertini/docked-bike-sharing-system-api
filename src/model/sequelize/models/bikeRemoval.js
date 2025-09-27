@@ -6,7 +6,7 @@ import Employee from './employee.js';
 
 export default class BikeRemoval extends BaseModel {
   constructor() {
-    throw new Error( errorMessages.modelConstructorMessage );
+    throw new Error( errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MSG );
   }
 
   static modelAttributes = {
