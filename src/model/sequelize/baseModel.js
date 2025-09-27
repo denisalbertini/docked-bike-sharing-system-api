@@ -1,5 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
-import errorMessages from '../../errorMessages.js';
+import {
+  getBaseClassConstructorMessage, 
+  getSequelizeModelConstructorMessage
+} from '../../constructorErrorMessage.js';
 
 export default class BaseModel extends Model {
   constructor() {
@@ -7,8 +10,8 @@ export default class BaseModel extends Model {
 
     const message =
       className === BaseModel ? 
-      errorMessages.BASE_CLASS_CONSTRUCTOR_MESSAGE( className ) : 
-      errorMessages.SEQUELIZE_MODEL_CONSTRUCTOR_MESSAGE( className );
+      getBaseClassConstructorMessage( className ) : 
+      getSequelizeModelConstructorMessage( className );
 
     throw new Error( message );
   }
