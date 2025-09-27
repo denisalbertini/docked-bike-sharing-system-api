@@ -18,10 +18,12 @@ export default class BaseRepository {
     try {
       return Result.success( await operation() );
     } catch ( error ) {
-      if ( error instanceof ValidationError )
-        return Result.failure( error.errors.map( item => item.message ) );
+      const errors =
+        error instanceof ValidationError ? 
+        error.errors.map( item => item.message ) : 
+        [ error.message ];
       
-      return Result.failure( [ error.message ] );
+      return Result.failure( errors );
     }
   }
 
