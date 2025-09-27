@@ -1,6 +1,7 @@
-import { ValidationError } from 'sequelize';
-import errorMessages from '../../errorMessages.js';
+import { getBaseClassConstructorMessage } from '../../constructorErrorMessage.js';
 import Result from '../../model/shared/result.js';
+import { ValidationError } from 'sequelize';
+import errorTypes from '../../errorTypes.js';
 
 export default class BaseRepository {
   #model;
@@ -8,10 +9,23 @@ export default class BaseRepository {
   constructor( model ) {
     if ( new.target === BaseRepository )
       throw new Error(
-        errorMessages.BASE_CLASS_CONSTRUCTOR_MESSAGE( BaseRepository.name )
+        getBaseClassConstructorMessage( BaseRepository.name )
       );
     
     this.#model = model;
+  }
+
+  #getErrorType( error ) {
+    switch ( error.constructor.name ) {
+      case 'ValidationError': 
+        return errorTypes.VALIDATION_ERROR;
+      case 'UniqueConstraintError': 
+        return errorTypes.UNIQUE_CONSTRAINT_ERROR;
+      case 'ForeignKeyConstraintError':
+        return errorTypes.FOREIGN_KEY_CONSTRAINT_ERROR;
+      default:
+        return errorTypes.INTERNAL_SERVER_ERROR;
+    }
   }
   
   async #handleOperation( operation ) {
@@ -22,8 +36,10 @@ export default class BaseRepository {
         error instanceof ValidationError ? 
         error.errors.map( item => item.message ) : 
         [ error.message ];
+
+      const errorType = this.#getErrorType( error );
       
-      return Result.failure( errors );
+      return Result.failure( errors, errorType );
     }
   }
 
