@@ -1,4 +1,4 @@
-const bikeStatus = {
+export default {
   NEW: 'NEW', 
   AVAILABLE: 'AVAILABLE', 
   RENTED: 'RENTED', 
@@ -6,5 +6,3 @@ const bikeStatus = {
   UNDER_MAINTENANCE: 'UNDER_MAINTENANCE', 
   RETIRED: 'RETIRED'
 };
-
-export default bikeStatus;

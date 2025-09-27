@@ -1,4 +1,4 @@
-const dockStatus = {
+export default {
   OPERATIONAL: 'OPERATIONAL', 
   AVAILABLE: 'AVAILABLE', 
   OCCUPIED: 'OCCUPIED', 
@@ -6,5 +6,3 @@ const dockStatus = {
   UNDER_MAINTENANCE: 'UNDER_MAINTENANCE', 
   DECOMMISSIONED: 'DECOMMISSIONED'
 };
-
-export default dockStatus;

@@ -1,6 +1,4 @@
-const bikerStatus = {
+export default {
   PENDING: 'PENDING', 
   ACTIVE: 'ACTIVE'
 };
-
-export default bikerStatus;

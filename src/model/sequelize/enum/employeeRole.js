@@ -1,6 +1,4 @@
-const employeeRole = {
+export default {
   ADMIN: 'ADMIN', 
   OPERATOR: 'OPERATOR'
 };
-
-export default employeeRole;
