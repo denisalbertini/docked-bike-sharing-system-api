@@ -1,12 +1,19 @@
 import { ValidationError } from 'sequelize';
 import Result from '../../model/shared/result.js';
 
+const constructorMessage = 'The base repository class cannot be instantiated.';
+
 export default class BaseRepository {
+  #model;
+  
   constructor( model ) {
-    this.model = model;
+    if ( new.target === BaseRepository )
+      throw new Error( constructorMessage );
+    
+    this.#model = model;
   }
   
-  async handleOperation( operation ) {
+  async #handleOperation( operation ) {
     try {
       return Result.success( await operation() );
     } catch ( error ) {
@@ -18,32 +25,32 @@ export default class BaseRepository {
   }
 
   findAll() {
-    return this.handleOperation(
-      () => this.model.findAll()
+    return this.#handleOperation(
+      () => this.#model.findAll()
     );
   }
 
   findById( id ) {
-    return this.handleOperation(
-      () => this.model.findByPk( id )
+    return this.#handleOperation(
+      () => this.#model.findByPk( id )
     );
   }
 
   create( attributes ) {
-    return this.handleOperation(
-      () => this.model.create( attributes )
+    return this.#handleOperation(
+      () => this.#model.create( attributes )
     );
   }
 
   save( modelInstance ) {
-    return this.handleOperation(
+    return this.#handleOperation(
       () => modelInstance.save()
     );
   }
 
   deleteById( id ) {
-    return this.handleOperation(
-      () => this.model.destroy( { where: { id } } )
+    return this.#handleOperation(
+      () => this.#model.destroy( { where: { id } } )
     );
   }
 }
