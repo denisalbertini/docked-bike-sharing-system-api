@@ -1,5 +1,6 @@
 import BaseModel from '../baseModel.js';
 import { DataTypes } from 'sequelize';
+import validateCpf from '../CpfValidation.js';
 import status from '../enum/bikerStatus.js';
 import Passport from './passport.js';
 import Rental from './rental.js';
@@ -13,7 +14,10 @@ export default class Biker extends BaseModel {
       allowNull: false, 
       unique: true, 
       validate: {
-        is: /\b\d{11}\b/
+        isCpf( cpf ) {
+          if ( !validateCpf( cpf ) )
+            throw new Error( 'Invalid CPF.' );
+        }
       }
     }, 
     name: {
