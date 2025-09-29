@@ -4,15 +4,18 @@ import { VALIDATION_ERROR } from '../../error-types.js';
 export default class BikerService {
   #creditCardRepository;
   #passportRepository;
+  #transaction;
 
   constructor(
     bikerRepository, 
     creditCardRepository, 
-    passportRepository
+    passportRepository, 
+    transaction
   ) {
     super( bikerRepository );
     this.#creditCardRepository = creditCardRepository;
     this.#passportRepository = passportRepository;
+    this.#transaction = transaction;
   }
 
   validateCreationData(
@@ -42,7 +45,7 @@ export default class BikerService {
     return Result.success();
   }
 
-  createLocal( data ) {}
+  createLocal( bikerData, creditCardData ) {}
 
-  createForeigner( data ) {}
+  createForeigner( bikerData, creditCardData, passportData ) {}
 }
