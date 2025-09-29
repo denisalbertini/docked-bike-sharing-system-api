@@ -1,7 +1,12 @@
 import { getBaseClassConstructorMessage } from '../../constructorErrorMessage.js';
 import Result from '../../model/shared/result.js';
 import { ValidationError } from 'sequelize';
-import errorTypes from '../../errorTypes.js';
+import {
+  VALIDATION_ERROR, 
+  UNIQUE_CONSTRAINT_ERROR, 
+  FOREIGN_KEY_CONSTRAINT_ERROR, 
+  INTERNAL_SERVER_ERROR
+} from '../../errorTypes.js';
 
 export default class BaseRepository {
   #model;
@@ -18,13 +23,13 @@ export default class BaseRepository {
   #getErrorType( error ) {
     switch ( error.constructor.name ) {
       case 'ValidationError': 
-        return errorTypes.VALIDATION_ERROR;
+        return VALIDATION_ERROR;
       case 'UniqueConstraintError': 
-        return errorTypes.UNIQUE_CONSTRAINT_ERROR;
+        return UNIQUE_CONSTRAINT_ERROR;
       case 'ForeignKeyConstraintError':
-        return errorTypes.FOREIGN_KEY_CONSTRAINT_ERROR;
+        return FOREIGN_KEY_CONSTRAINT_ERROR;
       default:
-        return errorTypes.INTERNAL_SERVER_ERROR;
+        return INTERNAL_SERVER_ERROR;
     }
   }
   
@@ -55,15 +60,15 @@ export default class BaseRepository {
     );
   }
 
-  create( attributes ) {
+  create( data ) {
     return this.#handleOperation(
-      () => this.#model.create( attributes )
+      () => this.#model.create( data )
     );
   }
 
-  save( modelInstance ) {
+  update( modelInstance, data ) {
     return this.#handleOperation(
-      () => modelInstance.save()
+      () => modelInstance.update( data )
     );
   }
 
