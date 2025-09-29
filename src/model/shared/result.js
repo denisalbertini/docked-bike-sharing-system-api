@@ -8,7 +8,7 @@ export default class Result {
   #errors;
   #errorType;
   
-  constructor( token, value, errors, errorType = null ) {
+  constructor( token, value, errors, errorType ) {
     if ( token !== Result.#instantiationToken )
       throw new Error( constructorErrorMessage );
     
@@ -25,15 +25,20 @@ export default class Result {
   get isSuccess() { return this.#value != null; }
   get isFailure() { return this.#errors != null; }
 
-  set errorType( errorType ) {
-    if ( this.isSuccess() ) errorType = null;
-    this.#errorType = errorType;
+  static success( value = null ) {
+    return new Result(
+      this.#instantiationToken, 
+      value, 
+      null, 
+      null
+    );
   }
-
-  static success( value ) {
-    return new Result( this.#instantiationToken, value, null );
-  }
-  static failure( errors, errorType = null ) {
-    return new Result( this.#instantiationToken, null, errors, errorType );
+  static failure( errors, errorType ) {
+    return new Result(
+      this.#instantiationToken, 
+      null, 
+      errors, 
+      errorType
+    );
   }
 }
