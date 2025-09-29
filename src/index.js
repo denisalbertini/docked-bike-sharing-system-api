@@ -1,6 +1,6 @@
 import '@dotenvx/dotenvx/config';
 import sequelize from './sequelize.js';
-import initORM from './model/index.js';
+import initORM from './model/sequelize/index.js';
 
 try {
   await sequelize.authenticate();
