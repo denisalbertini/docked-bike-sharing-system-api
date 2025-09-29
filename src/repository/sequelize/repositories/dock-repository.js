@@ -1,4 +1,4 @@
-import BaseRepository from "../baseRepository";
+import BaseRepository from "../base-repository";
 import Dock from '../../../model/sequelize/models/dock.js';
 
 export default class DockRepository extends BaseRepository {

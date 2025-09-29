@@ -1,5 +1,5 @@
 import Result from '../../model/shared/result.js';
-import { VALIDATION_ERROR } from '../../errorTypes.js';
+import { VALIDATION_ERROR } from '../../error-types.js';
 
 export default class BikerService {
   #creditCardRepository;

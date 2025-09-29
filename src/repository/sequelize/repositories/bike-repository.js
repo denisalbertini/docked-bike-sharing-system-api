@@ -1,4 +1,4 @@
-import BaseRepository from "../baseRepository";
+import BaseRepository from "../base-repository";
 import Bike from '../../../model/sequelize/models/bike.js';
 
 export default class BikeRepository extends BaseRepository {

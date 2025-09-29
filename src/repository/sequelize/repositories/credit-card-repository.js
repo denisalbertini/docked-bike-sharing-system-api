@@ -1,5 +1,5 @@
-import BaseRepository from "../baseRepository";
-import CreditCard from '../../../model/sequelize/models/creditCard.js';
+import BaseRepository from "../base-repository";
+import CreditCard from '../../../model/sequelize/models/credit-card.js';
 
 export default class CreditCardRepository extends BaseRepository {
   constructor() { super( CreditCard ); }

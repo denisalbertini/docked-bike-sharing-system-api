@@ -1,4 +1,4 @@
-import { getBaseClassConstructorMessage } from '../../constructorErrorMessage.js';
+import { getBaseClassConstructorMessage } from '../../constructor-error-message.js';
 import Result from '../../model/shared/result.js';
 import { ValidationError } from 'sequelize';
 import {
@@ -6,7 +6,7 @@ import {
   UNIQUE_CONSTRAINT_ERROR, 
   FOREIGN_KEY_CONSTRAINT_ERROR, 
   INTERNAL_SERVER_ERROR
-} from '../../errorTypes.js';
+} from '../../error-types.js';
 
 export default class BaseRepository {
   #model;

@@ -1,3 +1,3 @@
-import BaseService from '../baseService.js';
+import BaseService from '../base-service.js';
 
 export default class BikeService extends BaseService {}

@@ -1,11 +1,11 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
-import validateCpf from '../CpfValidation.js';
-import status from '../enum/bikerStatus.js';
+import validateCpf from '../cpf-validation.js';
+import status from '../enum/biker-status.js';
 import Passport from './passport.js';
 import Rental from './rental.js';
 import Charge from './charge.js';
-import CreditCard from './creditCard.js';
+import CreditCard from './credit-card.js';
 
 export default class Biker extends BaseModel {
   static modelAttributes = {

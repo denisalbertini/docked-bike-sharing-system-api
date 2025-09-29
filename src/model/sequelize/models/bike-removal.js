@@ -1,4 +1,4 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
 import Bike from './bike.js';
 import Employee from './employee.js';

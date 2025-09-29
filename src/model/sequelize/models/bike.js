@@ -1,9 +1,9 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
-import status from '../enum/bikeStatus.js';
+import status from '../enum/bike-status.js';
 import Dock from './dock.js';
-import BikeAdmission from './bikeAdmission.js';
-import BikeRemoval from './bikeRemoval.js';
+import BikeAdmission from './bike-admission.js';
+import BikeRemoval from './bike-removal.js';
 import Rental from './rental.js';
 
 export default class Bike extends BaseModel {

@@ -1,9 +1,9 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
-import status from '../enum/dockStatus.js';
-import BikeAdmission from './bikeAdmission.js';
-import DockAdmission from './dockAdmission.js';
-import DockRemoval from './dockRemoval.js';
+import status from '../enum/dock-status.js';
+import BikeAdmission from './bike-admission.js';
+import DockAdmission from './dock-admission.js';
+import DockRemoval from './dock-removal.js';
 import Rental from './rental.js';
 import Bike from './bike.js';
 import Station from './station.js';

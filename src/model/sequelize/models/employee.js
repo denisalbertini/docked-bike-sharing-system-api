@@ -1,10 +1,10 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
-import validateCpf from '../CpfValidation.js';
-import roles from '../enum/employeeRole.js';
-import BikeRemoval from './bikeRemoval.js';
-import DockAdmission from './dockAdmission.js';
-import DockRemoval from './dockRemoval.js';
+import validateCpf from '../cpf-validation.js';
+import roles from '../enum/employee-role.js';
+import BikeRemoval from './bike-removal.js';
+import DockAdmission from './dock-admission.js';
+import DockRemoval from './dock-removal.js';
 
 export default class Employee extends BaseModel {
   static modelAttributes = {

@@ -1,6 +1,6 @@
-import { getBaseClassConstructorMessage } from '../constructorErrorMessage.js';
+import { getBaseClassConstructorMessage } from '../constructor-error-message.js';
 import Result from '../model/shared/result.js';
-import { NOT_FOUND_ERROR } from '../errorTypes.js';
+import { NOT_FOUND_ERROR } from '../error-types.js';
 
 export default class BaseService {
   #modelRepository;

@@ -2,7 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import {
   getBaseClassConstructorMessage, 
   getSequelizeModelConstructorMessage
-} from '../../constructorErrorMessage.js';
+} from '../../constructor-error-message.js';
 
 export default class BaseModel extends Model {
   constructor() {

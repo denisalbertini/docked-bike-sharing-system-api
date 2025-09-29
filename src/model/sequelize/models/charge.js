@@ -1,4 +1,4 @@
-import BaseModel from '../baseModel.js';
+import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
 import Rental from './rental.js';
 import Biker from './biker.js';
