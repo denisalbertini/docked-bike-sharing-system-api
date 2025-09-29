@@ -11,7 +11,6 @@ export default class Biker extends BaseModel {
   static modelAttributes = {
     cpf: {
       type: DataTypes.CHAR( 11 ), 
-      allowNull: false, 
       unique: true, 
       validate: {
         isCpf( cpf ) {
