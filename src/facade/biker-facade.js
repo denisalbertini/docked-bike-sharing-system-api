@@ -1,0 +1,182 @@
+import Result from '../model/shared/result';
+import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../error-types';
+
+export default class BikerFacade {
+  #bikerService;
+  #passportService;
+  #creditCardService;
+  #transaction;
+
+  constructor(
+    bikerService, 
+    passportService, 
+    creditCardService, 
+    transaction
+  ) {
+    this.#bikerService = bikerService;
+    this.#passportService = passportService;
+    this.#creditCardService = creditCardService;
+    this.#transaction = transaction
+  }
+
+  async createBiker( bikerData, creditCardData, passportData = null ) {
+    const errors = [];
+
+    const bikerValidationResult = this.#bikerService.validate(
+      { ...bikerData, ...( passportData ?? {} ) }
+    );
+    if ( bikerValidationResult.isFailure )
+      errors.push( ...bikerValidationResult.errors );
+
+    const creditCardValidationResult =
+      this.#creditCardService.validate( creditCardData );
+    if( creditCardValidationResult.isFailure )
+      errors.push( ...creditCardValidationResult.errors );
+
+    if ( errors.length !== 0 )
+      return Result.failure( errors, VALIDATION_ERROR );
+
+    try {
+      await this.#transaction.start();
+
+      const creditCardResult =
+        await this.#creditCardService.findOrCreate( creditCardData );
+      if ( creditCardResult.isFailure ) {
+        await this.#transaction.rollback();
+        return creditCardResult;
+      }
+
+      const creditCard = creditCardResult.value;
+      const creditCardId = creditCard.id;
+      bikerData.creditCardId = creditCardId;
+
+      const bikerResult =
+        await this.#bikerService.create( bikerData );
+      if ( bikerResult.isFailure ) {
+        await this.#transaction.rollback();
+        return bikerResult;
+      }
+
+      const biker = bikerResult.value;
+      const bikerId = biker.id;
+      passportData.bikerId = bikerId;
+
+      if ( passportData ) {
+        const passportResult =
+          await this.#passportService.create( passportData );
+        if ( passportResult.isFailure ) {
+          await this.#transaction.rollback();
+          return passportResult;
+        }
+
+        const passport = passportResult.value;
+        biker.passport = passport;
+      }
+
+      biker.creditCard = creditCard;
+
+      await this.#transaction.commit();
+
+      return Result.success( biker );
+    } catch ( error ) {
+      await this.#transaction.rollback();
+
+      return Result.failure(
+        error.message, 
+        INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async updateBiker( bikerId, data ) {
+    const validationResult = this.#bikerService.validate( data );
+    if ( validationResult.isFailure ) return validationResult;
+
+    try {
+      await this.#transaction.start();
+
+      const bikerResult =
+        await this.#bikerService.updateById( bikerId, data );
+      if ( bikerResult.isFailure ) {
+        await this.#transaction.rollback();
+        return bikerResult;
+      }
+
+      const biker = bikerResult.value;
+
+      const findPassportResult =
+        await this.#passportService.findByBikerId( bikerId );
+      if (
+        findPassportResult.isFailure && 
+        findPassportResult.errorType !== NOT_FOUND_ERROR
+      ) {
+        await this.#transaction.rollback();
+        return findPassportResult;
+      }
+
+      let passportResult;
+      if ( findPassportResult.isSuccess ) {
+        const passportId = findPassportResult.value.id;
+        passportResult =
+          await this.#passportService.updateById( passportId, data );
+      } else {
+        passportResult =
+          await this.#passportService.create( { ...data, bikerId } );
+      }
+
+      if ( passportResult.isFailure ) {
+        await this.#transaction.rollback();
+        return passportResult;
+      }
+
+      biker.passport = passportResult.value;
+
+      await this.#transaction.commit();
+
+      return Result.success( biker );
+    } catch ( error ) {
+      await this.#transaction.rollback();
+
+      return Result.failure(
+        error.message, 
+        INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async changeBikerCreditCard( bikerId, data ) {
+    const validationResult = this.#creditCardService.validate( data );
+    if ( validationResult.isFailure ) return validationResult;
+
+    try {
+      await this.#transaction.start();
+
+      const creditCardResult =
+        await this.#creditCardService.findOrCreate( data );
+      if ( creditCardResult.isFailure ) {
+        await this.#transaction.rollback();
+        return creditCardResult;
+      }
+
+      const creditCardId = creditCardResult.value.id;
+
+      const bikerResult =
+        await this.#bikerService.updateById( bikerId, { creditCardId } );
+      if ( bikerResult.isFailure ) {
+        await this.#transaction.rollback();
+        return bikerResult;
+      }
+
+      await this.#transaction.commit();
+
+      return Result.success();
+    } catch ( error ) {
+      await this.#transaction.rollback();
+
+      return Result.failure(
+        error.message, 
+        INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+}
