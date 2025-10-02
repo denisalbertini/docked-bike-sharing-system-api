@@ -38,17 +38,22 @@ export default class BaseService {
     return result;
   }
 
-  async create( values ) {
-    return await this.#modelRepository.create( values );
+  async create( data ) {
+    return await this.#modelRepository.create( data );
   }
 
-  async update( id, updates ) {
-    const bikeResult = await this.findById( id );
-    if ( bikeResult.isFailure ) return bikeResult;
+  async updateById( id, data ) {
+    const result = await this.#modelRepository.updateById( id, data );
 
-    const bike = bikeResult.value;
+    const [ affectedRows, [ updatedEntry ] ] = result.value;
 
-    return await this.#modelRepository.update( bike, updates );
+    if ( result.isSuccess && affectedRows !== 1 )
+      return Result.failure(
+        [ 'Entry does not exist.' ], 
+        NOT_FOUND_ERROR
+      );
+
+    return Result.success( updatedEntry );
   }
 
   async deleteById( id ) {
