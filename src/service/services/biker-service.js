@@ -1,6 +1,7 @@
 import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
-import { VALIDATION_ERROR } from '../../error-types.js';
+import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../../error-types.js';
+import status from '../../model/shared/enum/biker-status.js';
 
 export default class BikerService extends BaseService {
   validate(
@@ -28,5 +29,21 @@ export default class BikerService extends BaseService {
       return Result.failure( errors, VALIDATION_ERROR );
 
     return Result.success();
+  }
+
+  async activateAccount( id ) {
+    const findResult = await this.findById( id );
+    if ( findResult.isFailure ) return findResult;
+
+    const biker = findResult.value;
+    if ( biker === null || biker.status !== status.PENDING )
+      return Result.failure(
+        [ 'Entry is not confirmation pending.' ], 
+        NOT_FOUND_ERROR
+      );
+
+    const updateResult = await this.updateById( id, { status: status.ACTIVE } );
+    
+    return updateResult;
   }
 }
