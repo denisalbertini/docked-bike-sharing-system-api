@@ -1,7 +1,7 @@
 import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
 import validateCpf from '../cpf-validation.js';
-import roles from '../enum/employee-role.js';
+import roles from '../../shared/enum/employee-role.js';
 import BikeRemoval from './bike-removal.js';
 import DockAdmission from './dock-admission.js';
 import DockRemoval from './dock-removal.js';

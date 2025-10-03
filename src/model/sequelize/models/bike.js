@@ -1,6 +1,6 @@
 import BaseModel from '../base-model.js';
 import { DataTypes } from 'sequelize';
-import status from '../enum/bike-status.js';
+import status from '../../shared/enum/bike-status.js';
 import Dock from './dock.js';
 import BikeAdmission from './bike-admission.js';
 import BikeRemoval from './bike-removal.js';
