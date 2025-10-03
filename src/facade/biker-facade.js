@@ -1,22 +1,26 @@
 import Result from '../model/shared/result';
 import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../error-types';
+import jwt from 'jsonwebtoken';
 
 export default class BikerFacade {
   #bikerService;
   #passportService;
   #creditCardService;
   #transaction;
+  #emailService;
 
   constructor(
     bikerService, 
     passportService, 
     creditCardService, 
-    transaction
+    transaction, 
+    emailService
   ) {
     this.#bikerService = bikerService;
     this.#passportService = passportService;
     this.#creditCardService = creditCardService;
-    this.#transaction = transaction
+    this.#transaction = transaction;
+    this.#emailService = emailService;
   }
 
   async createBiker( bikerData, creditCardData, passportData = null ) {
@@ -74,6 +78,18 @@ export default class BikerFacade {
       }
 
       biker.creditCard = creditCard;
+
+      const tokenPayload = { bikerId, purpose: 'email_verification' };
+      const token = jwt.sign(
+        tokenPayload, process.env.JWT_SECRET, { expiresIn: '15m' }
+      );
+
+      const emailResult =
+        await this.#emailService.sendAccountConfirmation( bikerId, biker.email, token );
+      if ( emailResult.isFailure ) {
+        await this.#transaction.rollback();
+        return emailResult;
+      }
 
       await this.#transaction.commit();
 
@@ -178,5 +194,9 @@ export default class BikerFacade {
         INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  async activateBikerAccount( bikerId ) {
+    return await this.#bikerService.activateAccount( bikerId );
   }
 }
