@@ -3,18 +3,18 @@ import Result from '../../model/shared/result.js';
 import { VALIDATION_ERROR } from '../../error-types.js';
 
 export default class CreditCardService extends BaseService {
-  validate( { number, expirationDate, cvc } ) {
+  validate( { number, expirationDate, cvv } ) {
     const errors = [];
 
     if ( !this.#validateNumber( number ) )
       errors.push( 'Invalid credit card number.' );
     if ( !this.#validateExpirationDate( expirationDate ) )
       errors.push( 'Invalid credit card expiration date.' );
-    if ( !this.#validateCvc( cvc ) )
+    if ( !this.#validateCvv( cvv ) )
       errors.push( 'Invalid credit card cvc.' );
 
     if ( errors.length !== 0 )
-      return Result.failure( errors, VALIDATION_ERROR );
+      return Result.failure( VALIDATION_ERROR, ...errors );
 
     return Result.success();
   }
@@ -55,8 +55,8 @@ export default class CreditCardService extends BaseService {
     );
   }
 
-  #validateCvc( cvc ) {
-    return /^\d{3,4}$/.test( cvc );
+  #validateCvv( cvv ) {
+    return /^\d{3,4}$/.test( cvv );
   }
   
   async findOrCreate( data ) {
