@@ -14,7 +14,7 @@ export default class Result {
     
     this.#value = value;
     this.#errors = errors;
-    this.errorType = errorType;
+    this.#errorType = errorType;
 
     Object.seal( this );
   }
@@ -33,7 +33,7 @@ export default class Result {
       null
     );
   }
-  static failure( errors, errorType ) {
+  static failure( errorType, ...errors ) {
     return new Result(
       this.#instantiationToken, 
       null, 
