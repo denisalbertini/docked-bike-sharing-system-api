@@ -20,7 +20,6 @@ Table credit_card {
   number char(19) [not null]
   holder_name varchar(255) [not null]
   expiration_date date [not null]
-  cvv char(3) [not null]
 }
 
 Table passport {

@@ -25,13 +25,6 @@ export default class CreditCard extends BaseModel {
       validate: {
         isDate: true
       }
-    }, 
-    cvv: {
-      type: DataTypes.CHAR( 3 ), 
-      allowNull: false, 
-      validate: {
-        is: /\b\d{3}\b/
-      }
     }
   }
 
