@@ -20,6 +20,7 @@
   "homepage": "https://github.com/denis-albertini/docked-bike-sharing-system-api#readme",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.49.1",
+    "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.6",
