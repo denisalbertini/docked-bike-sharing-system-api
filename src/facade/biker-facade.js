@@ -38,7 +38,7 @@ export default class BikerFacade {
       errors.push( ...creditCardValidationResult.errors );
 
     if ( errors.length !== 0 )
-      return Result.failure( errors, VALIDATION_ERROR );
+      return Result.failure( VALIDATION_ERROR, ...errors );
 
     try {
       await this.#transaction.start();
@@ -97,10 +97,7 @@ export default class BikerFacade {
     } catch ( error ) {
       await this.#transaction.rollback();
 
-      return Result.failure(
-        error.message, 
-        INTERNAL_SERVER_ERROR
-      );
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message);
     }
   }
 
@@ -153,10 +150,7 @@ export default class BikerFacade {
     } catch ( error ) {
       await this.#transaction.rollback();
 
-      return Result.failure(
-        error.message, 
-        INTERNAL_SERVER_ERROR
-      );
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
     }
   }
 
@@ -189,10 +183,7 @@ export default class BikerFacade {
     } catch ( error ) {
       await this.#transaction.rollback();
 
-      return Result.failure(
-        error.message, 
-        INTERNAL_SERVER_ERROR
-      );
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
     }
   }
 

@@ -47,7 +47,7 @@ export default class EmailService {
 
       return Result.success(info);
     } catch (error) {
-      return Result.failure([error.message], INTERNAL_SERVER_ERROR);
+      return Result.failure(INTERNAL_SERVER_ERROR, error.message);
     }
   }
 }

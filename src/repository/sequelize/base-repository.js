@@ -42,7 +42,7 @@ export default class BaseRepository {
 
       const errorType = this.#getErrorType( error );
       
-      return Result.failure( errors, errorType );
+      return Result.failure( errorType, ...errors );
     }
   }
 

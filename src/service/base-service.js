@@ -19,8 +19,8 @@ export default class BaseService {
 
     if ( result.isSuccess && result.value.length === 0 )
       return Result.failure(
-        [ 'No entries found.' ], 
-        NOT_FOUND_ERROR
+        NOT_FOUND_ERROR, 
+        'No entries found.'
       );
     
     return result;
@@ -31,8 +31,8 @@ export default class BaseService {
 
     if ( result.isSuccess && result.value === null )
       return Result.failure(
-        [ 'No entry found.' ], 
-        NOT_FOUND_ERROR
+        NOT_FOUND_ERROR, 
+        'No entry found.'
       );
 
     return result;
@@ -49,8 +49,8 @@ export default class BaseService {
 
     if ( result.isSuccess && affectedRows !== 1 )
       return Result.failure(
-        [ 'Entry does not exist.' ], 
-        NOT_FOUND_ERROR
+        NOT_FOUND_ERROR, 
+        'Entry does not exist.'
       );
 
     return Result.success( updatedEntry );
@@ -61,8 +61,8 @@ export default class BaseService {
 
     if ( result.isSuccess && result.value === 0 )
       return Result.failure(
-        [ 'Entry does not exist.' ], 
-        NOT_FOUND_ERROR
+        NOT_FOUND_ERROR, 
+        'Entry does not exist.'
       );
 
     return result;
