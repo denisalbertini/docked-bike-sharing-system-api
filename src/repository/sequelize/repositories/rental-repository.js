@@ -11,4 +11,12 @@ export default class RentalRepository extends BaseRepository {
       )
     );
   }
+
+  findByNullFinishTimeAndBikerId( bikerId ) {
+    return this.handleOperation(
+      () => this.model.findOne(
+        { where: { finishedAt: null, bikerId } }
+      )
+    );
+  }
 }
