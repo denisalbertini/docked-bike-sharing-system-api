@@ -190,4 +190,8 @@ export default class BikerFacade {
   async activateBikerAccount( bikerId ) {
     return await this.#bikerService.activateAccount( bikerId );
   }
+
+  async login( email ) {
+    return this.#bikerService.login( email );
+  }
 }
