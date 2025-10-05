@@ -43,11 +43,12 @@ export default class BaseService {
   }
 
   async updateById( id, data ) {
-    const result = await this.modelRepository.updateById( id, data );
+    const updateResult = await this.modelRepository.updateById( id, data );
+    if ( updateResult.isFailure ) return updateResult;
 
-    const [ affectedRows, [ updatedEntry ] ] = result.value;
+    const [ affectedRows, [ updatedEntry ] ] = updateResult.value;
 
-    if ( result.isSuccess && affectedRows !== 1 )
+    if ( affectedRows === 0 )
       return Result.failure(
         NOT_FOUND_ERROR, 
         'Entry does not exist.'
