@@ -8,7 +8,7 @@ export default class PassportService extends BaseService {
     if ( result.isSuccess && result.value === null )
       return Result.failure(
         NOT_FOUND_ERROR, 
-        'No entry found.'
+        'Passport not found.'
       );
 
     return result;
