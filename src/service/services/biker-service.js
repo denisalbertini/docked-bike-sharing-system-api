@@ -42,30 +42,13 @@ export default class BikerService extends BaseService {
   }
 
   async activateAccount( id ) {
-    const accountPendingResult = await this.isAccountPending( id );
-    if ( accountPendingResult.isFailure ) return accountPendingResult;
-
-    return await this.updateById( id, { status: status.ACTIVE } );
-  }
-
-  async isAccountPending( id ) {
     const findResult = await this.findById( id );
     if ( findResult.isFailure ) return findResult;
 
     const biker = findResult.value;
-
-    if ( biker === null )
-      return Result.failure(
-        NOT_FOUND_ERROR, 
-        'Account does not exist.'
-      );
-
     if ( biker.status !== status.PENDING )
-      return Result.failure(
-        PRECONDITION_FAILED_ERROR, 
-        'Account is not pending.'
-      );
+      return Result.failure( PRECONDITION_FAILED_ERROR, 'Account not pending.' );
 
-    return Result.success();
+    return await this.updateById( id, { status: status.ACTIVE } );
   }
 }
