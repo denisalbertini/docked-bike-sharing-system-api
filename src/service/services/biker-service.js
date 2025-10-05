@@ -1,12 +1,12 @@
 import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
 import {
-  NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR, 
   VALIDATION_ERROR
 } from '../../error-types.js';
 import status from '../../model/shared/enum/biker-status.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export default class BikerService extends BaseService {
   validate(
@@ -36,8 +36,8 @@ export default class BikerService extends BaseService {
     return Result.success();
   }
 
-  create( data ) {
-    const hashedPassword = bcrypt.hashSync( data.password, 10 );
+  async create( data ) {
+    const hashedPassword = await bcrypt.hash( data.password, 10 );
     super.create( { ...data, password: hashedPassword } );
   }
 
@@ -50,5 +50,23 @@ export default class BikerService extends BaseService {
       return Result.failure( PRECONDITION_FAILED_ERROR, 'Account not pending.' );
 
     return await this.updateById( id, { status: status.ACTIVE } );
+  }
+
+  async login( email, password ) {
+    const findResult = await this.modelRepository.findByEmail( email );
+    if ( findResult.isFailure ) return findResult;
+
+    const biker = findResult.value;
+
+    const checksOut = await bcrypt.compare( password, biker.password );
+
+    if ( !checksOut )
+      return Result.failure( VALIDATION_ERROR, 'Incorrect credentials.' );
+
+    const token = jwt.sign(
+      { bikerId: biker.id }, process.env.JWT_SECRET, { expiresIn: '7d' }
+    );
+
+    return Result.success( token );
   }
 }
