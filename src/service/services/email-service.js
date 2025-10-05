@@ -50,4 +50,73 @@ export default class EmailService {
       return Result.failure(INTERNAL_SERVER_ERROR, error.message);
     }
   }
+
+  async sendRentalConfirmation(bikerEmail, rentalInfo, isReturn = false) {
+    try {
+      const transporter = await createTransporter();
+
+      const mailOptions = {
+        from: '"Bike Sharing System" <noreply@bssapp.com>',
+        to: bikerEmail,
+        subject: isReturn
+          ? 'Your Renturn Confirmation'
+          : 'Your Rental Confirmation',
+        html: this.#generateRentalConfirmationTemplate(rentalInfo),
+        text: this.#generatePlainTextRentalConfirmation(rentalInfo),
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+
+      return Result.success(info);
+    } catch (error) {
+      return Result.failure(INTERNAL_SERVER_ERROR, error.message);
+    }
+  }
+
+  #generateRentalConfirmationTemplate(rentalInfo, isReturn) {
+    return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <h2 style="color: #333; text-align: center; margin-bottom: 30px;">🚴‍♂️ ${
+        isReturn ? 'Return' : 'Rental'
+      } Confirmed!</h2>
+      
+      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+        <h3 style="color: #28a745; margin-top: 0;">${
+          isReturn ? 'Return' : 'Rental'
+        } Details</h3>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; width: 120px;">Station:</td>
+            <td style="padding: 8px 0;">${rentalInfo.station}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Time:</td>
+            <td style="padding: 8px 0;">${rentalInfo.time}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Charge Amount:</td>
+            <td style="padding: 8px 0; color: #dc3545; font-size: 1.1em;">
+              $${rentalInfo.chargeAmount.toFixed(2)}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+  }
+
+  #generatePlainTextRentalConfirmation(rentalInfo, isReturn) {
+    return `
+    ${isReturn ? 'Return' : 'Rental'} Confirmation
+
+    Your ${isReturn ? 'Return' : 'Rental'} has been successfully processed!
+
+    ${isReturn ? 'Return' : 'Rental'} Details:
+    ---------------
+    Station: ${rentalInfo.station}
+    Time: ${rentalInfo.time}
+    Charge Amount: $${rentalInfo.chargeAmount.toFixed(2)}
+    `;
+  }
 }
