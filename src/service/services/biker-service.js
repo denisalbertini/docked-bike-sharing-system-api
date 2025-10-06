@@ -1,6 +1,8 @@
 import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
 import {
+  AUTHENTICATION_ERROR,
+  INTERNAL_SERVER_ERROR,
   PRECONDITION_FAILED_ERROR, 
   VALIDATION_ERROR
 } from '../../error-types.js';
@@ -8,6 +10,9 @@ import status from '../../model/shared/enum/biker-status.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
+import { ACCESS } from '../../auth-purpose.js';
+
+const jwtAsyncSign = promisify( jwt.sign );
 
 export default class BikerService extends BaseService {
   validate(
@@ -38,8 +43,28 @@ export default class BikerService extends BaseService {
   }
 
   async create( data ) {
-    const hashedPassword = await bcrypt.hash( data.password, 10 );
-    super.create( { ...data, password: hashedPassword } );
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash( data.password, 10 );
+    } catch ( error ) {
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+    }
+
+    return super.create( { ...data, password: hashedPassword } );
+  }
+
+  async generateAccountConfirmationToken( biker ) {
+    try {
+      const token = await jwtAsyncSign(
+        { bikerId: biker.id, purpose: 'email_verification' }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '15m' }
+      );
+
+      return Result.success( token );
+    } catch (error) {
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+    }
   }
 
   async activateAccount( id ) {
@@ -59,16 +84,21 @@ export default class BikerService extends BaseService {
 
     const biker = findResult.value;
 
-    const checksOut = await bcrypt.compare( password, biker.password );
+    try {
+      const checksOut = await bcrypt.compare( password, biker.password );
 
-    if ( !checksOut )
-      return Result.failure( VALIDATION_ERROR, 'Incorrect credentials.' );
+      if ( !checksOut )
+        return Result.failure( AUTHENTICATION_ERROR, 'Incorrect credentials.' );
+      
+      const token = await jwtAsyncSign(
+        { id: biker.id, purpose: ACCESS }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '7d' }
+      );
 
-    const jwtAsyncSign = promisify( jwt.sign );
-    const token = await jwtAsyncSign(
-      {}, process.env.JWT_SECRET, { expiresIn: '7d' }
-    );
-
-    return Result.success( token );
+      return Result.success( token );
+    } catch ( error ) {
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+    }
   }
 }
