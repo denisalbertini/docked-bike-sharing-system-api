@@ -7,6 +7,7 @@ import {
 import status from '../../model/shared/enum/biker-status.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 
 export default class BikerService extends BaseService {
   validate(
@@ -63,8 +64,9 @@ export default class BikerService extends BaseService {
     if ( !checksOut )
       return Result.failure( VALIDATION_ERROR, 'Incorrect credentials.' );
 
-    const token = jwt.sign(
-      { bikerId: biker.id }, process.env.JWT_SECRET, { expiresIn: '7d' }
+    const jwtAsyncSign = promisify( jwt.sign );
+    const token = await jwtAsyncSign(
+      {}, process.env.JWT_SECRET, { expiresIn: '7d' }
     );
 
     return Result.success( token );
