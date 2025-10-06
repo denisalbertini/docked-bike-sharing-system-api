@@ -1,7 +1,5 @@
 import Result from '../model/shared/result';
 import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../error-types';
-import jwt from 'jsonwebtoken';
-import { promisify } from 'util';
 
 export default class BikerFacade {
   #bikerService;
@@ -25,6 +23,7 @@ export default class BikerFacade {
   }
 
   async createBiker( bikerData, creditCardData, passportData = null ) {
+    // Validates the data
     const errors = [];
 
     const bikerValidationResult = this.#bikerService.validate(
@@ -33,42 +32,46 @@ export default class BikerFacade {
     if ( bikerValidationResult.isFailure )
       errors.push( ...bikerValidationResult.errors );
 
-    const creditCardValidationResult =
-      this.#creditCardService.validate( creditCardData );
+    const creditCardValidationResult = this.#creditCardService.validate(
+      creditCardData
+    );
     if( creditCardValidationResult.isFailure )
       errors.push( ...creditCardValidationResult.errors );
 
     if ( errors.length !== 0 )
       return Result.failure( VALIDATION_ERROR, ...errors );
 
+    // Tries to finalize the process with a transaction
     try {
       await this.#transaction.start();
 
-      const creditCardResult =
-        await this.#creditCardService.findOrCreate( creditCardData );
+      // Finds or creates the credit card
+      const creditCardResult = await this.#creditCardService.findOrCreate(
+        creditCardData
+      );
       if ( creditCardResult.isFailure ) {
         await this.#transaction.rollback();
         return creditCardResult;
       }
 
       const creditCard = creditCardResult.value;
-      const creditCardId = creditCard.id;
-      bikerData.creditCardId = creditCardId;
 
-      const bikerResult =
-        await this.#bikerService.create( bikerData );
+      // Creates the biker
+      const bikerResult = await this.#bikerService.create(
+        { ...bikerData, creditCardId: creditCard.id }
+      );
       if ( bikerResult.isFailure ) {
         await this.#transaction.rollback();
         return bikerResult;
       }
 
       const biker = bikerResult.value;
-      const bikerId = biker.id;
-      passportData.bikerId = bikerId;
 
+      // Creates the passport
       if ( passportData ) {
-        const passportResult =
-          await this.#passportService.create( passportData );
+        const passportResult = await this.#passportService.create(
+          { ...passportData, bikerId: biker.id }
+        );
         if ( passportResult.isFailure ) {
           await this.#transaction.rollback();
           return passportResult;
@@ -80,15 +83,20 @@ export default class BikerFacade {
 
       biker.creditCard = creditCard;
 
-      const jwtAsyncSign = promisify( jwt.sign );
-      const token = await jwtAsyncSign(
-        { bikerId, purpose: 'email_verification' }, 
-        process.env.JWT_SECRET, 
-        { expiresIn: '15m' }
-      );
+      // Generates the confirmation token
+      const generateTokenResult =
+        await this.#bikerService.generateAccountConfirmationToken( biker );
+      if ( generateTokenResult.isFailure ) {
+        await this.#transaction.rollback();
+        return generateTokenResult;
+      }
 
-      const emailResult =
-        await this.#emailService.sendAccountConfirmation( bikerId, biker.email, token );
+      const token = generateTokenResult.value;
+
+      // Sends the confirmation email
+      const emailResult = await this.#emailService.sendAccountConfirmation(
+        biker.id, biker.email, token
+      );
       if ( emailResult.isFailure ) {
         await this.#transaction.rollback();
         return emailResult;
