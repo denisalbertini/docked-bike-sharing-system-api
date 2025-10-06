@@ -1,6 +1,7 @@
 import Result from '../model/shared/result';
 import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../error-types';
 import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 
 export default class BikerFacade {
   #bikerService;
@@ -79,9 +80,11 @@ export default class BikerFacade {
 
       biker.creditCard = creditCard;
 
-      const tokenPayload = { bikerId, purpose: 'email_verification' };
-      const token = jwt.sign(
-        tokenPayload, process.env.JWT_SECRET, { expiresIn: '15m' }
+      const jwtAsyncSign = promisify( jwt.sign );
+      const token = await jwtAsyncSign(
+        { bikerId, purpose: 'email_verification' }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '15m' }
       );
 
       const emailResult =
@@ -185,13 +188,5 @@ export default class BikerFacade {
 
       return Result.failure( INTERNAL_SERVER_ERROR, error.message );
     }
-  }
-
-  async activateBikerAccount( bikerId ) {
-    return await this.#bikerService.activateAccount( bikerId );
-  }
-
-  async login( email ) {
-    return this.#bikerService.login( email );
   }
 }
