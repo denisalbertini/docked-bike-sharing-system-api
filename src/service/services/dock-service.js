@@ -18,7 +18,7 @@ export default class DockService extends BaseService {
     return findResult;
   }
 
-  async checkStatus( serialNumber, status ) {
+  async checkStatusBySerialNumber( serialNumber, status ) {
     const findResult = await this.findBySerialNumber( serialNumber );
 
     if ( findResult.isSuccess && findResult.value.status !== status )
@@ -30,7 +30,7 @@ export default class DockService extends BaseService {
     return findResult;
   }
 
-  updateStatus( id, status ) {
+  updateStatusById( id, status ) {
     return this.updateById( id, { status } );
   }
 }
