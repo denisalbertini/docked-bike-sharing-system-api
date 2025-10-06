@@ -53,7 +53,7 @@ export default class RentalFacade {
       return bikerRentingResult;
 
     // Verifies if the dock is holding a bike
-    const dockOccupiedResult = await this.#dockService.checkStatus(
+    const dockOccupiedResult = await this.#dockService.checkStatusBySerialNumber(
       dockSerialNumber, dockStatus.OCCUPIED
     );
     if ( dockOccupiedResult.isFailure ) return dockOccupiedResult;
@@ -62,7 +62,7 @@ export default class RentalFacade {
 
     // Verifies if the bike is available
     const bikeAvailableResult =
-      await this.#bikeService.isAvailable( dock.bikeId );
+      await this.#bikeService.isAvailableById( dock.bikeId );
     if ( bikeAvailableResult.isFailure ) return bikeAvailableResult;
 
     const bike = bikeAvailableResult.value;
@@ -119,7 +119,7 @@ export default class RentalFacade {
 
       // Updates the bike's status
       const updateBikeResult =
-        await this.#bikeService.updateStatus( bike.id, bikeStatus.RENTED );
+        await this.#bikeService.updateStatusById( bike.id, bikeStatus.RENTED );
       if ( updateBikeResult.isFailure ) {
         await this.#transaction.rollback();
         return updateBikeResult;
@@ -127,7 +127,7 @@ export default class RentalFacade {
 
       // Updates the dock's status
       const updateDockResult =
-        await this.#dockService.updateStatus( dock.id, dockStatus.AVAILABLE );
+        await this.#dockService.updateStatusById( dock.id, dockStatus.AVAILABLE );
       if ( updateDockResult.isFailure ) {
         await this.#transaction.rollback();
         return updateDockResult;
@@ -166,7 +166,7 @@ export default class RentalFacade {
 
   async registerReturn( { dockSerialNumber, bikeSerialNumber } ) {
     // Verifies if the dock is available
-    const dockAvailableResult = await this.#dockService.checkStatus(
+    const dockAvailableResult = await this.#dockService.checkStatusBySerialNumber(
       dockSerialNumber, dockStatus.AVAILABLE
     );
     if ( dockAvailableResult.isFailure ) return dockAvailableResult;
@@ -174,8 +174,8 @@ export default class RentalFacade {
     const dock = dockAvailableResult.value;
 
     // Verifies if the bike is rented
-    const bikeRentedResult = await this.#bikeService.isRented(
-      bikeSerialNumber
+    const bikeRentedResult = await this.#bikeService.checkStatusBySerialNumber(
+      bikeSerialNumber, bikeStatus.RENTED
     );
     if ( bikeRentedResult.isFailure ) return bikeRentedResult;
 
@@ -235,7 +235,7 @@ export default class RentalFacade {
 
       // Updates the bike's status
       const updateBikeResult =
-        await this.#bikeService.updateStatus( bike.id, bikeStatus.AVAILABLE );
+        await this.#bikeService.updateStatusById( bike.id, bikeStatus.AVAILABLE );
       if ( updateBikeResult.isFailure ) {
         await this.#transaction.rollback();
         return updateBikeResult;
@@ -243,7 +243,7 @@ export default class RentalFacade {
 
       // Updates the dock's status
       const updateDockResult =
-        await this.#dockService.updateStatus( dock.id, dockStatus.OCCUPIED );
+        await this.#dockService.updateStatusById( dock.id, dockStatus.OCCUPIED );
       if ( updateDockResult.isFailure ) {
         await this.#transaction.rollback();
         return updateDockResult;
