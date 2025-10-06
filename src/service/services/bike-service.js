@@ -15,7 +15,7 @@ export default class BikeService extends BaseService {
     return findResult;
   }
   
-  async isAvailable( id ) {
+  async isAvailableById( id ) {
     const findResult = await this.findById( id );
 
     if ( findResult.isSuccess && findResult.value.status !== bikeStatus.AVAILABLE )
@@ -24,16 +24,19 @@ export default class BikeService extends BaseService {
     return findResult;
   }
 
-  async isRented( serialNumber ) {
+  async checkStatusBySerialNumber( serialNumber, ...status ) {
     const findResult = await this.findBySerialNumber( serialNumber );
 
-    if ( findResult.isSuccess && findResult.value.status !== bikeStatus.RENTED )
-      return Result.failure( PRECONDITION_FAILED_ERROR, 'Bike is not rented.' );
+    if ( findResult.isSuccess && !status.includes( findResult.value.status  ) )
+      return Result.failure(
+        PRECONDITION_FAILED_ERROR, 
+        'Bike does not match preconditions.'
+      );
 
     return findResult;
   }
 
-  updateStatus( id, status ) {
+  updateStatusById( id, status ) {
     return this.updateById( id, { status } );
   }
 }
