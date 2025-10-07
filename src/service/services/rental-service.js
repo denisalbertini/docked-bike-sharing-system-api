@@ -9,7 +9,7 @@ export default class RentalService extends BaseService {
     return this.modelRepository.findByNullFinishTimeAndBikerId( bikerId );
   }
 
-  finish( rental ) {
-    return this.updateById( rental.id, rental );
+  finishById( id, data ) {
+    return this.updateById( id, data );
   }
 }
