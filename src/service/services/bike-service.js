@@ -39,4 +39,18 @@ export default class BikeService extends BaseService {
   updateStatusById( id, status ) {
     return this.updateById( id, { status } );
   }
+
+  getStatusByAction( action ) {
+    switch ( action ) {
+      case 'REPAIR':
+        return Result.success( bikeStatus.UNDER_MAINTENANCE );
+      case 'RETIRE':
+        return Result.success( bikeStatus.RETIRED );
+      default:
+        return Result.failure(
+          VALIDATION_ERROR, 
+          'Action not supported.'
+        );
+    }
+  }
 }

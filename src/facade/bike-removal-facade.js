@@ -56,23 +56,16 @@ export default class BikeRemovalFacade {
 
       const bikeAdmission = createBikeRemovalResult.value;
 
-      // Updates the bike's status
-      let newBikeStatus;
-      switch ( action ) {
-        case 'REPAIR':
-          newBikeStatus = bikeStatus.UNDER_MAINTENANCE;
-          break;
-        case 'RETIRE':
-          newBikeStatus = bikeStatus.RETIRED;
-          break;
-        default:
-          await this.#transaction.rollback();
-          return Result.failure(
-            VALIDATION_ERROR, 
-            'Action not supported.'
-          );
+      // Gets the new bike status
+      const bikeStatusResult = this.#bikeService.getStatusByAction( action );
+      if ( bikeStatusResult.isFailure ) {
+        await this.#transaction.rollback();
+        return bikeStatusResult;
       }
 
+      const newBikeStatus = bikeStatusResult.value;
+      
+      // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
         bike.id, newBikeStatus
       );
