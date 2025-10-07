@@ -34,18 +34,12 @@ function createAuthMiddleware( purpose = null, ...acceptedRoles ) {
   }
 }
 
-const accountConfirmationAuthMiddleware =
-  createAuthMiddleware( EMAIL_VERIFICATION );
-const bikerAuthMiddleware =
-  createAuthMiddleware( ACCESS );
-const operatorAuthMiddleware =
-  createAuthMiddleware( ACCESS, employeeRole.OPERATOR, employeeRole.ADMIN );
-const adminAuthMiddleware =
+export const
+accountConfirmationAuthMiddleware =
+  createAuthMiddleware( EMAIL_VERIFICATION ), 
+bikerAuthMiddleware =
+  createAuthMiddleware( ACCESS ), 
+operatorAuthMiddleware =
+  createAuthMiddleware( ACCESS, employeeRole.OPERATOR, employeeRole.ADMIN ), 
+adminAuthMiddleware =
   createAuthMiddleware( ACCESS, employeeRole.ADMIN );
-
-export {
-  accountConfirmationAuthMiddleware, 
-  bikerAuthMiddleware, 
-  operatorAuthMiddleware, 
-  adminAuthMiddleware
-};
