@@ -1,5 +1,6 @@
-import BaseRepository from "../base-repository";
+import BaseRepository from '../base-repository';
 import Rental from '../../../model/sequelize/models/rental.js';
+import { Op } from 'sequelize';
 
 export default class RentalRepository extends BaseRepository {
   constructor() { super( Rental ); }
@@ -7,7 +8,7 @@ export default class RentalRepository extends BaseRepository {
   findByNullFinishTimeAndBikeId( bikeId ) {
     return this.handleOperation(
       () => this.model.findOne(
-        { where: { finishedAt: null, bikeId } }
+        { where: { finishedAt: { [ Op.is ]: null }, bikeId } }
       )
     );
   }
@@ -15,7 +16,7 @@ export default class RentalRepository extends BaseRepository {
   findByNullFinishTimeAndBikerId( bikerId ) {
     return this.handleOperation(
       () => this.model.findOne(
-        { where: { finishedAt: null, bikerId } }
+        { where: { finishedAt: { [ Op.is ]: null }, bikerId } }
       )
     );
   }
