@@ -51,6 +51,10 @@ export default class Employee extends BaseModel {
     }
   }
 
+  static modelOptions = {
+    paranoid: true
+  }
+
   static defineAssociations() {
     this.hasMany(
       BikeRemoval, 
