@@ -4,6 +4,7 @@ import {
   PRECONDITION_FAILED_ERROR
 } from '../../error-types.js';
 import Result from '../../model/shared/result.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
 
 export default class DockService extends BaseService {
   async findBySerialNumber( serialNumber ) {
@@ -42,5 +43,19 @@ export default class DockService extends BaseService {
       );
 
     return findResult;
+  }
+
+  getStatusByAction( action ) {
+    switch ( action ) {
+      case 'REPAIR':
+        return Result.success( dockStatus.UNDER_MAINTENANCE );
+      case 'RETIRE':
+        return Result.success( dockStatus.DECOMMISSIONED );
+      default:
+        return Result.failure(
+          VALIDATION_ERROR, 
+          'Action not supported.'
+        );
+    }
   }
 }
