@@ -113,12 +113,15 @@ export default class BikerFacade {
   }
 
   async updateBiker( bikerId, data ) {
+    // Validates the data
     const validationResult = this.#bikerService.validate( data );
     if ( validationResult.isFailure ) return validationResult;
 
+    // Tries to finalize the proccess with a transaction
     try {
       await this.#transaction.start();
 
+      // Updates the biker
       const bikerResult =
         await this.#bikerService.updateById( bikerId, data );
       if ( bikerResult.isFailure ) {
@@ -128,6 +131,7 @@ export default class BikerFacade {
 
       const biker = bikerResult.value;
 
+      // Checks if the biker has a passport
       const findPassportResult =
         await this.#passportService.findByBikerId( bikerId );
       if (
@@ -138,6 +142,7 @@ export default class BikerFacade {
         return findPassportResult;
       }
 
+      // Updates or creates the passport
       let passportResult;
       if ( findPassportResult.isSuccess ) {
         const passportId = findPassportResult.value.id;
@@ -166,31 +171,38 @@ export default class BikerFacade {
   }
 
   async changeBikerCreditCard( bikerId, data ) {
+    // Validates the data
     const validationResult = this.#creditCardService.validate( data );
     if ( validationResult.isFailure ) return validationResult;
 
+    // Tries to finalize the process with a transaction
     try {
       await this.#transaction.start();
 
-      const creditCardResult =
-        await this.#creditCardService.findOrCreate( data );
+      // Finds or creates the credit card
+      const creditCardResult = await this.#creditCardService.findOrCreate( data );
       if ( creditCardResult.isFailure ) {
         await this.#transaction.rollback();
         return creditCardResult;
       }
 
-      const creditCardId = creditCardResult.value.id;
+      const creditCard = creditCardResult.value;
 
-      const bikerResult =
-        await this.#bikerService.updateById( bikerId, { creditCardId } );
+      // Updates the biker
+      const bikerResult = await this.#bikerService.updateById(
+        bikerId, { creditCardId: creditCard.id }
+      );
       if ( bikerResult.isFailure ) {
         await this.#transaction.rollback();
         return bikerResult;
       }
 
+      const biker = bikerResult.value;
+      biker.creditCard = creditCard;
+
       await this.#transaction.commit();
 
-      return Result.success();
+      return Result.success( biker );
     } catch ( error ) {
       await this.#transaction.rollback();
 
