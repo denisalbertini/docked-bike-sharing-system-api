@@ -1,12 +1,20 @@
-import BaseRepository from "../base-repository";
+import BaseRepository from '../base-repository';
 import Charge from '../../../model/sequelize/models/charge.js';
+import { Op } from 'sequelize';
 
 export default class ChargeRepository extends BaseRepository {
   constructor() { super( Charge ); }
 
-  findAllByNullCompletionTime() {
+  findAllByRequestPeriodAndNullCompletionTime( requestPeriod ) {
     return this.handleOperation(
-      () => this.model.findAll( { where: { completedAt: null } } )
+      () => this.model.findAll(
+        {
+          where: {
+            requestedAt: { [ Op.lte ]: requestPeriod }, 
+            completedAt: { [ Op.is ]: null }
+          }
+        }
+      )
     );
   }
 }
