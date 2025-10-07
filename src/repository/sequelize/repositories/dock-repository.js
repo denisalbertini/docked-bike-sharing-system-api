@@ -15,4 +15,12 @@ export default class DockRepository extends BaseRepository {
       () => this.model.findOne( { where: { bikeId } } )
     );
   }
+
+  deleteById( id ) {
+    return this.handleOperation(
+      () => this.model.destroy(
+        { where: { id }, individualHooks: true }
+      )
+    );
+  }
 }

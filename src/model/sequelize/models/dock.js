@@ -1,5 +1,5 @@
 import BaseModel from '../base-model.js';
-import { DataTypes } from 'sequelize';
+import { DataTypes, ForeignKeyConstraintError } from 'sequelize';
 import status from '../../shared/enum/dock-status.js';
 import BikeAdmission from './bike-admission.js';
 import DockAdmission from './dock-admission.js';
@@ -41,7 +41,13 @@ export default class Dock extends BaseModel {
   }
 
   static modelOptions = {
-    paranoid: true
+    paranoid: true, 
+    hooks: {
+      beforeDestroy: ( dock, _options ) => {
+        if ( dock.bikeId !== null )
+          throw new ForeignKeyConstraintError( 'Dock has a bike attached.' );
+      }
+    }
   }
 
   static defineAssociations() {
