@@ -219,15 +219,14 @@ export default class RentalFacade {
       }
 
       // Updates the rental info
-      rental.set(
+      const updateRentalResult = await this.#rentalService.finishById(
+        rental.id, 
         {
           finishedAt: Date.now(), 
-          dockId: dock.id, 
+          returnedToDockId: dock.id, 
           extraChargeId: charge ? charge.id : null
         }
       );
-
-      const updateRentalResult = await this.#rentalService.finish( rental );
       if ( updateRentalResult.isFailure ) {
         await this.#transaction.rollback();
         return updateRentalResult;
