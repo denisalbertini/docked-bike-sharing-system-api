@@ -58,4 +58,17 @@ export default class DockService extends BaseService {
         );
     }
   }
+
+  async findAllByStationId( stationId ) {
+    const findResult = await this.modelRepository.findAllByStationId(
+      stationId
+    );
+
+    if ( findResult.isSuccess && findResult.value.length === 0 )
+      return Result.failure(
+        NOT_FOUND_ERROR, 'No docks found.'
+      );
+
+    return findResult;
+  }
 }

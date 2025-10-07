@@ -23,4 +23,10 @@ export default class DockRepository extends BaseRepository {
       )
     );
   }
+
+  findAllByStationId( stationId ) {
+    return this.handleOperation(
+      () => this.model.findAll( { where: stationId } )
+    );
+  }
 }
