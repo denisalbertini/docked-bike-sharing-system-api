@@ -4,7 +4,6 @@ import {
   PRECONDITION_FAILED_ERROR
 } from '../../error-types.js';
 import Result from '../../model/shared/result.js';
-import dockStatus from '../../model/shared/enum/dock-status.js';
 
 export default class DockService extends BaseService {
   async findBySerialNumber( serialNumber ) {
@@ -32,5 +31,16 @@ export default class DockService extends BaseService {
 
   updateStatusById( id, status ) {
     return this.updateById( id, { status } );
+  }
+
+  async findByBikeId( bikeId ) {
+    const findResult = await this.modelRepository.findByBikeId( bikeId );
+    if ( findResult.isSuccess && findResult.value === null )
+      return Result.failure(
+        NOT_FOUND_ERROR, 
+        'Dock not found'
+      );
+
+    return findResult;
   }
 }

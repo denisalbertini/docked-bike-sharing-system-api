@@ -9,4 +9,10 @@ export default class DockRepository extends BaseRepository {
       () => this.model.findOne( { where: { serialNumber } } )
     );
   }
+
+  findByBikeId( bikeId ) {
+    return this.handleOperation(
+      () => this.model.findOne( { where: { bikeId } } )
+    );
+  }
 }

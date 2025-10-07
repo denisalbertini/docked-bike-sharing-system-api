@@ -61,8 +61,9 @@ export default class RentalFacade {
     const dock = dockOccupiedResult.value;
 
     // Verifies if the bike is available
-    const bikeAvailableResult =
-      await this.#bikeService.isAvailableById( dock.bikeId );
+    const bikeAvailableResult = await this.#bikeService.checkStatusById(
+      dock.bikeId, bikeStatus.AVAILABLE
+    );
     if ( bikeAvailableResult.isFailure ) return bikeAvailableResult;
 
     const bike = bikeAvailableResult.value;
