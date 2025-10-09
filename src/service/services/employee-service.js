@@ -12,7 +12,7 @@ import { ACCESS } from '../../auth-purpose.js';
 const jwtAsyncSign = promisify( jwt.sign );
 
 export default class EmployeeService extends BaseSerice {
-  async login( registration, password ) {
+  async login( { registration, password } ) {
     const findResult = await this.modelRepository.findByRegistration( registration );
     if ( findResult.isFailure ) return findResult;
 
