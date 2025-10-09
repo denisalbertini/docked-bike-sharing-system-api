@@ -1,5 +1,5 @@
 import BaseRepository from '../base-repository';
-import Charge from '../../../model/sequelize/models/charge.js';
+import Charge from '../../../model/models/charge.js';
 import { Op } from 'sequelize';
 
 export default class ChargeRepository extends BaseRepository {

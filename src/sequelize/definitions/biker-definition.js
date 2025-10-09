@@ -1,0 +1,95 @@
+import { DataTypes } from "sequelize";
+import { defaultAttributes, defaultOptions } from "../default.js";
+import Biker from "../../model/models/biker.js";
+import Cpf from "../../model/shared/cpf.js";
+import status from "../../model/shared/enum/biker-status.js";
+import Passport from "../../model/models/passport.js";
+import Charge from "../../model/models/charge.js";
+import Rental from "../../model/models/rental.js";
+import CreditCard from "../../model/models/credit-card.js";
+
+function defineModel( sequelize ) {
+  Biker.init(
+    {
+      ...defaultAttributes, 
+      cpf: {
+        type: DataTypes.CHAR( 11 ), 
+        unique: true, 
+        allowNull: false, 
+        validate: {
+          isCpf( cpf ) {
+            if ( !Cpf.validate( cpf ) )
+              throw new Error( 'Invalid CPF.' );
+          }
+        }
+      }, 
+      name: {
+        type: DataTypes.STRING, 
+        allowNull: false, 
+        validate: {
+          is: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b/
+        }
+      }, 
+      birthDate: {
+        type: DataTypes.DATEONLY, 
+        allowNull: false, 
+        validate: {
+          isDate: true
+        }
+      }, 
+      email: {
+        type: DataTypes.STRING, 
+        allowNull: false, 
+        unique: true, 
+        validate: {
+          isEmail: true
+        }
+      }, 
+      password: {
+        type: DataTypes.CHAR( 60 ), 
+        allowNull: false, 
+        validate: {
+          is: /\$2[aby]\$10\$[./A-Za-z0-9]{53}/
+        }
+      }, 
+      foreigner: {
+        type: DataTypes.BOOLEAN, 
+        allowNull: false, 
+        validate: {
+          isIn: [ [ true, false ] ]
+        }
+      }, 
+      status: {
+        type: DataTypes.ENUM, 
+        values: Object.values( status ), 
+        allowNull: false, 
+        defaultValue: status.PENDING, 
+        validate: {
+          isIn: [ Object.values( status ) ]
+        }
+      }
+    }, 
+    {
+      sequelize, 
+      ...defaultOptions( Biker.name )
+    }
+  );
+}
+
+function defineAssociations() {
+  Biker.hasOne( Passport );
+  Biker.hasMany(
+    Charge, 
+    { foreignKey: { allowNull: false } }
+  );
+  Biker.hasMany(
+    Rental, 
+    { foreignKey: { allowNull: false } }
+  );
+  Biker.belongsTo(
+    CreditCard, 
+    { foreignKey: { allowNull: false } }
+  );
+}
+
+export { defineModel, defineAssociations };

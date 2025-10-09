@@ -1,5 +1,5 @@
 import BaseRepository from "../base-repository";
-import Biker from '../../../model/sequelize/models/biker.js';
+import Biker from '../../../model/models/biker.js';
 
 export default class BikerRepository extends BaseRepository {
   constructor() { super( Biker ); }

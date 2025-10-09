@@ -4,7 +4,7 @@ import { readdir } from 'fs/promises';
 
 const __filename = fileURLToPath( import.meta.url );
 const __dirname = path.dirname( __filename );
-const modelsPath = path.join( __dirname, 'models' );
+const modelsPath = path.join( __dirname, 'definitions' );
 
 export default async function init( sequelize ) {
   const files = await readdir( modelsPath );
@@ -22,10 +22,10 @@ export default async function init( sequelize ) {
   );
 
   await Promise.all(
-    modules.map( module => module.default.init( sequelize ) )
+    modules.map( module => module.defineModel( sequelize ) )
   );
 
   await Promise.all(
-    modules.map( module => module.default.defineAssociations() )
+    modules.map( module => module.defineAssociations() )
   );
 }
