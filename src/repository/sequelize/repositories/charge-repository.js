@@ -6,8 +6,8 @@ export default class ChargeRepository extends BaseRepository {
   constructor() { super( Charge ); }
 
   findAllByRequestPeriodAndNullCompletionTime( requestPeriod ) {
-    return this.handleOperation(
-      () => this.model.findAll(
+    return this._handleOperation(
+      () => this._model.findAll(
         {
           where: {
             requestedAt: { [ Op.lte ]: requestPeriod }, 

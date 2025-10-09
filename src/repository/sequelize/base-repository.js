@@ -9,13 +9,15 @@ import {
 } from '../../error-types.js';
 
 export default class BaseRepository {
+  _model;
+  
   constructor( model ) {
     if ( new.target === BaseRepository )
       throw new Error(
         getBaseClassConstructorMessage( BaseRepository.name )
       );
     
-    this.model = model;
+    this._model = model;
   }
 
   #getErrorType( error ) {
@@ -31,7 +33,7 @@ export default class BaseRepository {
     }
   }
   
-  async handleOperation( operation ) {
+  async _handleOperation( operation ) {
     try {
       return Result.success( await operation() );
     } catch ( error ) {
@@ -47,34 +49,34 @@ export default class BaseRepository {
   }
 
   findAll() {
-    return this.handleOperation(
-      () => this.model.findAll()
+    return this._handleOperation(
+      () => this._model.findAll()
     );
   }
 
   findById( id ) {
-    return this.handleOperation(
-      () => this.model.findByPk( id )
+    return this._handleOperation(
+      () => this._model.findByPk( id )
     );
   }
 
   create( data ) {
-    return this.handleOperation(
-      () => this.model.create( data )
+    return this._handleOperation(
+      () => this._model.create( data )
     );
   }
 
   updateById( id, data ) {
-    return this.handleOperation(
-      () => this.model.update(
+    return this._handleOperation(
+      () => this._model.update(
         data, { where: { id }, returning: true }
       )
     );
   }
 
   deleteById( id ) {
-    return this.handleOperation(
-      () => this.model.destroy( { where: { id } } )
+    return this._handleOperation(
+      () => this._model.destroy( { where: { id } } )
     );
   }
 }

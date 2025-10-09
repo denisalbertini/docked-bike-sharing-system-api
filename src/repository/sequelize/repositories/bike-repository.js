@@ -5,8 +5,8 @@ export default class BikeRepository extends BaseRepository {
   constructor() { super( Bike ); }
 
   findBySerialNumber( serialNumber ) {
-    return this.handleOperation(
-      () => this.model.findOne( { where: { serialNumber } } )
+    return this._handleOperation(
+      () => this._model.findOne( { where: { serialNumber } } )
     );
   }
 }

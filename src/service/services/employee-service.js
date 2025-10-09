@@ -13,7 +13,7 @@ const jwtAsyncSign = promisify( jwt.sign );
 
 export default class EmployeeService extends BaseSerice {
   async login( { registration, password } ) {
-    const findResult = await this.modelRepository.findByRegistration( registration );
+    const findResult = await this._modelRepository.findByRegistration( registration );
     if ( findResult.isFailure ) return findResult;
 
     const employee = findResult.value;

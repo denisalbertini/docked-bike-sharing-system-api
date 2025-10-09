@@ -78,8 +78,8 @@ export default class BikerService extends BaseService {
     return await this.updateById( id, { status: status.ACTIVE } );
   }
 
-  async login( email, password ) {
-    const findResult = await this.modelRepository.findByEmail( email );
+  async login( { email, password } ) {
+    const findResult = await this._modelRepository.findByEmail( email );
     if ( findResult.isFailure ) return findResult;
 
     const biker = findResult.value;

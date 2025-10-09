@@ -8,7 +8,7 @@ import dockStatus from '../../model/shared/enum/dock-status.js';
 
 export default class DockService extends BaseService {
   async findBySerialNumber( serialNumber ) {
-    const findResult = await this.modelRepository.findBySerialNumber(
+    const findResult = await this._modelRepository.findBySerialNumber(
       serialNumber
     );
 
@@ -35,7 +35,7 @@ export default class DockService extends BaseService {
   }
 
   async findByBikeId( bikeId ) {
-    const findResult = await this.modelRepository.findByBikeId( bikeId );
+    const findResult = await this._modelRepository.findByBikeId( bikeId );
     if ( findResult.isSuccess && findResult.value === null )
       return Result.failure(
         NOT_FOUND_ERROR, 
@@ -60,7 +60,7 @@ export default class DockService extends BaseService {
   }
 
   async findAllByStationId( stationId ) {
-    const findResult = await this.modelRepository.findAllByStationId(
+    const findResult = await this._modelRepository.findAllByStationId(
       stationId
     );
 

@@ -60,7 +60,7 @@ export default class CreditCardService extends BaseService {
   }
   
   async findOrCreate( data ) {
-    const result = await this.modelRepository.findOrCreate( data );
+    const result = await this._modelRepository.findOrCreate( data );
 
     if ( result.isFailure ) return result;
 

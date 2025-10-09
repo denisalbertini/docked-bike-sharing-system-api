@@ -5,8 +5,8 @@ export default class CreditCardRepository extends BaseRepository {
   constructor() { super( CreditCard ); }
 
   findOrCreate( data ) {
-    return this.handleOperation(
-      () => this.model.findOrCreate( { where: data } )
+    return this._handleOperation(
+      () => this._model.findOrCreate( { where: data } )
     );
   }
 }

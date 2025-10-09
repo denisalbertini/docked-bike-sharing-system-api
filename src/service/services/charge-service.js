@@ -18,7 +18,7 @@ export default class ChargeService extends BaseService {
 
   async findIncomplete() {
     const findResult =
-      await this.modelRepository.findAllByRequestPeriodAndNullCompletionTime(
+      await this._modelRepository.findAllByRequestPeriodAndNullCompletionTime(
         new Date( Date.now() - 12 * 60 * 60 * 1000 ) // 12 hours ago
       );
     

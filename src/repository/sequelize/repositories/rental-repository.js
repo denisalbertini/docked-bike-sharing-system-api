@@ -6,16 +6,16 @@ export default class RentalRepository extends BaseRepository {
   constructor() { super( Rental ); }
 
   findByNullFinishTimeAndBikeId( bikeId ) {
-    return this.handleOperation(
-      () => this.model.findOne(
+    return this._handleOperation(
+      () => this._model.findOne(
         { where: { finishedAt: { [ Op.is ]: null }, bikeId } }
       )
     );
   }
 
   findByNullFinishTimeAndBikerId( bikerId ) {
-    return this.handleOperation(
-      () => this.model.findOne(
+    return this._handleOperation(
+      () => this._model.findOne(
         { where: { finishedAt: { [ Op.is ]: null }, bikerId } }
       )
     );

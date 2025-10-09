@@ -5,7 +5,7 @@ import { PRECONDITION_FAILED_ERROR } from '../../error-types.js';
 
 export default class BikeService extends BaseService {
   async findBySerialNumber( serialNumber ) {
-    const findResult = await this.modelRepository.findBySerialNumber(
+    const findResult = await this._modelRepository.findBySerialNumber(
       serialNumber
     );
 
