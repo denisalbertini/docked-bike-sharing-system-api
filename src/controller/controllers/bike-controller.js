@@ -3,7 +3,8 @@ import BaseController from '../base-controller.js';
 export default class BikeController extends BaseController {
   #bikeFacade;
 
-  constructor( bikeFacade ) {
+  constructor( modelService, bikeFacade ) {
+    super( modelService );
     this.#bikeFacade = bikeFacade;
   }
 

@@ -3,7 +3,8 @@ import BaseController from '../base-controller.js';
 export default class StationController extends BaseController {
   #stationFacade;
 
-  constructor( stationFacade ) {
+  constructor( modelService, stationFacade ) {
+    super( modelService );
     this.#stationFacade = stationFacade;
   }
 
