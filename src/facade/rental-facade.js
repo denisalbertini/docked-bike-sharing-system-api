@@ -184,7 +184,7 @@ export default class RentalFacade {
 
     // Finds the rental
     const findRentalResult =
-      await this.modelRepository.findByNullFinishTimeAndBikeId( bike.id );
+      await this.#rentalService.findUnfinishedByBikeId( bike.id );
     if ( findRentalResult.isFailure ) return findRentalResult;
 
     const rental = findRentalResult.value;
