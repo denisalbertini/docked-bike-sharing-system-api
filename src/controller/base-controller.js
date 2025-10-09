@@ -1,6 +1,8 @@
 import { errorStatusMap } from '../error-status-map.js';
 
 export default class BaseController {
+  _modelService;
+  
   constructor( modelService ) {
     this._modelService = modelService;
   }
