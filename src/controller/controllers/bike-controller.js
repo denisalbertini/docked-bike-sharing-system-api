@@ -10,7 +10,7 @@ export default class BikeController extends BaseController {
 
   deleteRecord( req, res ) {
     return this._handleOperation(
-      () => this.#bikeFacade.deleteBike( req.query.id ), 
+      () => this.#bikeFacade.deleteBike( req.params.id ), 
       res, 
       200
     );

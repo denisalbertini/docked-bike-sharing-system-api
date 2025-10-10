@@ -32,7 +32,7 @@ export default class BaseController {
 
   getRecord( req, res ) {
     return this._handleOperation(
-      () => this._modelService.findById( req.query.id ), 
+      () => this._modelService.findById( req.params.id ), 
       res, 
       200
     );
@@ -48,7 +48,7 @@ export default class BaseController {
 
   updateRecord( req, res ) {
     return this._handleOperation(
-      () => this._modelService.updateById( req.query.id ), 
+      () => this._modelService.updateById( req.params.id ), 
       res,
       200
     );
@@ -56,7 +56,7 @@ export default class BaseController {
 
   deleteRecord( req, res ) {
     return this._handleOperation(
-      () => this._handleOperation( req.query.id ), 
+      () => this._handleOperation( req.params.id ), 
       res, 
       200
     );

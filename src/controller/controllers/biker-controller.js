@@ -28,7 +28,7 @@ export default class BikerController extends BaseController {
 
   updateRecord( req, res ) {
     return this._handleOperation(
-      () => this.#bikerFacade.updateBiker( req.query.id, req.body ), 
+      () => this.#bikerFacade.updateBiker( req.params.id, req.body ), 
       res, 
       200
     );
@@ -36,7 +36,7 @@ export default class BikerController extends BaseController {
 
   changeCreditCard( req, res ) {
     return this._handleOperation(
-      this.#bikerFacade.changeBikerCreditCard( req.query.id, req.body ), 
+      this.#bikerFacade.changeBikerCreditCard( req.params.id, req.body ), 
       res, 
       200
     );

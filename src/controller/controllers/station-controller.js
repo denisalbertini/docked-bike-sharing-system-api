@@ -10,7 +10,7 @@ export default class StationController extends BaseController {
 
   deleteRecord( req, res ) {
     return this._handleOperation(
-      () => this.#stationFacade.deleteStation( req.query.id ), 
+      () => this.#stationFacade.deleteStation( req.params.id ), 
       res, 
       200
     );
