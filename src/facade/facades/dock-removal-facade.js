@@ -1,9 +1,9 @@
-import dockStatus from '../model/shared/enum/dock-status.js';
-import Result from '../model/shared/result.js';
-import { INTERNAL_SERVER_ERROR } from '../error-types.js';
+import BaseFacade from '../base-facade.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
+import Result from '../../model/shared/result.js';
+import { INTERNAL_SERVER_ERROR } from '../../error-types.js';
 
-export default class DockRemovalFacade {
-  #dockRemovalService;
+export default class DockRemovalFacade extends BaseFacade {
   #dockService;
   #transaction;
 
@@ -12,7 +12,7 @@ export default class DockRemovalFacade {
     dockService, 
     transaction
   ) {
-    this.#dockRemovalService = dockRemovalService;
+    super( dockRemovalService );
     this.#dockService = dockService;
     this.#transaction = transaction;
   }
@@ -32,7 +32,7 @@ export default class DockRemovalFacade {
       await this.#transaction.start();
 
       // Creates the dock removal record
-      const createDockRemoval = await this.#dockRemovalService.create(
+      const createDockRemoval = await this.createRecord(
         { employeeId, dockId: dock.id }
       );
       if ( createDockRemoval.isFailure ) {

@@ -1,14 +1,14 @@
-import Result from '../model/shared/result';
+import BaseFacade from '../base-facade.js';
+import Result from '../../model/shared/result';
 import {
   INTERNAL_SERVER_ERROR,
   NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR
-} from '../error-types';
-import dockStatus from '../model/shared/enum/dock-status.js';
-import bikeStatus from '../model/shared/enum/bike-status.js';
+} from '../../error-types';
+import dockStatus from '../../model/shared/enum/dock-status.js';
+import bikeStatus from '../../model/shared/enum/bike-status.js';
 
-export default class RentalFacade {
-  #rentalService;
+export default class RentalFacade extends BaseFacade {
   #bikerService;
   #bikeService;
   #dockService;
@@ -29,7 +29,7 @@ export default class RentalFacade {
     emailService, 
     transaction
   ) {
-    this.#rentalService = rentalService;
+    super( rentalService );
     this.#bikerService = bikerService;
     this.#bikeService = bikeService;
     this.#dockService = dockService;
@@ -43,7 +43,7 @@ export default class RentalFacade {
   async createRental( { bikerId, dockSerialNumber } ) {
     // Verifies if the biker is already renting
     const bikerRentingResult =
-      await this.#rentalService.findUnfinishedByBikerId( bikerId );
+      await this._modelService.findUnfinishedByBikerId( bikerId );
     if ( bikerRentingResult.isSuccess )
       return Result.failure(
         PRECONDITION_FAILED_ERROR, 
@@ -103,7 +103,7 @@ export default class RentalFacade {
       }
 
       // Creates the rental
-      const createRentalResult = await this.#rentalService.create(
+      const createRentalResult = await this.createRecord(
         {
           bikerId, 
           bikeId: bike.id, 
@@ -184,7 +184,7 @@ export default class RentalFacade {
 
     // Finds the rental
     const findRentalResult =
-      await this.#rentalService.findUnfinishedByBikeId( bike.id );
+      await this._modelService.findUnfinishedByBikeId( bike.id );
     if ( findRentalResult.isFailure ) return findRentalResult;
 
     const rental = findRentalResult.value;
@@ -220,7 +220,7 @@ export default class RentalFacade {
       }
 
       // Updates the rental info
-      const updateRentalResult = await this.#rentalService.finishById(
+      const updateRentalResult = await this._modelService.finishById(
         rental.id, 
         {
           finishedAt: Date.now(), 

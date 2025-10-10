@@ -1,15 +1,15 @@
-import Result from '../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
+import Result from '../../model/shared/result.js';
 import {
   NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR
-} from '../error-types.js';
+} from '../../error-types.js';
 
-export default class StationFacade {
-  #stationService;
+export default class StationFacade extends BaseFacade {
   #dockService;
 
   constructor( stationService, dockService ) {
-    this.#stationService = stationService;
+    super( stationService );
     this.#dockService = dockService;
   }
 
@@ -24,6 +24,6 @@ export default class StationFacade {
     if ( findDockResult.errorType !== NOT_FOUND_ERROR ) return findDockResult;
 
     // Deletes the station
-    return await this.#stationService.deleteById( stationId );
+    return await this.deleteRecordById( stationId );
   }
 }

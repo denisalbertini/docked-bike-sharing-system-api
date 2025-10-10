@@ -1,13 +1,10 @@
-import bikeStatus from '../model/shared/enum/bike-status.js';
-import dockStatus from '../model/shared/enum/dock-status.js';
-import Result from '../model/shared/result.js';
-import {
-  INTERNAL_SERVER_ERROR, 
-  VALIDATION_ERROR
-} from '../error-types.js';
+import BaseFacade from '../base-facade.js';
+import bikeStatus from '../../model/shared/enum/bike-status.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
+import Result from '../../model/shared/result.js';
+import { INTERNAL_SERVER_ERROR } from '../../error-types.js';
 
-export default class BikeRemovalFacade {
-  #bikeRemovalService;
+export default class BikeRemovalFacade extends BaseFacade {
   #bikeService;
   #dockService;
   #transaction;
@@ -18,7 +15,7 @@ export default class BikeRemovalFacade {
     dockService, 
     transaction
   ) {
-    this.#bikeRemovalService = bikeRemovalService;
+    super( bikeRemovalService );
     this.#bikeService = bikeService;
     this.#dockService = dockService;
     this.#transaction = transaction;
@@ -46,7 +43,7 @@ export default class BikeRemovalFacade {
       await this.#transaction.start();
 
       // Creates the removal record
-      const createBikeRemovalResult = await this.#bikeRemovalService.create(
+      const createBikeRemovalResult = await this.createRecord(
         { employeeId, bikeId: bike.id }
       );
       if ( createBikeRemovalResult.isFailure ) {

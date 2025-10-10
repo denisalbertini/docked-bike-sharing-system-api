@@ -1,9 +1,9 @@
-import dockStatus from '../model/shared/enum/dock-status.js';
-import Result from '../model/shared/result.js';
-import { INTERNAL_SERVER_ERROR } from '../error-types.js';
+import BaseFacade from '../base-facade.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
+import Result from '../../model/shared/result.js';
+import { INTERNAL_SERVER_ERROR } from '../../error-types.js';
 
-export default class DockAdmissionFacade {
-  #dockAdmissionService;
+export default class DockAdmissionFacade extends BaseFacade {
   #dockService;
   #stationService;
   #transaction;
@@ -14,7 +14,7 @@ export default class DockAdmissionFacade {
     stationService, 
     transaction
   ) {
-    this.#dockAdmissionService = dockAdmissionService;
+    super( dockAdmissionService );
     this.#dockService = dockService;
     this.#stationService = stationService;
     this.#transaction = transaction;
@@ -42,7 +42,7 @@ export default class DockAdmissionFacade {
       await this.#transaction.start();
 
       // Creates the admission record
-      const createAdmissionResult = await this.#dockAdmissionService.create(
+      const createAdmissionResult = await this.createRecord(
         { employeeId, dockId: dock.id }
       );
       if ( createAdmissionResult.isFailure ) {

@@ -1,10 +1,10 @@
-import bikeStatus from '../model/shared/enum/bike-status.js';
-import dockStatus from '../model/shared/enum/dock-status.js';
-import Result from '../model/shared/result.js';
-import { INTERNAL_SERVER_ERROR } from '../error-types.js';
+import BaseFacade from '../base-facade.js';
+import bikeStatus from '../../model/shared/enum/bike-status.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
+import Result from '../../model/shared/result.js';
+import { INTERNAL_SERVER_ERROR } from '../../error-types.js';
 
-export default class BikeAdmissionFacade {
-  #bikeAdmissionService;
+export default class BikeAdmissionFacade extends BaseFacade {
   #bikeService;
   #dockService;
   #transaction;
@@ -15,7 +15,7 @@ export default class BikeAdmissionFacade {
     dockService, 
     transaction
   ) {
-    this.#bikeAdmissionService = bikeAdmissionService;
+    super( bikeAdmissionService );
     this.#bikeService = bikeService;
     this.#dockService = dockService;
     this.#transaction = transaction;
@@ -43,7 +43,7 @@ export default class BikeAdmissionFacade {
       await this.#transaction.start();
 
       // Creates the admission record
-      const createBikeAdmissionResult = await this.#bikeAdmissionService.create(
+      const createBikeAdmissionResult = await this.createRecord(
         { bikeId: bike.id, dockId: dock.id }
       );
       if ( createBikeAdmissionResult.isFailure ) {

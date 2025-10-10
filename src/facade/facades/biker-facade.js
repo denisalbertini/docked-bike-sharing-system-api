@@ -1,8 +1,8 @@
-import Result from '../model/shared/result';
-import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../error-types';
+import BaseFacade from '../base-facade';
+import Result from '../../model/shared/result';
+import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../../error-types';
 
-export default class BikerFacade {
-  #bikerService;
+export default class BikerFacade extends BaseFacade {
   #passportService;
   #creditCardService;
   #transaction;
@@ -15,7 +15,7 @@ export default class BikerFacade {
     transaction, 
     emailService
   ) {
-    this.#bikerService = bikerService;
+    super( bikerService );
     this.#passportService = passportService;
     this.#creditCardService = creditCardService;
     this.#transaction = transaction;
@@ -26,7 +26,7 @@ export default class BikerFacade {
     // Validates the data
     const errors = [];
 
-    const bikerValidationResult = this.#bikerService.validate(
+    const bikerValidationResult = this._modelService.validate(
       { ...bikerData, ...( passportData ?? {} ) }
     );
     if ( bikerValidationResult.isFailure )
@@ -57,7 +57,7 @@ export default class BikerFacade {
       const creditCard = creditCardResult.value;
 
       // Creates the biker
-      const bikerResult = await this.#bikerService.create(
+      const bikerResult = await this.createRecord(
         { ...bikerData, creditCardId: creditCard.id }
       );
       if ( bikerResult.isFailure ) {
@@ -85,7 +85,7 @@ export default class BikerFacade {
 
       // Generates the confirmation token
       const generateTokenResult =
-        await this.#bikerService.generateAccountConfirmationToken( biker );
+        await this._modelService.generateAccountConfirmationToken( biker );
       if ( generateTokenResult.isFailure ) {
         await this.#transaction.rollback();
         return generateTokenResult;
@@ -114,7 +114,7 @@ export default class BikerFacade {
 
   async updateBiker( bikerId, data ) {
     // Validates the data
-    const validationResult = this.#bikerService.validate( data );
+    const validationResult = this._modelService.validate( data );
     if ( validationResult.isFailure ) return validationResult;
 
     // Tries to finalize the proccess with a transaction
@@ -123,7 +123,7 @@ export default class BikerFacade {
 
       // Updates the biker
       const bikerResult =
-        await this.#bikerService.updateById( bikerId, data );
+        await this.updateRecordById( bikerId, data );
       if ( bikerResult.isFailure ) {
         await this.#transaction.rollback();
         return bikerResult;
@@ -189,7 +189,7 @@ export default class BikerFacade {
       const creditCard = creditCardResult.value;
 
       // Updates the biker
-      const bikerResult = await this.#bikerService.updateById(
+      const bikerResult = await this.updateRecordById(
         bikerId, { creditCardId: creditCard.id }
       );
       if ( bikerResult.isFailure ) {

@@ -1,17 +1,17 @@
-import bikeStatus from '../model/shared/enum/bike-status.js';
+import BaseFacade from '../base-facade.js';
+import bikeStatus from '../../model/shared/enum/bike-status.js';
 
-export default class BikeFacade {
-  #bikeService;
+export default class BikeFacade extends BaseFacade {
   #dockService;
 
   constructor( bikeService, dockService ) {
-    this.#bikeService = bikeService;
+    super( bikeService );
     this.#dockService = dockService;
   }
 
   async deleteBike( bikeId ) {
     // Checks the bike's status
-    const bikeStatusResult = await this.#bikeService.checkStatusById(
+    const bikeStatusResult = await this._modelService.checkStatusById(
       bikeStatus.RETIRED
     );
     if ( bikeStatusResult.isFailure ) return bikeStatusResult;
@@ -21,6 +21,6 @@ export default class BikeFacade {
     if ( bikeDockedResult.isFailure ) return bikeDockedResult;
 
     // Deletes the bike
-    return await this.#bikeService.deleteById( bikeId );
+    return await this.deleteRecordById( bikeId );
   }
 }

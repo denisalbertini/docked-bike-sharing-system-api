@@ -1,15 +1,16 @@
-export default class ChargeFacade {
-  #chargeService;
+import BaseFacade from "../base-facade";
+
+export default class ChargeFacade extends BaseFacade {
   #ccAdminService;
 
   constructor( chargeService, ccAdminService ) {
-    this.#chargeService = chargeService;
+    super( chargeService );
     this.#ccAdminService = ccAdminService;
   }
 
   async chargeLateFees() {
     // Finds the late charges
-    const findChargesResult = await this.#chargeService.findIncomplete();
+    const findChargesResult = await this._modelService.findIncomplete();
     if ( findChargesResult.isFailure ) return findChargesResult;
 
     const charges = findChargesResult.value;
@@ -19,7 +20,7 @@ export default class ChargeFacade {
       const paymentResult = this.#ccAdminService.processPayment( charge );
       if ( paymentResult.isFailure ) continue;
 
-      const chargeCompleteResult = await this.#chargeService.complete( charge );
+      const chargeCompleteResult = await this._modelService.complete( charge );
       if ( chargeCompleteResult.isFailure ) console.error(
         chargeCompleteResult.errorType, ...chargeCompleteResult.errors
       );
