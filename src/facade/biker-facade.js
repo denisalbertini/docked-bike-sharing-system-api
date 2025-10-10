@@ -22,7 +22,7 @@ export default class BikerFacade {
     this.#emailService = emailService;
   }
 
-  async createBiker( bikerData, creditCardData, passportData = null ) {
+  async createBiker( bikerData, creditCardData, passportData ) {
     // Validates the data
     const errors = [];
 

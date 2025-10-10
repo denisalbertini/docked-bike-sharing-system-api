@@ -8,6 +8,16 @@ export default class BikerController extends BaseController {
     this.#bikerFacade = bikerFacade;
   }
 
+  createRecord( req, res ) {
+    return this._handleOperation(
+      () => this.#bikerFacade.createBiker(
+        req.body.biker, req.body.creditCard, req.body.passport
+      ),  
+      res, 
+      201
+    );
+  }
+
   login( req, res ) {
     return this._handleOperation(
       () => this._modelService.login( req.body ), 
