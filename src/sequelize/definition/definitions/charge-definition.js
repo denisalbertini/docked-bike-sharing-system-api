@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import Charge from "../../model/models/charge.js";
-import Rental from "../../model/models/rental.js";
-import Biker from "../../model/models/biker.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Charge from "../../../model/models/charge.js";
+import Rental from "../../../model/models/rental.js";
+import Biker from "../../../model/models/biker.js";
 
 function defineModel( sequelize ) {
   Charge.init(

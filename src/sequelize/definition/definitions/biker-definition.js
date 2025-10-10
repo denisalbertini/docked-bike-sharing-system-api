@@ -1,12 +1,12 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import Biker from "../../model/models/biker.js";
-import Cpf from "../../model/shared/cpf.js";
-import status from "../../model/shared/enum/biker-status.js";
-import Passport from "../../model/models/passport.js";
-import Charge from "../../model/models/charge.js";
-import Rental from "../../model/models/rental.js";
-import CreditCard from "../../model/models/credit-card.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Biker from "../../../model/models/biker.js";
+import Cpf from "../../../model/shared/cpf.js";
+import status from "../../../model/shared/enum/biker-status.js";
+import Passport from "../../../model/models/passport.js";
+import Charge from "../../../model/models/charge.js";
+import Rental from "../../../model/models/rental.js";
+import CreditCard from "../../../model/models/credit-card.js";
 
 function defineModel( sequelize ) {
   Biker.init(

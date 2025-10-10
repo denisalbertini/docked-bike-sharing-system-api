@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import Station from "../../model/models/station.js";
-import Dock from "../../model/models/dock.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Station from "../../../model/models/station.js";
+import Dock from "../../../model/models/dock.js";
 
 function defineModel( sequelize ) {
   Station.init(

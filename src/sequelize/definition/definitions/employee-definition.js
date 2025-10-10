@@ -1,11 +1,11 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import Employee from "../../model/models/employee.js";
-import Cpf from "../../model/shared/cpf.js";
-import roles from "../../model/shared/enum/employee-role.js";
-import BikeRemoval from "../../model/models/bike-removal.js";
-import DockAdmission from "../../model/models/dock-admission.js";
-import DockRemoval from "../../model/models/dock-removal.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Employee from "../../../model/models/employee.js";
+import Cpf from "../../../model/shared/cpf.js";
+import roles from "../../../model/shared/enum/employee-role.js";
+import BikeRemoval from "../../../model/models/bike-removal.js";
+import DockAdmission from "../../../model/models/dock-admission.js";
+import DockRemoval from "../../../model/models/dock-removal.js";
 
 function defineModel( sequelize ) {
   Employee.init(

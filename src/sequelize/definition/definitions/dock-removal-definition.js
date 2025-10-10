@@ -1,11 +1,11 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import BikeRemoval from "../../model/models/bike-removal.js";
-import Bike from "../../model/models/bike.js";
-import Employee from "../../model/models/employee.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import DockRemoval from "../../../model/models/dock-removal.js";
+import Dock from "../../../model/models/dock.js";
+import Employee from "../../../model/models/employee.js";
 
 function defineModel( sequelize ) {
-  BikeRemoval.init(
+  DockRemoval.init(
     {
       ...defaultAttributes, 
       requestedAt: {
@@ -15,18 +15,18 @@ function defineModel( sequelize ) {
       }
     }, 
     {
-      sequelize,
-      ...defaultOptions( BikeRemoval.name )
+      sequelize, 
+      ...defaultOptions( DockRemoval.name )
     }
   );
 }
 
 function defineAssociations() {
-  BikeRemoval.belongsTo(
-    Bike, 
+  DockRemoval.belongsTo(
+    Dock, 
     { foreignKey: { allowNull: false } }
   );
-  BikeRemoval.belongsTo(
+  DockRemoval.belongsTo(
     Employee, 
     { foreignKey: { allowNull: false } }
   );

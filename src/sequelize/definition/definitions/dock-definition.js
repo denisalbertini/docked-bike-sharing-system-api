@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import Dock from "../../model/models/dock.js";
-import status from '../../model/shared/enum/dock-status.js';
-import BikeAdmission from "../../model/models/bike-admission.js";
-import DockAdmission from "../../model/models/dock-admission.js";
-import DockRemoval from "../../model/models/dock-removal.js";
-import Rental from "../../model/models/rental.js";
-import Bike from "../../model/models/bike.js";
-import Station from "../../model/models/station.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Dock from "../../../model/models/dock.js";
+import status from '../../../model/shared/enum/dock-status.js';
+import BikeAdmission from "../../../model/models/bike-admission.js";
+import DockAdmission from "../../../model/models/dock-admission.js";
+import DockRemoval from "../../../model/models/dock-removal.js";
+import Rental from "../../../model/models/rental.js";
+import Bike from "../../../model/models/bike.js";
+import Station from "../../../model/models/station.js";
 
 function defineModel( sequelize ) {
   Dock.init(

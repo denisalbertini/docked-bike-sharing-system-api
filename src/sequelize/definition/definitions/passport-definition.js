@@ -1,25 +1,18 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default.js";
-import CreditCard from "../../model/models/credit-card.js";
-import Biker from "../../model/models/biker.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Passport from "../../../model/models/passport.js";
+import Biker from "../../../model/models/biker.js";
 
 function defineModel( sequelize ) {
-  CreditCard.init(
+  Passport.init(
     {
       ...defaultAttributes, 
       number: {
-        type: DataTypes.CHAR( 19 ), 
+        type: DataTypes.STRING( 9 ), 
         allowNull: false, 
         unique: true, 
         validate: {
-          is: /\b\d{19}\b/
-        }
-      }, 
-      holderName: {
-        type: DataTypes.STRING, 
-        allowNull: false, 
-        validate: {
-          is: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b/
+          is: /^[A-Za-z0-9]{6,9}$/
         }
       }, 
       expirationDate: {
@@ -28,17 +21,24 @@ function defineModel( sequelize ) {
         validate: {
           isDate: true
         }
+      }, 
+      countryCode: {
+        type: DataTypes.CHAR( 3 ), 
+        allowNull: false, 
+        validate: {
+          is: /\b[A-Z]{3}\b/
+        }
       }
     }, 
     {
       sequelize, 
-      ...defaultOptions( CreditCard.name )
+      ...defaultOptions( Passport.name )
     }
   );
 }
 
 function defineAssociations() {
-  CreditCard.hasMany(
+  Passport.belongsTo(
     Biker, 
     { foreignKey: { allowNull: false } }
   );

@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize';
-import getTableName from './table-name-format.js';
 
 const defaultAttributes = Object.freeze(
   {
@@ -12,7 +11,10 @@ const defaultAttributes = Object.freeze(
 
 const defaultOptions = ( className ) => Object.freeze(
   {
-    tableName: getTableName( className )
+    // PascalCase to snake_case
+    tableName: className
+      .replace( /([a-z0-9])([A-Z])/g, '$1_$2' )
+      .toLowerCase()
   }
 );
 
