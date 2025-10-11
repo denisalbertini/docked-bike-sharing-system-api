@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import employeeRole from './model/shared/enum/employee-role.js';
 import { promisify } from 'util';
-import { EMAIL_VERIFICATION, ACCESS } from './auth-purpose.js';
+import { EMAIL_VERIFICATION, ACCESS } from '../auth-purpose.js';
 
 const jwtAsyncVerify = promisify( jwt.verify );
 

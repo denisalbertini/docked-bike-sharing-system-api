@@ -7,7 +7,7 @@ import {
   INTERNAL_SERVER_ERROR
 } from '../../error-types.js';
 import Result from '../../model/shared/result.js';
-import { ACCESS } from '../../routing/auth-purpose.js';
+import { ACCESS } from '../../auth-purpose.js';
 
 const jwtAsyncSign = promisify( jwt.sign );
 
