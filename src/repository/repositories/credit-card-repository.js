@@ -1,5 +1,5 @@
-import BaseRepository from "../base-repository";
-import CreditCard from '../../../model/models/credit-card.js';
+import BaseRepository from "../base-repository.js";
+import CreditCard from '../../model/models/credit-card.js';
 
 export default class CreditCardRepository extends BaseRepository {
   constructor() { super( CreditCard ); }

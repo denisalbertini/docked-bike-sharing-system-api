@@ -1,5 +1,5 @@
-import BaseRepository from "../base-repository";
-import Biker from '../../../model/models/biker.js';
+import BaseRepository from "../base-repository.js";
+import Biker from '../../model/models/biker.js';
 
 export default class BikerRepository extends BaseRepository {
   constructor() { super( Biker ); }

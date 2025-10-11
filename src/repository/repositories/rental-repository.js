@@ -1,5 +1,5 @@
-import BaseRepository from '../base-repository';
-import Rental from '../../../model/models/rental.js';
+import BaseRepository from '../base-repository.js';
+import Rental from '../../model/models/rental.js';
 import { Op } from 'sequelize';
 
 export default class RentalRepository extends BaseRepository {

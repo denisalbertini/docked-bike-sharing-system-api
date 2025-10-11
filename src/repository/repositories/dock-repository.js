@@ -1,5 +1,5 @@
-import BaseRepository from "../base-repository";
-import Dock from '../../../model/models/dock.js';
+import BaseRepository from "../base-repository.js";
+import Dock from '../../model/models/dock.js';
 
 export default class DockRepository extends BaseRepository {
   constructor() { super( Dock ); }

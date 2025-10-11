@@ -1,5 +1,5 @@
-import BaseRepository from "../base-repository";
-import Station from '../../../model/models/station.js';
+import BaseRepository from "../base-repository.js";
+import Station from '../../model/models/station.js';
 
 export default class StationRepository extends BaseRepository {
   constructor() { super( Station ); }

@@ -13,9 +13,7 @@ export default class BaseRepository {
   
   constructor( model ) {
     if ( new.target === BaseRepository )
-      throw new Error(
-        getBaseClassConstructorMessage( BaseRepository.name )
-      );
+      throw new Error( getBaseClassConstructorMessage( BaseRepository.name ) );
     
     this._model = model;
   }
