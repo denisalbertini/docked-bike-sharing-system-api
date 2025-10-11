@@ -1,6 +1,7 @@
 import '@dotenvx/dotenvx/config';
 import sequelize from './sequelize/sequelize.js';
 import initORM from './sequelize/index.js';
+import app from './routing/app.js';
 
 try {
   await sequelize.authenticate();
@@ -13,4 +14,6 @@ await initORM( sequelize );
 
 await sequelize.sync( { force: true } );
 
-await sequelize.close();
+const PORT = 3000;
+
+app.listen( PORT, () => console.log( `Server running on port ${ PORT }.` ) );
