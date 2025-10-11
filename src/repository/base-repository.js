@@ -1,5 +1,5 @@
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
-import Result from '../../model/shared/result.js';
+import Result from '../model/shared/result.js';
 import { ValidationError } from 'sequelize';
 import {
   VALIDATION_ERROR, 
