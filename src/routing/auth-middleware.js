@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import employeeRole from './model/shared/enum/employee-role.js';
+import employeeRole from '../model/shared/enum/employee-role.js';
 import { promisify } from 'util';
-import { EMAIL_VERIFICATION, ACCESS } from '../auth-purpose.js';
+import { EMAIL_VERIFICATION, ACCESS } from '../model/shared/enum/auth-purpose.js';
 
 const jwtAsyncVerify = promisify( jwt.verify );
 
@@ -40,6 +40,8 @@ accountConfirmationAuthMiddleware =
 bikerAuthMiddleware =
   createAuthMiddleware( ACCESS ), 
 operatorAuthMiddleware =
-  createAuthMiddleware( ACCESS, employeeRole.OPERATOR, employeeRole.ADMIN ), 
+  createAuthMiddleware( ACCESS, employeeRole.OPERATOR ), 
 adminAuthMiddleware =
-  createAuthMiddleware( ACCESS, employeeRole.ADMIN );
+  createAuthMiddleware( ACCESS, employeeRole.ADMIN ), 
+employeeAuthMiddleware = 
+  createAuthMiddleware( ACCESS, Object.values( employeeRole ) );
