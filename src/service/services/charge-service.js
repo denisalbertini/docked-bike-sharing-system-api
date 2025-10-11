@@ -1,6 +1,6 @@
 import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
-import { NOT_FOUND_ERROR } from '../../error-types.js';
+import { NOT_FOUND_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class ChargeService extends BaseService {
   complete( charge ) {

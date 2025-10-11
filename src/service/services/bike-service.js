@@ -1,7 +1,7 @@
 import BaseService from '../base-service.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import Result from '../../model/shared/result.js';
-import { PRECONDITION_FAILED_ERROR } from '../../error-types.js';
+import { PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class BikeService extends BaseService {
   async findBySerialNumber( serialNumber ) {

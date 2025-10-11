@@ -1,6 +1,6 @@
 import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
-import { VALIDATION_ERROR } from '../../error-types.js';
+import { VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class CreditCardService extends BaseService {
   validate( { number, expirationDate, cvv } ) {

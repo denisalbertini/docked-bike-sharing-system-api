@@ -1,4 +1,4 @@
-import { getBaseClassConstructorMessage } from '../constructor-error-message.js';
+import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
 
 export default class BaseFacade {
   _modelService;

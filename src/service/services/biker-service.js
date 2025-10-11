@@ -10,7 +10,7 @@ import status from '../../model/shared/enum/biker-status.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
-import { ACCESS } from '../../auth-purpose.js';
+import { ACCESS } from '../../model/shared/enum/auth-purpose.js';
 
 const jwtAsyncSign = promisify( jwt.sign );
 

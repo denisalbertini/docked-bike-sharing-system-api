@@ -2,7 +2,7 @@ import BaseService from '../base-service.js';
 import {
   NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR
-} from '../../error-types.js';
+} from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 

@@ -6,7 +6,7 @@ import {
   FOREIGN_KEY_CONSTRAINT_ERROR, 
   PRECONDITION_FAILED_ERROR, 
   INTERNAL_SERVER_ERROR
-} from './error-types.js';
+} from '../shared/enum/error-types.js';
 
 export const errorStatusMap = new Map(
   [

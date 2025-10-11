@@ -1,7 +1,7 @@
 import BaseFacade from '../base-facade.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import Result from '../../model/shared/result.js';
-import { INTERNAL_SERVER_ERROR } from '../../error-types.js';
+import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class DockAdmissionFacade extends BaseFacade {
   #dockService;

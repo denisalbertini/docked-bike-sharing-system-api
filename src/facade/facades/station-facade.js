@@ -3,7 +3,7 @@ import Result from '../../model/shared/result.js';
 import {
   NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR
-} from '../../error-types.js';
+} from '../../model/shared/enum/error-types.js';
 
 export default class StationFacade extends BaseFacade {
   #dockService;

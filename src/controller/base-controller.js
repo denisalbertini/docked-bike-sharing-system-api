@@ -1,5 +1,5 @@
-import { getBaseClassConstructorMessage } from '../constructor-error-message.js';
-import { errorStatusMap } from '../error-status-map.js';
+import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
+import { errorStatusMap } from '../model/shared/error-status-map.js';
 
 export default class BaseController {
   _modelFacade;
