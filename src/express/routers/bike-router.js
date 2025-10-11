@@ -12,7 +12,7 @@ import DockService from '../../service/services/dock-service.js';
 import BikeAdmissionService from '../../service/services/bike-admission-service.js';
 import BikeRemovalService from '../../service/services/bike-removal-service.js';
 
-import Transaction from '../../sequelize/transaction.js';
+import Transaction from '../../model/shared/transaction.js';
 
 import BikeFacade from '../../facade/facades/bike-facade.js';
 import BikeAmissionFacade from '../../facade/facades/bike-admission-facade.js';

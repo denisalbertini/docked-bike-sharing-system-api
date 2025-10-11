@@ -1,6 +1,6 @@
 import express from 'express';
 
-import bikeRouter from './routers/bike-router.js';
+import bikeRouter from './bike-router.js';
 
 const router = express.Router();
 

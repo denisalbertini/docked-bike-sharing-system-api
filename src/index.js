@@ -1,7 +1,7 @@
 import '@dotenvx/dotenvx/config';
 import sequelize from './sequelize/sequelize.js';
-import initORM from './sequelize/index.js';
-import app from './routing/app.js';
+import initORM from './sequelize/definition/init-definitions.js';
+import app from './express/app.js';
 
 try {
   await sequelize.authenticate();
