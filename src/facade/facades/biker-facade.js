@@ -112,6 +112,10 @@ export default class BikerFacade extends BaseFacade {
     }
   }
 
+  login( data ) {
+    return this._modelService.login( data );
+  }
+
   async updateBiker( bikerId, data ) {
     // Validates the data
     const validationResult = this._modelService.validate( data );

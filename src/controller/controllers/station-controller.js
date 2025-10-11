@@ -1,16 +1,9 @@
 import BaseController from '../base-controller.js';
 
 export default class StationController extends BaseController {
-  #stationFacade;
-
-  constructor( modelService, stationFacade ) {
-    super( modelService );
-    this.#stationFacade = stationFacade;
-  }
-
   deleteRecord( req, res ) {
     return this._handleOperation(
-      () => this.#stationFacade.deleteStation( req.params.id ), 
+      () => this._modelFacade.deleteStation( req.params.id ), 
       res, 
       200
     );

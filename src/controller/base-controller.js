@@ -1,10 +1,14 @@
+import { getBaseClassConstructorMessage } from '../constructor-error-message.js';
 import { errorStatusMap } from '../error-status-map.js';
 
 export default class BaseController {
-  _modelService;
+  _modelFacade;
   
-  constructor( modelService ) {
-    this._modelService = modelService;
+  constructor( modelFacade ) {
+    if ( new.target === BaseController )
+      throw new Error( getBaseClassConstructorMessage( BaseController.name ) );
+    
+    this._modelFacade = modelFacade;
   }
 
   async _handleOperation( operation, res, successStatus ) {
@@ -24,7 +28,7 @@ export default class BaseController {
 
   listRecords( _req, res ) {
     return this._handleOperation(
-      () => this._modelService.findAll(), 
+      () => this._modelFacade.findRecords(), 
       res, 
       200
     );
@@ -32,7 +36,7 @@ export default class BaseController {
 
   getRecord( req, res ) {
     return this._handleOperation(
-      () => this._modelService.findById( req.params.id ), 
+      () => this._modelFacade.findRecordById( req.params.id ), 
       res, 
       200
     );
@@ -40,7 +44,7 @@ export default class BaseController {
 
   createRecord( req, res ) {
     return this._handleOperation(
-      () => this._modelService.create( req.body ), 
+      () => this._modelFacade.createRecord( req.body ), 
       res, 
       201
     );
@@ -48,7 +52,7 @@ export default class BaseController {
 
   updateRecord( req, res ) {
     return this._handleOperation(
-      () => this._modelService.updateById( req.params.id ), 
+      () => this._modelFacade.updateRecordById( req.params.id ), 
       res,
       200
     );
@@ -56,7 +60,7 @@ export default class BaseController {
 
   deleteRecord( req, res ) {
     return this._handleOperation(
-      () => this._handleOperation( req.params.id ), 
+      () => this._modelFacade.deleteRecordById( req.params.id ), 
       res, 
       200
     );

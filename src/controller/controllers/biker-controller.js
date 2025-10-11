@@ -1,16 +1,9 @@
 import BaseController from '../base-controller.js';
 
 export default class BikerController extends BaseController {
-  #bikerFacade;
-
-  constructor( modelService, bikerFacade ) {
-    super( modelService );
-    this.#bikerFacade = bikerFacade;
-  }
-
   createRecord( req, res ) {
     return this._handleOperation(
-      () => this.#bikerFacade.createBiker(
+      () => this._modelFacade.createBiker(
         req.body.biker, req.body.creditCard, req.body.passport
       ),  
       res, 
@@ -20,7 +13,7 @@ export default class BikerController extends BaseController {
 
   login( req, res ) {
     return this._handleOperation(
-      () => this._modelService.login( req.body ), 
+      () => this._modelFacade.login( req.body ), 
       res, 
       200
     );
@@ -28,7 +21,7 @@ export default class BikerController extends BaseController {
 
   updateRecord( req, res ) {
     return this._handleOperation(
-      () => this.#bikerFacade.updateBiker( req.params.id, req.body ), 
+      () => this._modelFacade.updateBiker( req.params.id, req.body ), 
       res, 
       200
     );
@@ -36,7 +29,7 @@ export default class BikerController extends BaseController {
 
   changeCreditCard( req, res ) {
     return this._handleOperation(
-      this.#bikerFacade.changeBikerCreditCard( req.params.id, req.body ), 
+      () => this._modelFacade.changeBikerCreditCard( req.params.id, req.body ), 
       res, 
       200
     );
