@@ -1,6 +1,8 @@
 import BaseController from '../base-controller.js';
 
 export default class BikerController extends BaseController {
+  constructor( bikerFacade ) { super( bikerFacade ); }
+  
   createRecord( req, res ) {
     return this._handleOperation(
       () => this._modelFacade.createBiker(
