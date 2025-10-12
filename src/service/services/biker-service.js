@@ -15,6 +15,8 @@ import { ACCESS } from '../../model/shared/enum/auth-purpose.js';
 const jwtAsyncSign = promisify( jwt.sign );
 
 export default class BikerService extends BaseService {
+  constructor( bikerRepository ) { super( bikerRepository ); }
+  
   validate(
     {
       foreigner, 

@@ -4,6 +4,8 @@ import Result from '../../model/shared/result.js';
 import { PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class BikeService extends BaseService {
+  constructor( bikeRepository ) { super( bikeRepository ); }
+  
   async findBySerialNumber( serialNumber ) {
     const findResult = await this._modelRepository.findBySerialNumber(
       serialNumber

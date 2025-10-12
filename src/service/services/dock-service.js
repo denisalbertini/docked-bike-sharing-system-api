@@ -7,6 +7,8 @@ import Result from '../../model/shared/result.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 
 export default class DockService extends BaseService {
+  constructor( dockRepository ) { super( dockRepository ); }
+  
   async findBySerialNumber( serialNumber ) {
     const findResult = await this._modelRepository.findBySerialNumber(
       serialNumber

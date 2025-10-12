@@ -12,6 +12,8 @@ import { ACCESS } from '../../model/shared/enum/auth-purpose.js';
 const jwtAsyncSign = promisify( jwt.sign );
 
 export default class EmployeeService extends BaseSerice {
+  constructor( employeeRepository ) { super( employeeRepository ); }
+  
   async login( { registration, password } ) {
     const findResult = await this._modelRepository.findByRegistration( registration );
     if ( findResult.isFailure ) return findResult;

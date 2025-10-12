@@ -3,6 +3,8 @@ import Result from '../../model/shared/result.js';
 import { VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class CreditCardService extends BaseService {
+  constructor( creditCardRepository ) { super( creditCardRepository ); }
+  
   validate( { number, expirationDate, cvv } ) {
     const errors = [];
 

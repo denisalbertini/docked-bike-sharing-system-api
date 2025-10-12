@@ -1,6 +1,8 @@
 import BaseService from '../base-service.js';
 
 export default class RentalService extends BaseService {
+  constructor( rentalRepository ) { super( rentalRepository ); }
+  
   findUnfinishedByBikeId( bikeId ) {
     return this._modelRepository.findByNullFinishTimeAndBikeId( bikeId );
   }

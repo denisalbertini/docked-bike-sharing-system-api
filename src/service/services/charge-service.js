@@ -3,6 +3,8 @@ import Result from '../../model/shared/result.js';
 import { NOT_FOUND_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class ChargeService extends BaseService {
+  constructor( chargeRepository ) { super( chargeRepository ); }
+  
   complete( charge ) {
     return this.updateById( charge.id, { completedAt: Date.now() } );
   }
