@@ -1,4 +1,4 @@
-import BaseFacade from "../base-facade";
+import BaseFacade from "../base-facade.js";
 
 export default class ChargeFacade extends BaseFacade {
   #ccAdminService;

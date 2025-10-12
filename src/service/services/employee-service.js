@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import {
   AUTHENTICATION_ERROR, 
   INTERNAL_SERVER_ERROR
-} from '../../error-types.js';
+} from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import { ACCESS } from '../../model/shared/enum/auth-purpose.js';
 

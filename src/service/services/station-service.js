@@ -1,4 +1,4 @@
-import BaseService from '../base-service';
+import BaseService from '../base-service.js';
 
 export default class StationService extends BaseService {
   findBySerialNumber( serialNumber ) {

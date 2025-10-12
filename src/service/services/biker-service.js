@@ -5,7 +5,7 @@ import {
   INTERNAL_SERVER_ERROR,
   PRECONDITION_FAILED_ERROR, 
   VALIDATION_ERROR
-} from '../../error-types.js';
+} from '../../model/shared/enum/error-types.js';
 import status from '../../model/shared/enum/biker-status.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';

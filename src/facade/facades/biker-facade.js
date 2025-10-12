@@ -1,6 +1,6 @@
-import BaseFacade from '../base-facade';
-import Result from '../../model/shared/result';
-import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../../error-types';
+import BaseFacade from '../base-facade.js';
+import Result from '../../model/shared/result.js';
+import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class BikerFacade extends BaseFacade {
   #passportService;

@@ -1,10 +1,10 @@
 import BaseFacade from '../base-facade.js';
-import Result from '../../model/shared/result';
+import Result from '../../model/shared/result.js';
 import {
   INTERNAL_SERVER_ERROR,
   NOT_FOUND_ERROR, 
   PRECONDITION_FAILED_ERROR
-} from '../../error-types';
+} from '../../model/shared/enum/error-types.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 
