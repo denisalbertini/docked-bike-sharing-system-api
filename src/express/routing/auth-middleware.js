@@ -44,4 +44,4 @@ operatorAuthMiddleware =
 adminAuthMiddleware =
   createAuthMiddleware( ACCESS, employeeRole.ADMIN ), 
 employeeAuthMiddleware = 
-  createAuthMiddleware( ACCESS, Object.values( employeeRole ) );
+  createAuthMiddleware( ACCESS, ...Object.values( employeeRole ) );
