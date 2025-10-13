@@ -1,3 +1,3 @@
-import BaseModel from "../base-model.js";
+import { Model } from 'sequelize';
 
-export default class DockAdmission extends BaseModel {}
+export default class DockAdmission extends Model {}

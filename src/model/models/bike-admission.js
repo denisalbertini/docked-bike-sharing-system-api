@@ -1,3 +1,3 @@
-import BaseModel from "../base-model.js";
+import { Model } from 'sequelize';
 
-export default class BikeAdmission extends BaseModel {}
+export default class BikeAdmission extends Model {}
