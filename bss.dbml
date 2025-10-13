@@ -46,7 +46,7 @@ enum employee_role {
 
 Table bike {
   id uuid [pk]
-  serial_number char(6) [not null]
+  serial_number char(6) [not null, unique]
   brand varchar(100) [not null]
   model varchar(100) [not null]
   manufacture_year integer [not null]
