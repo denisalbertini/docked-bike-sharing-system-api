@@ -16,7 +16,7 @@ export default class BaseController {
 
     if ( result.isFailure ) {
       const errorType = result.errorType;
-      const errors = result.erros;
+      const errors = result.errors;
       
       return res
         .status( errorStatusMap.get( errorType ) )
@@ -26,43 +26,38 @@ export default class BaseController {
     res.status( successStatus ).send( result.value );
   }
 
-  listRecords( _req, res ) {
-    return this._handleOperation(
-      () => this._modelFacade.findRecords(), 
+  listRecords = ( _req, res ) =>
+    this._handleOperation(
+      () => this._modelFacade.getRecords(), 
       res, 
       200
     );
-  }
 
-  getRecord( req, res ) {
-    return this._handleOperation(
-      () => this._modelFacade.findRecordById( req.params.id ), 
+  getRecord = ( req, res ) =>
+    this._handleOperation(
+      () => this._modelFacade.getRecordById( req.params.id ), 
       res, 
       200
     );
-  }
 
-  createRecord( req, res ) {
-    return this._handleOperation(
+  createRecord = ( req, res ) =>
+    this._handleOperation(
       () => this._modelFacade.createRecord( req.body ), 
       res, 
       201
     );
-  }
 
-  updateRecord( req, res ) {
-    return this._handleOperation(
-      () => this._modelFacade.updateRecordById( req.params.id ), 
+  updateRecord = ( req, res ) =>
+    this._handleOperation(
+      () => this._modelFacade.updateRecordById( req.params.id, req.body ), 
       res,
       200
     );
-  }
 
-  deleteRecord( req, res ) {
-    return this._handleOperation(
+  deleteRecord = ( req, res ) =>
+    this._handleOperation(
       () => this._modelFacade.deleteRecordById( req.params.id ), 
       res, 
-      200
+      204
     );
-  }
 }
