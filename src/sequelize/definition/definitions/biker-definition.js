@@ -77,18 +77,18 @@ function defineModel( sequelize ) {
 }
 
 function defineAssociations() {
-  Biker.hasOne( Passport );
+  Biker.hasOne( Passport, { foreignKey: 'bikerId' } );
   Biker.hasMany(
     Charge, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikerId', allowNull: false } }
   );
   Biker.hasMany(
     Rental, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikerId', allowNull: false } }
   );
   Biker.belongsTo(
     CreditCard, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'creditCardId', allowNull: false } }
   );
 }
 

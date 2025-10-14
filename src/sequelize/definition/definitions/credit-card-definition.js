@@ -40,7 +40,7 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   CreditCard.hasMany(
     Biker, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'creditCardId', allowNull: false } }
   );
 }
 

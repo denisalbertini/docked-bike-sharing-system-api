@@ -24,11 +24,11 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   DockRemoval.belongsTo(
     Dock, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'dockId', allowNull: false } }
   );
   DockRemoval.belongsTo(
     Employee, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'employeeId', allowNull: false } }
   );
 }
 

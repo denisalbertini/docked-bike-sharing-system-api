@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+import ForeignKeyConstraintError from "sequelize";
 import { defaultAttributes, defaultOptions } from "../default-definition.js";
 import Dock from "../../../model/models/dock.js";
 import status from '../../../model/shared/enum/dock-status.js';
@@ -23,7 +24,10 @@ function defineModel( sequelize ) {
       }, 
       model: {
         type: DataTypes.STRING( 100 ), 
-        allowNull: false
+        allowNull: false, 
+        validate: {
+          len: [ 1, 100 ]
+        }
       }, 
       manufactureDate: {
         type: DataTypes.DATEONLY, 
@@ -59,32 +63,32 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   Dock.hasMany(
     BikeAdmission, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'dockId', allowNull: false } }
   );
   Dock.hasMany(
     DockAdmission, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'dockId', allowNull: false } }
   );
   Dock.hasMany(
     DockRemoval, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'dockId', allowNull: false } }
   );
   Dock.hasMany(
     Rental, 
     {
       as: 'rentedFromDock', 
-      foreignKey: { name: 'rented_from_dock_id', allowNull: false }
+      foreignKey: { name: 'rentedFromDockId', allowNull: false }
     }
   );
   Dock.hasMany(
     Rental, 
     {
       as: 'returnedToDock', 
-      foreignKey: { name: 'returned_to_dock_id' }
+      foreignKey: { name: 'returnedToDockId' }
     }
   );
-  Dock.belongsTo( Bike );
-  Dock.belongsTo( Station );
+  Dock.belongsTo( Bike, { foreignKey: 'bikeId' } );
+  Dock.belongsTo( Station, { foreignKey: 'stationId' } );
 }
 
 export { defineModel, defineAssociations };

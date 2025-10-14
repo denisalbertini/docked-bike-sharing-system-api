@@ -21,11 +21,17 @@ function defineModel( sequelize ) {
       }, 
       brand: {
         type: DataTypes.STRING( 100 ), 
-        allowNull: false
+        allowNull: false, 
+        validate: {
+          len: [ 1, 100 ]
+        }
       }, 
       model: {
         type: DataTypes.STRING( 100 ), 
-        allowNull: false
+        allowNull: false, 
+        validate: {
+          len: [ 1, 100 ]
+        }
       }, 
       manufactureYear: {
         type: DataTypes.INTEGER, 
@@ -53,18 +59,18 @@ function defineModel( sequelize ) {
 }
 
 function defineAssociations() {
-  Bike.hasOne( Dock );
+  Bike.hasOne( Dock, { foreignKey: 'bikeId' } );
   Bike.hasMany(
     BikeAdmission, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikeId', allowNull: false } }
   );
   Bike.hasMany( 
     BikeRemoval, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikeId', allowNull: false } }
   );
   Bike.hasMany(
     Rental, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikeId', allowNull: false } }
   );
 }
 

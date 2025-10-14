@@ -24,11 +24,11 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   BikeRemoval.belongsTo(
     Bike, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikeId', allowNull: false } }
   );
   BikeRemoval.belongsTo(
     Employee, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'employeeId', allowNull: false } }
   );
 }
 

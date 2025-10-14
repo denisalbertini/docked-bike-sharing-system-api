@@ -17,11 +17,17 @@ function defineModel( sequelize ) {
       }, 
       name: {
         type: DataTypes.STRING, 
-        allowNull: false
+        allowNull: false, 
+        validate: {
+          len: [ 1, 256 ]
+        }
       }, 
       location: {
         type: DataTypes.STRING, 
-        allowNull: false
+        allowNull: false, 
+        validate: {
+          len: [ 1, 256 ]
+        }
       }
     }, 
     {
@@ -32,7 +38,7 @@ function defineModel( sequelize ) {
 }
 
 function defineAssociations() {
-  Station.hasMany( Dock );
+  Station.hasMany( Dock, { foreignKey: 'stationId' } );
 }
 
 export { defineModel, defineAssociations };

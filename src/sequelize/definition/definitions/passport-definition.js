@@ -40,7 +40,7 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   Passport.belongsTo(
     Biker, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikerId', allowNull: false } }
   );
 }
 

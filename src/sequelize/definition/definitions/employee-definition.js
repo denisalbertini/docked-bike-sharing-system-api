@@ -64,15 +64,15 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   Employee.hasMany(
     BikeRemoval, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'employeeId', allowNull: false } }
   );
   Employee.hasMany(
     DockAdmission, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'employeeId', allowNull: false } }
   );
   Employee.hasMany(
     DockRemoval, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'employeeId', allowNull: false } }
   );
 }
 

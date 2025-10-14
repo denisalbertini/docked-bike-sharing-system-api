@@ -34,19 +34,19 @@ function defineAssociations() {
     Rental, 
     {
       as: 'initialCharge', 
-      foreignKey: { name: 'initial_charge_id', allowNull: false }
+      foreignKey: { name: 'initialChargeId', allowNull: false }
     }
   );
   Charge.hasMany(
     Rental, 
     {
       as: 'extraCharge', 
-      foreignKey: 'extra_charge_id'
+      foreignKey: 'extraChargeId'
     }
   );
   Charge.belongsTo(
     Biker, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikerId', allowNull: false } }
   );
 }
 

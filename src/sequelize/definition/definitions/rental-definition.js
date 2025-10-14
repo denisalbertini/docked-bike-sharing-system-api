@@ -27,38 +27,38 @@ function defineModel( sequelize ) {
 function defineAssociations() {
   Rental.belongsTo(
     Bike, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikeId', allowNull: false } }
   );
   Rental.belongsTo(
     Biker, 
-    { foreignKey: { allowNull: false } }
+    { foreignKey: { name: 'bikerId', allowNull: false } }
   );
   Rental.belongsTo(
     Charge, 
     {
       as: 'initialCharge', 
-      foreignKey: { name: 'initial_charge_id', allowNull: false }
+      foreignKey: { name: 'initialChargeId', allowNull: false }
     }
   );
   Rental.belongsTo(
     Charge, 
     {
       as: 'extraCharge', 
-      foreignKey: { name: 'extra_charge_id' }
+      foreignKey: { name: 'extraChargeId' }
     }
   );
   Rental.belongsTo(
     Dock, 
     {
       as: 'rentedFromDock', 
-      foreignKey: { name: 'rented_from_dock_id', allowNull: false }
+      foreignKey: { name: 'rentedFromDockId', allowNull: false }
     }
   );
   Rental.belongsTo(
     Dock, 
     {
       as: 'returnedToDock', 
-      foreignKey: { name: 'returned_to_dock_id' }
+      foreignKey: { name: 'returnedToDockId' }
     }
   );
 }
