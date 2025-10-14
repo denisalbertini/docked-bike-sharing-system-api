@@ -2,7 +2,10 @@ import BaseFacade from '../base-facade.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import Result from '../../model/shared/result.js';
-import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
+import {
+  INTERNAL_SERVER_ERROR, 
+  VALIDATION_ERROR
+} from '../../model/shared/enum/error-types.js';
 
 export default class BikeRemovalFacade extends BaseFacade {
   #bikeService;
@@ -24,19 +27,29 @@ export default class BikeRemovalFacade extends BaseFacade {
   async createBikeRemoval(
     { employeeId, bikeSerialNumber, dockSerialNumber, action }
   ) {
+    const errors = [];
+        
     // Checks the bike's status
-    const checkBikeStatus = await this.#bikeService.checkStatusBySerialNumber(
+    const bikeStatusResult = await this.#bikeService.checkStatusBySerialNumber(
       bikeSerialNumber, bikeStatus.MAINTENANCE_REQUESTED
     );
-    if ( checkBikeStatus.isFailure ) return checkBikeStatus;
-
-    const bike = checkBikeStatus.value;
+    if ( bikeStatusResult.isFailure ) errors.push( ...bikeStatusResult.errors );
 
     // Checks the dock's status
-    const checkDockStatus = await this.#dockService.checkStatusBySerialNumber(
+    const dockStatusResult = await this.#dockService.checkStatusBySerialNumber(
       dockSerialNumber, dockStatus.OCCUPIED
     );
-    if ( checkDockStatus.isFailure ) return checkDockStatus;
+    if ( dockStatusResult.isFailure ) errors.push( ...dockStatusResult.errors );
+
+    if ( errors.length > 0 ) return Result.failure(
+      bikeStatusResult.errorType === dockStatusResult.errorType ? 
+      bikeStatusResult.errorType : 
+      VALIDATION_ERROR, 
+      ...errors
+    );
+
+    const bike = bikeStatusResult.value;
+    const dock = dockStatusResult.value;
 
     // Tries to finalize the process with a transaction
     try {
@@ -51,16 +64,16 @@ export default class BikeRemovalFacade extends BaseFacade {
         return createBikeRemovalResult;
       }
 
-      const bikeAdmission = createBikeRemovalResult.value;
+      const bikeRemoval = createBikeRemovalResult.value;
 
       // Gets the new bike status
-      const bikeStatusResult = this.#bikeService.getStatusByAction( action );
-      if ( bikeStatusResult.isFailure ) {
+      const newBikeStatusResult = this.#bikeService.getStatusByAction( action );
+      if ( newBikeStatusResult.isFailure ) {
         await this.#transaction.rollback();
-        return bikeStatusResult;
+        return newBikeStatusResult;
       }
 
-      const newBikeStatus = bikeStatusResult.value;
+      const newBikeStatus = newBikeStatusResult.value;
       
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
@@ -82,7 +95,14 @@ export default class BikeRemovalFacade extends BaseFacade {
 
       await this.#transaction.commit();
 
-      return Result.success( bikeAdmission );
+      return Result.success(
+        {
+          id: bikeRemoval.id, 
+          requestedAt: bikeRemoval.requestedAt.toString(), 
+          bikeId: bikeRemoval.bikeId, 
+          employeeId: bikeRemoval.employeeId
+        }
+      );
     } catch ( error ) {
       await this.#transaction.rollback();
       return Result.failure( INTERNAL_SERVER_ERROR, error.message );

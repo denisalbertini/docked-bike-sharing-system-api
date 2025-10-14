@@ -14,7 +14,7 @@ export default class DockService extends BaseService {
       serialNumber
     );
 
-    if ( findResult.isFailure && findResult.errorType === NOT_FOUND_ERROR )
+    if ( findResult.isSuccess && findResult.value === null )
       return Result.failure( NOT_FOUND_ERROR, 'Dock not found.' );
 
     return findResult;
@@ -26,7 +26,7 @@ export default class DockService extends BaseService {
     if ( findResult.isSuccess && findResult.value.status !== status )
       return Result.failure(
         PRECONDITION_FAILED_ERROR, 
-        `Dock is not ${ status.toLowerCase() }.`
+        `Dock is not ${ status.replace( '_', ' ' ) }.`
       );
 
     return findResult;

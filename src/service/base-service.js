@@ -46,7 +46,7 @@ export default class BaseService {
     const updateResult = await this._modelRepository.updateById( id, data );
     if ( updateResult.isFailure ) return updateResult;
 
-    const [ affectedRows, [ updatedEntry ] ] = updateResult.value;
+    const [ affectedRows, [ updatedEntry ] = [] ] = updateResult.value;
 
     if ( affectedRows === 0 )
       return Result.failure(

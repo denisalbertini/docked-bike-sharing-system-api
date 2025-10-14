@@ -22,8 +22,8 @@ export default class BaseFacade {
     return this._modelService.create( data );
   }
 
-  updateRecordById( id ) {
-    return this._modelService.updateById( id );
+  updateRecordById( id, data ) {
+    return this._modelService.updateById( id, data );
   }
 
   deleteRecordById( id ) {
