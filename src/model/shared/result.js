@@ -22,8 +22,8 @@ export default class Result {
   get value() { return this.#value; }
   get errors() { return this.#errors; }
   get errorType() { return this.#errorType; }
-  get isSuccess() { return this.#value != null; }
-  get isFailure() { return this.#errors != null; }
+  get isSuccess() { return this.#errors === null; }
+  get isFailure() { return this.#errors !== null; }
 
   static success( value = null ) {
     return new Result(
