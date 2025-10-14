@@ -4,6 +4,7 @@ const defaultAttributes = Object.freeze(
   {
     id: {
       type: DataTypes.UUID, 
+      defaultValue: DataTypes.UUIDV4, 
       primaryKey: true
     }
   }
