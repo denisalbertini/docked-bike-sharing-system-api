@@ -5,15 +5,15 @@ import { VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
 export default class CreditCardService extends BaseService {
   constructor( creditCardRepository ) { super( creditCardRepository ); }
   
-  validate( { number, expirationDate, cvv } ) {
+  validate( { creditCardNumber, expirationDate, cvv } ) {
     const errors = [];
 
-    if ( !this.#validateNumber( number ) )
+    if ( !this.#validateNumber( creditCardNumber ) )
       errors.push( 'Invalid credit card number.' );
     if ( !this.#validateExpirationDate( expirationDate ) )
       errors.push( 'Invalid credit card expiration date.' );
     if ( !this.#validateCvv( cvv ) )
-      errors.push( 'Invalid credit card cvc.' );
+      errors.push( 'Invalid credit card cvv.' );
 
     if ( errors.length !== 0 )
       return Result.failure( VALIDATION_ERROR, ...errors );
@@ -21,24 +21,25 @@ export default class CreditCardService extends BaseService {
     return Result.success();
   }
 
-  #validateNumber( number ) {
-    const length = number.length;
-    
-    if ( length < 13 || length > 19 ) return false;
+  #validateNumber( creditCardNumber ) {
+    const cleanNumber = creditCardNumber
+      .toString()
+      .replace( /\s/g, '' )
+      .split( '' )
+      .reverse()
+      .join( '' );
     
     let sum = 0;
-    let isEven = false;
     
-    for ( let i = number.length - 1; i >= 0; i-- ) {
-      let digit = number[ i ];
+    for ( let i = 0; i < cleanNumber.length; i++ ) {
+      let digit = parseInt( cleanNumber[ i ], 10 );
       
-      if ( isEven ) {
+      if ( i % 2 === 1 ) {
         digit *= 2;
         if ( digit > 9 ) digit -= 9;
       }
       
       sum += digit;
-      isEven = !isEven;
     }
     
     return sum % 10 === 0;
