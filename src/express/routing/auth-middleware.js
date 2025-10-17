@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import employeeRole from '../../model/shared/enum/employee-role.js';
-import { EMAIL_VERIFICATION, ACCESS } from '../../model/shared/enum/auth-purpose.js';
+import { ACCESS } from '../../model/shared/enum/auth-purpose.js';
 
 const jwtAsyncVerify = promisify( jwt.verify );
 
@@ -18,7 +18,7 @@ function createAuthMiddleware( purpose = null, ...acceptedRoles ) {
       if ( purpose && payload.purpose !== purpose )
         return res.sendStatus( 403 );
 
-      if ( acceptedRoles && !acceptedRoles.includes( payload.role ) )
+      if ( acceptedRoles.length > 0 && !acceptedRoles.includes( payload.role ) )
         return res.sendStatus( 403 );
 
       req.user = {
@@ -35,8 +35,6 @@ function createAuthMiddleware( purpose = null, ...acceptedRoles ) {
 }
 
 export const
-accountConfirmationAuthMiddleware =
-  createAuthMiddleware( EMAIL_VERIFICATION ), 
 bikerAuthMiddleware =
   createAuthMiddleware( ACCESS ), 
 operatorAuthMiddleware =
