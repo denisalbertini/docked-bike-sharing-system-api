@@ -1,12 +1,12 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
 import Biker from "../../../model/models/biker.js";
+import Charge from "../../../model/models/charge.js";
+import CreditCard from "../../../model/models/credit-card.js";
+import Passport from "../../../model/models/passport.js";
+import Rental from "../../../model/models/rental.js";
 import Cpf from "../../../model/shared/cpf.js";
 import status from "../../../model/shared/enum/biker-status.js";
-import Passport from "../../../model/models/passport.js";
-import Charge from "../../../model/models/charge.js";
-import Rental from "../../../model/models/rental.js";
-import CreditCard from "../../../model/models/credit-card.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
 function defineModel( sequelize ) {
   Biker.init(
@@ -15,7 +15,6 @@ function defineModel( sequelize ) {
       cpf: {
         type: DataTypes.CHAR( 11 ), 
         unique: true, 
-        allowNull: false, 
         validate: {
           isCpf( cpf ) {
             if ( !Cpf.validate( cpf ) )
@@ -71,7 +70,13 @@ function defineModel( sequelize ) {
     }, 
     {
       sequelize, 
-      ...defaultOptions( Biker.name )
+      ...defaultOptions( Biker.name ), 
+      hooks: {
+        beforeCreate: ( biker, _options ) => {
+          if ( biker.status !== status.PENDING )
+            biker.status = status.PENDING;
+        }
+      }
     }
   );
 }
@@ -92,4 +97,5 @@ function defineAssociations() {
   );
 }
 
-export { defineModel, defineAssociations };
+export { defineAssociations, defineModel };
+

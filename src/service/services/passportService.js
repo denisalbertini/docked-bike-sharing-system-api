@@ -15,4 +15,19 @@ export default class PassportService extends BaseService {
 
     return result;
   }
+
+  async updateByBikerId( bikerId, data ) {
+    const updateResult = await this._modelRepository.updateByBikerId( bikerId, data );
+    if ( updateResult.isFailure ) return updateResult;
+
+    const [ affectedRows, [ updatedEntry ] = [] ] = updateResult.value;
+
+    if ( affectedRows === 0 )
+      return Result.failure(
+        NOT_FOUND_ERROR, 
+        'Entry does not exist.'
+      );
+
+    return Result.success( updatedEntry );
+  }
 }

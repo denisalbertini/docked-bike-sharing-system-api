@@ -1,14 +1,14 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import CreditCard from "../../../model/models/credit-card.js";
 import Biker from "../../../model/models/biker.js";
+import CreditCard from "../../../model/models/credit-card.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
 function defineModel( sequelize ) {
   CreditCard.init(
     {
       ...defaultAttributes, 
       creditCardNumber: {
-        type: DataTypes.CHAR( 19 ), 
+        type: DataTypes.STRING( 19 ), 
         allowNull: false, 
         unique: true, 
         validate: {
@@ -43,4 +43,5 @@ function defineAssociations() {
   );
 }
 
-export { defineModel, defineAssociations };
+export { defineAssociations, defineModel };
+

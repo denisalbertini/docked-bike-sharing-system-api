@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import bikeStatus from '../model/shared/enum/bike-status.js';
 import dockStatus from '../model/shared/enum/dock-status.js';
 import employeeRole from '../model/shared/enum/employee-role.js';
@@ -5,7 +6,7 @@ import employeeRole from '../model/shared/enum/employee-role.js';
 export const bikeData = [
   {
     id: 'c2739f83-93ec-45ae-8a48-73667bbadfd6',
-    serialNumber: 'BI-001',
+    bikeSerial: 'BI-001',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -13,7 +14,7 @@ export const bikeData = [
   },
   {
     id: '89c6ffdd-6a0b-45bf-b51a-9eb00aa54b2b',
-    serialNumber: 'BI-002',
+    bikeSerial: 'BI-002',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -21,7 +22,7 @@ export const bikeData = [
   },
   {
     id: '35ee2d1a-5e44-422d-9e17-d10ebb62838c',
-    serialNumber: 'BI-003',
+    bikeSerial: 'BI-003',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -29,7 +30,7 @@ export const bikeData = [
   },
   {
     id: '43abae4f-c13a-43e4-9802-d83e598107e1',
-    serialNumber: 'BI-004',
+    bikeSerial: 'BI-004',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -37,7 +38,7 @@ export const bikeData = [
   },
   {
     id: '5eb6afd9-4bcd-4364-8bbe-ffd5ab700542',
-    serialNumber: 'BI-005',
+    bikeSerial: 'BI-005',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -45,7 +46,7 @@ export const bikeData = [
   },
   {
     id: '6141cf4b-3063-4351-b0ae-eb16888ab043',
-    serialNumber: 'BI-006',
+    bikeSerial: 'BI-006',
     brand: 'abc',
     model: 'abc',
     manufactureYear: 2000,
@@ -56,28 +57,28 @@ export const bikeData = [
 export const dockData = [
   {
     id: '885a3276-a561-4aa8-b878-cf6945a510f4',
-    serialNumber: 'DO-001',
+    dockSerial: 'DO-001',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.AVAILABLE,
   },
   {
     id: 'f9529f69-7538-4e0a-87d4-192632208bd5',
-    serialNumber: 'DO-002',
+    dockSerial: 'DO-002',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.DECOMMISSIONED,
   },
   {
     id: 'fa788e4a-f4b3-4308-90f1-5c538eaf31d6',
-    serialNumber: 'DO-003',
+    dockSerial: 'DO-003',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.MAINTENANCE_REQUESTED,
   },
   {
     id: '0153ce2d-90b7-40eb-a4a1-1e40578c99f0',
-    serialNumber: 'DO-004',
+    dockSerial: 'DO-004',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.OCCUPIED,
@@ -85,7 +86,7 @@ export const dockData = [
   },
   {
     id: 'caa8ffc0-f42d-4900-b9ac-b2f0640f17b4',
-    serialNumber: 'DO-005',
+    dockSerial: 'DO-005',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.OCCUPIED,
@@ -93,14 +94,14 @@ export const dockData = [
   },
   {
     id: '3dc555e3-e81c-4a7e-8d31-508149f7ffa8',
-    serialNumber: 'DO-006',
+    dockSerial: 'DO-006',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.OPERATIONAL,
   },
   {
     id: '3ad94812-ed26-40d7-a674-1ec75a871526',
-    serialNumber: 'DO-007',
+    dockSerial: 'DO-007',
     model: 'abc',
     manufactureDate: '2025-06-15',
     status: dockStatus.UNDER_MAINTENANCE,
@@ -123,5 +124,67 @@ export const employeeData = [
     name: 'Admin Person',
     birthDate: '2000-06-15',
     role: employeeRole.ADMIN,
+  },
+];
+
+export const creditCardData = [
+  {
+    id: '4c2167c8-1291-4c2f-a777-9952d73251c1',
+    creditCardNumber: '4111111111111111',
+    holderName: 'Name Lastname',
+    expirationDate: '06/2030',
+  },
+  {
+    id: 'a28ef712-987a-44ee-a1e0-ac6dedaf6c7f',
+    creditCardNumber: '5217-7299-1473-0884',
+    holderName: 'Name Lastname',
+    expirationDate: '06/2030',
+  },
+  {
+    id: 'c9937d14-04a6-4d9e-a859-71eb50437b8a',
+    creditCardNumber: '6011111111111117',
+    holderName: 'Name Lastname',
+    expirationDate: '06/2030',
+  },
+];
+
+export const bikerData = [
+  {
+    id: 'deb9bcc5-6d8c-48d9-8f9c-43af09f52d0c',
+    cpf: '84082801049',
+    name: 'Name Lastname',
+    birthDate: '2000-06-15',
+    email: 'email@address.com',
+    password: bcrypt.hashSync('secret', 10),
+    foreigner: false,
+    creditCardId: creditCardData[0].id,
+  },
+  {
+    id: '3613d681-78ea-4f9e-99f7-9dd73ddcd4b8',
+    cpf: '43377773002',
+    name: 'Name Lastname',
+    birthDate: '2000-06-15',
+    email: 'email2@address.com',
+    password: bcrypt.hashSync('secret', 10),
+    foreigner: false,
+    creditCardId: creditCardData[0].id,
+  },
+  {
+    id: '3613d681-78ea-4f9e-99f7-9dd73ddcd4b8',
+    name: 'Name Lastname',
+    birthDate: '2000-06-15',
+    email: 'email3@address.com',
+    password: bcrypt.hashSync('secret', 10),
+    foreigner: true,
+    creditCardId: creditCardData[0].id,
+  },
+];
+
+export const passportData = [
+  {
+    passportNumber: 'abc123',
+    expirationDate: '2030-06-15',
+    countryCode: 'USA',
+    bikerId: bikerData[2].id,
   },
 ];

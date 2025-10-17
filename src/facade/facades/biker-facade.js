@@ -1,6 +1,7 @@
-import BaseFacade from '../base-facade.js';
+import { BaseError } from 'sequelize';
+import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
-import { NOT_FOUND_ERROR, VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
+import BaseFacade from '../base-facade.js';
 
 export default class BikerFacade extends BaseFacade {
   #passportService;
@@ -22,24 +23,24 @@ export default class BikerFacade extends BaseFacade {
     this.#emailService = emailService;
   }
 
-  async createBiker( bikerData, creditCardData, passportData ) {
+  async createBiker( bikerData, creditCardData, passportData = null ) {
     // Validates the data
-    const errors = [];
+    const failures = [];
 
     const bikerValidationResult = this._modelService.validate(
       { ...bikerData, ...( passportData ?? {} ) }
     );
     if ( bikerValidationResult.isFailure )
-      errors.push( ...bikerValidationResult.errors );
+      failures.push( bikerValidationResult );
 
     const creditCardValidationResult = this.#creditCardService.validate(
       creditCardData
     );
     if( creditCardValidationResult.isFailure )
-      errors.push( ...creditCardValidationResult.errors );
+      failures.push( creditCardValidationResult );
 
-    if ( errors.length !== 0 )
-      return Result.failure( VALIDATION_ERROR, ...errors );
+    // Checks for failures
+    if ( failures.length !== 0 ) return Result.mergeFailures( failures );
 
     // Tries to finalize the process with a transaction
     try {
@@ -47,41 +48,36 @@ export default class BikerFacade extends BaseFacade {
 
       // Finds or creates the credit card
       const creditCardResult = await this.#creditCardService.findOrCreate(
-        creditCardData
+        {
+          creditCardNumber: creditCardData.creditCardNumber, 
+          holderName: creditCardData.holderName, 
+          expirationDate: creditCardData.expirationDate, 
+        }
       );
-      if ( creditCardResult.isFailure ) {
-        await this.#transaction.rollback();
-        return creditCardResult;
-      }
-
-      const creditCard = creditCardResult.value;
+      if ( creditCardResult.isFailure ) failures.push( creditCardResult );
+      const creditCard = creditCardResult.value ?? {};
 
       // Creates the biker
       const bikerResult = await this.createRecord(
         { ...bikerData, creditCardId: creditCard.id }
       );
-      if ( bikerResult.isFailure ) {
-        await this.#transaction.rollback();
-        return bikerResult;
-      }
-
-      const biker = bikerResult.value;
+      if ( bikerResult.isFailure ) failures.push( bikerResult );
+      const biker = bikerResult.value ?? {};
 
       // Creates the passport
       if ( passportData ) {
         const passportResult = await this.#passportService.create(
           { ...passportData, bikerId: biker.id }
         );
-        if ( passportResult.isFailure ) {
-          await this.#transaction.rollback();
-          return passportResult;
-        }
-
-        const passport = passportResult.value;
-        biker.passport = passport;
+        if ( passportResult.isFailure ) failures.push( passportResult );
+        var passport = passportResult.value;
       }
 
-      biker.creditCard = creditCard;
+      // Checks for failures
+      if ( failures.length !== 0 ) {
+        await this.#transaction.rollback();
+        return Result.mergeFailures( failures );
+      }
 
       // Generates the confirmation token
       const generateTokenResult =
@@ -90,7 +86,6 @@ export default class BikerFacade extends BaseFacade {
         await this.#transaction.rollback();
         return generateTokenResult;
       }
-
       const token = generateTokenResult.value;
 
       // Sends the confirmation email
@@ -102,115 +97,146 @@ export default class BikerFacade extends BaseFacade {
         return emailResult;
       }
 
+      const successData = {
+        ...( biker.cpf && { cpf: biker.cpf } ), 
+        name: biker.name, 
+        birthDate: biker.birthDate, 
+        email: biker.email, 
+        foreigner: biker.foreigner, 
+        status: biker.status, 
+        ...( passport && {
+            passport: {
+              passportNumber: passport.passportNumber, 
+              expirationDate: passport.expirationDate, 
+              countryCode: passport.countryCode
+            }
+          }
+        )
+      };
+
       await this.#transaction.commit();
 
-      return Result.success( biker );
+      return Result.success( successData );
     } catch ( error ) {
-      await this.#transaction.rollback();
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message);
+      throw error;
     }
   }
 
-  login( data ) {
-    return this._modelService.login( data );
-  }
-
-  async updateBiker( bikerId, data ) {
+  async updateBiker( bikerId, bikerData, passportData = null ) {
     // Validates the data
-    const validationResult = this._modelService.validate( data );
-    if ( validationResult.isFailure ) return validationResult;
+    const dataValidationResult = this._modelService.validate(
+      { ...bikerData, ...( passportData ?? {} ), update: true }
+    );
+    if ( dataValidationResult.isFailure ) return dataValidationResult;
 
     // Tries to finalize the proccess with a transaction
     try {
+      const failures = [];
+      
       await this.#transaction.start();
 
       // Updates the biker
-      const bikerResult =
-        await this.updateRecordById( bikerId, data );
-      if ( bikerResult.isFailure ) {
+      const bikerUpdateResult = await this.updateRecordById( bikerId, bikerData );
+      if ( bikerUpdateResult.isFailure ) failures.push( bikerUpdateResult );
+
+      // Updates the passport
+      if ( passportData ) {
+        var passportUpdateResult = await this.#passportService.updateByBikerId(
+          bikerId, passportData
+        );
+        if ( passportUpdateResult.isFailure ) failures.push( passportUpdateResult );
+        else var passport = passportUpdateResult.value;
+      }
+
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return bikerResult;
+        return Result.mergeFailures( failures );
       }
 
-      const biker = bikerResult.value;
+      const biker = bikerUpdateResult.value;
 
-      // Checks if the biker has a passport
-      const findPassportResult =
-        await this.#passportService.findByBikerId( bikerId );
-      if (
-        findPassportResult.isFailure && 
-        findPassportResult.errorType !== NOT_FOUND_ERROR
-      ) {
-        await this.#transaction.rollback();
-        return findPassportResult;
-      }
-
-      // Updates or creates the passport
-      let passportResult;
-      if ( findPassportResult.isSuccess ) {
-        const passportId = findPassportResult.value.id;
-        passportResult =
-          await this.#passportService.updateById( passportId, data );
-      } else {
-        passportResult =
-          await this.#passportService.create( { ...data, bikerId } );
-      }
-
-      if ( passportResult.isFailure ) {
-        await this.#transaction.rollback();
-        return passportResult;
-      }
-
-      biker.passport = passportResult.value;
+      const successData = {
+        ...( biker.cpf && { cpf: biker.cpf } ), 
+        name: biker.name, 
+        birthDate: biker.birthDate, 
+        email: biker.email, 
+        foreigner: biker.foreigner, 
+        status: biker.status, 
+        ...( passport && {
+            passport: {
+              passportNumber: passport.passportNumber, 
+              expirationDate: passport.expirationDate, 
+              countryCode: passport.countryCode
+            }
+          }
+        )
+      };
 
       await this.#transaction.commit();
 
-      return Result.success( biker );
+      return Result.success( successData );
     } catch ( error ) {
-      await this.#transaction.rollback();
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      throw error;
     }
   }
 
-  async changeBikerCreditCard( bikerId, data ) {
+  confirmEmail( bikerId, token ) {
+    return this._modelService.activateAccount( bikerId, token );
+  }
+
+  async changeBikerCreditCard( bikerId, creditCardData ) {
     // Validates the data
-    const validationResult = this.#creditCardService.validate( data );
+    const validationResult = this.#creditCardService.validate( creditCardData );
     if ( validationResult.isFailure ) return validationResult;
 
     // Tries to finalize the process with a transaction
     try {
+      const failures = [];
+      
       await this.#transaction.start();
 
       // Finds or creates the credit card
-      const creditCardResult = await this.#creditCardService.findOrCreate( data );
-      if ( creditCardResult.isFailure ) {
-        await this.#transaction.rollback();
-        return creditCardResult;
-      }
+      const creditCardResult = await this.#creditCardService.findOrCreate(
+        {
+          creditCardNumber: creditCardData.creditCardNumber, 
+          holderName: creditCardData.holderName, 
+          expirationDate: creditCardData.expirationDate
+        }
+      );
+      if ( creditCardResult.isFailure ) failures.push( creditCardResult );
 
-      const creditCard = creditCardResult.value;
+      const creditCard = creditCardResult.value ?? {};
 
       // Updates the biker
       const bikerResult = await this.updateRecordById(
         bikerId, { creditCardId: creditCard.id }
       );
-      if ( bikerResult.isFailure ) {
-        await this.#transaction.rollback();
-        return bikerResult;
-      }
+      if ( bikerResult.isFailure ) failures.push( bikerResult );
 
-      const biker = bikerResult.value;
-      biker.creditCard = creditCard;
+      // Checks for failures
+      if ( failures.length > 0 ) {
+        await this.#transaction.rollback();
+        return Result.mergeFailures( failures );
+      }
 
       await this.#transaction.commit();
 
-      return Result.success( biker );
+      return Result.success();
     } catch ( error ) {
-      await this.#transaction.rollback();
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      throw error;
     }
+  }
+
+  login( data ) {
+    return this._modelService.login( data );
   }
 }

@@ -12,23 +12,36 @@ export default class BikerController extends BaseController {
       201
     );
 
-  login = ( req, res ) =>
+  confirmEmail = ( req, res ) =>
     this._handleOperation(
-      () => this._modelFacade.login( req.body ), 
+      () => this._modelFacade.confirmEmail(
+        req.params.id, req.query.token
+      ), 
       res, 
-      200
+      204
     );
 
   updateRecord = ( req, res ) =>
     this._handleOperation(
-      () => this._modelFacade.updateBiker( req.params.id, req.body ), 
+      () => this._modelFacade.updateBiker(
+        req.params.id, req.body.biker, req.body.passport
+      ), 
       res, 
       200
     );
 
   changeCreditCard = ( req, res ) =>
     this._handleOperation(
-      () => this._modelFacade.changeBikerCreditCard( req.params.id, req.body ), 
+      () => this._modelFacade.changeBikerCreditCard(
+        req.params.id, req.body
+      ), 
+      res, 
+      204
+    );
+
+  login = ( req, res ) =>
+    this._handleOperation(
+      () => this._modelFacade.login( req.body ), 
       res, 
       200
     );

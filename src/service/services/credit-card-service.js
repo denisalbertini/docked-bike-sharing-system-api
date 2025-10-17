@@ -1,6 +1,6 @@
-import BaseService from '../base-service.js';
-import Result from '../../model/shared/result.js';
 import { VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseService from '../base-service.js';
 
 export default class CreditCardService extends BaseService {
   constructor( creditCardRepository ) { super( creditCardRepository ); }
@@ -22,26 +22,33 @@ export default class CreditCardService extends BaseService {
   }
 
   #validateNumber( creditCardNumber ) {
-    const cleanNumber = creditCardNumber
-      .toString()
-      .replace( /\s/g, '' )
-      .split( '' )
-      .reverse()
-      .join( '' );
+    // Remove non-digit characters
+    const digits = creditCardNumber.replace( /\D/g, '' );
+    
+    // Check if the input contains at least one digit
+    if ( digits.length === 0 ) return false;
     
     let sum = 0;
-    
-    for ( let i = 0; i < cleanNumber.length; i++ ) {
-      let digit = parseInt( cleanNumber[ i ], 10 );
-      
-      if ( i % 2 === 1 ) {
-        digit *= 2;
-        if ( digit > 9 ) digit -= 9;
+    let isEvenPosition = false;
+
+    // Process digits from right to left
+    for ( let i = digits.length - 1; i >= 0; i-- ) {
+      let digit = parseInt( digits[ i ], 10 );
+
+      // Double every second digit from the right
+      if ( isEvenPosition ) {
+          digit *= 2;
+          // Subtract 9 if result is greater than 9
+          if ( digit > 9 ) {
+              digit -= 9;
+          }
       }
-      
+
       sum += digit;
+      isEvenPosition = !isEvenPosition;
     }
-    
+
+    // Valid if sum is divisible by 10
     return sum % 10 === 0;
   }
 

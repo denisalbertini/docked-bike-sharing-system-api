@@ -9,4 +9,12 @@ export default class PassportRepository extends BaseRepository {
       () => this._model.findOne( { where: { bikerId: id } } )
     );
   }
+
+  updateByBikerId( bikerId, data ) {
+    return this._handleOperation(
+      () => this._model.update(
+        data, { where: { bikerId }, returning: true }
+      )
+    );
+  }
 }
