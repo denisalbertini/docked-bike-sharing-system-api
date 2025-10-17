@@ -1,12 +1,12 @@
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
 import Result from '../model/shared/result.js';
-import { ValidationError } from 'sequelize';
 import {
   VALIDATION_ERROR, 
   UNIQUE_CONSTRAINT_ERROR, 
   FOREIGN_KEY_CONSTRAINT_ERROR, 
   INTERNAL_SERVER_ERROR
 } from '../model/shared/enum/error-types.js';
+import { UniqueConstraintError } from 'sequelize';
 
 export default class BaseRepository {
   _model;
@@ -30,19 +30,23 @@ export default class BaseRepository {
         return INTERNAL_SERVER_ERROR;
     }
   }
+
+  #getErrors( error ) {
+    switch ( error.constructor.name ) {
+      case 'ValidationError': 
+        return error.errors.map( item => item.message );
+      default:
+        return [ error.message ];
+    }
+  }
   
   async _handleOperation( operation ) {
     try {
       return Result.success( await operation() );
     } catch ( error ) {
-      const errors =
-        error instanceof ValidationError ? 
-        error.errors.map( item => item.message ) : 
-        [ error.message ];
-
-      const errorType = this.#getErrorType( error );
-      
-      return Result.failure( errorType, ...errors );
+      return Result.failure(
+        this.#getErrorType( error ), ...this.#getErrors( error )
+      );
     }
   }
 
