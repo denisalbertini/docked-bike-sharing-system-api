@@ -6,7 +6,7 @@ Table biker {
   email varchar(255) [not null, unique]
   password char(60) [not null]
   foreigner boolean [not null]
-  status biker_status [not null]
+  status biker_status [not null, default: 'PENDING']
   credit_card_id uuid [not null]
 }
 
@@ -17,14 +17,14 @@ enum biker_status {
 
 Table credit_card {
   id uuid [pk]
-  number char(19) [not null]
+  creditCardNumber char(19) [not null]
   holder_name varchar(255) [not null]
-  expiration_date date [not null]
+  expiration_date char(7) [not null]
 }
 
 Table passport {
   id uuid [pk]
-  number varchar(9) [not null, unique]
+  passportNumber varchar(9) [not null, unique]
   expiration_date date [not null]
   country_code char(3) [not null]
   biker_id uuid
