@@ -3,22 +3,22 @@ import Result from '../../model/shared/result.js';
 import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class EmailService {
-  async #createTransporter() {
-    const testAccount = await nodemailer.createTestAccount();
-
+  #createTransporter() {
     return nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
-      secure: false, // true for port 465, false for other ports
-      auth: { user: testAccount.user, pass: testAccount.pass },
+      auth: {
+        user: process.env.ETHERIAL_EMAIL_USER,
+        pass: process.env.ETHERIAL_EMAIL_PASS,
+      },
     });
   }
 
   async sendAccountConfirmation(bikerId, bikerEmail, token) {
     try {
-      const transporter = await this.#createTransporter();
+      const transporter = this.#createTransporter();
 
-      const confirmationUrl = `http://localhost:3000/api/biker/${bikerId}/email-confirmation?token=${token}`;
+      const confirmationUrl = `http://localhost:3000/api/bikers/${bikerId}/email-confirmation?token=${token}`;
 
       const mailOptions = {
         from: '"Bike Sharing System" <noreply@bssapp.com>',
@@ -53,7 +53,7 @@ export default class EmailService {
 
   async sendRentalConfirmation(bikerEmail, rentalInfo, isReturn = false) {
     try {
-      const transporter = await createTransporter();
+      const transporter = this.#createTransporter();
 
       const mailOptions = {
         from: '"Bike Sharing System" <noreply@bssapp.com>',
