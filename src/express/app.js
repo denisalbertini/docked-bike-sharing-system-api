@@ -8,7 +8,7 @@ app.use( '/api', router );
 app.use(
   ( err, _req, res, _next ) => {
     console.error( err );
-    res.sendStatus( 500 );
+    res.status( 500 ).send( { message: 'Refer to console.' } );
   }
 );
 
