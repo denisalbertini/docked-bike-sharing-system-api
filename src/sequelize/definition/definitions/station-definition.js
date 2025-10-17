@@ -7,7 +7,7 @@ function defineModel( sequelize ) {
   Station.init(
     {
       ...defaultAttributes, 
-      serialNumber: {
+      stationSerial: {
         type: DataTypes.CHAR( 6 ), 
         allowNull: false, 
         unique: true, 

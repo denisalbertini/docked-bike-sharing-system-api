@@ -11,7 +11,7 @@ function defineModel( sequelize ) {
   Bike.init(
     {
       ...defaultAttributes, 
-      serialNumber: {
+      bikeSerial: {
         type: DataTypes.CHAR( 6 ), 
         allowNull: false, 
         unique: true, 

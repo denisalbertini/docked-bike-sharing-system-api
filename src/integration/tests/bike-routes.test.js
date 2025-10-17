@@ -111,7 +111,7 @@ describe('/api/bikes', () => {
           {
             description: 'Invalid data format',
             reqBody: {
-              serialNumber: 'abc',
+              bikeSerial: 'abc',
               brand: 'a'.repeat(101),
               model: '',
               manufactureYear: 'abc',
@@ -120,7 +120,7 @@ describe('/api/bikes', () => {
             expectedResBody: {
               errorType: VALIDATION_ERROR,
               errors: [
-                'Validation is on serialNumber failed',
+                'Validation is on bikeSerial failed',
                 'Validation len on brand failed',
                 'Validation len on model failed',
                 'Validation is on manufactureYear failed',
@@ -131,7 +131,7 @@ describe('/api/bikes', () => {
           {
             description: 'Null values',
             reqBody: {
-              serialNumber: null,
+              bikeSerial: null,
               brand: null,
               model: null,
               manufactureYear: null,
@@ -140,7 +140,7 @@ describe('/api/bikes', () => {
             expectedResBody: {
               errorType: VALIDATION_ERROR,
               errors: [
-                'Bike.serialNumber cannot be null',
+                'Bike.bikeSerial cannot be null',
                 'Bike.brand cannot be null',
                 'Bike.model cannot be null',
                 'Bike.manufactureYear cannot be null',
@@ -166,7 +166,7 @@ describe('/api/bikes', () => {
 
       describe('200', () => {
         const validData = {
-          serialNumber: 'BI-999',
+          bikeSerial: 'BI-999',
           brand: 'abc',
           model: 'abc',
           manufactureYear: 2000,
@@ -261,7 +261,7 @@ describe('/api/bikes', () => {
           {
             description: 'Existing serial number',
             reqBody: {
-              serialNumber: 'BI-002',
+              bikeSerial: 'BI-002',
               brand: 'abcd',
               model: 'abcd',
               manufactureYear: 2001,
@@ -311,7 +311,7 @@ describe('/api/bikes', () => {
         beforeAll(() => Bike.create(bikeToUpdate));
 
         const validData = {
-          serialNumber: 'BI-999',
+          bikeSerial: 'BI-999',
           brand: 'abcd',
           model: 'abcd',
           manufactureYear: 2001,
@@ -457,8 +457,8 @@ describe('/api/bikes', () => {
           {
             description: 'Preconditions failed',
             reqBody: {
-              bikeSerialNumber: bike.serialNumber,
-              dockSerialNumber: dock.serialNumber,
+              bikeSerialNumber: bike.bikeSerial,
+              dockSerialNumber: dock.dockSerial,
             },
             expectedResBody: {
               errorType: PRECONDITION_FAILED_ERROR,
@@ -484,7 +484,7 @@ describe('/api/bikes', () => {
         );
       });
 
-      describe('400', () => {
+      describe('404', () => {
         const testCases = [
           {
             description: 'Invalid values',
@@ -675,7 +675,7 @@ describe('/api/bikes', () => {
         );
       });
 
-      describe('400', () => {
+      describe('404', () => {
         const testCases = [
           {
             description: 'Invalid values',

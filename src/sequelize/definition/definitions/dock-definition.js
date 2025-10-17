@@ -14,7 +14,7 @@ function defineModel( sequelize ) {
   Dock.init(
     {
       ...defaultAttributes, 
-      serialNumber: {
+      dockSerial: {
         type: DataTypes.CHAR( 6 ), 
         allowNull: false, 
         unique: true, 

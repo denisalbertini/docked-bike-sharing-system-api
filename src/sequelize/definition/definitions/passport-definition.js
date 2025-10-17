@@ -7,7 +7,7 @@ function defineModel( sequelize ) {
   Passport.init(
     {
       ...defaultAttributes, 
-      number: {
+      passportNumber: {
         type: DataTypes.STRING( 9 ), 
         allowNull: false, 
         unique: true, 
