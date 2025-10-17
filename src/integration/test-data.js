@@ -188,3 +188,27 @@ export const passportData = [
     bikerId: bikerData[2].id,
   },
 ];
+
+export const chargeData = [
+  {
+    id: '6569a9f9-ff2b-434e-9b12-55f985446826',
+    requestedAt: '2024-01-14T20:30:00-03:00',
+    completedAt: '2024-01-14T20:30:00-03:00',
+    amount: 10.50,
+    bikerId: bikerData[0].id,
+  },
+  {
+    id: 'b9071391-bb20-44e9-be2f-af9dba25863c',
+    requestedAt: '2024-01-15T11:30:00-03:00',
+    completedAt: null,
+    amount: 10.50,
+    bikerId: bikerData[0].id,
+  },
+  {
+    id: 'a797203e-3c50-491a-aa2a-64396b175e6c',
+    requestedAt: '2024-01-15T13:30:00-03:00',
+    completedAt: null,
+    amount: 10.50,
+    bikerId: bikerData[0].id,
+  },
+];

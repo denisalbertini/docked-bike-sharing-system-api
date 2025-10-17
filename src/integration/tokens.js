@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { ACCESS } from '../model/shared/enum/auth-purpose.js';
+import { ACCESS, CHARGE_FEES } from '../model/shared/enum/auth-purpose.js';
 import employeeRole from '../model/shared/enum/employee-role.js';
 
 export const operatorToken = jwt.sign(
@@ -16,3 +16,8 @@ export const bikerToken = jwt.sign({ purpose: ACCESS }, process.env.JWT_SECRET);
 
 export const emailConfirmationToken = (id, purpose) =>
   jwt.sign({ id, purpose }, process.env.JWT_SECRET);
+
+export const schedulerToken = jwt.sign(
+  { purpose: CHARGE_FEES },
+  process.env.JWT_SECRET
+);

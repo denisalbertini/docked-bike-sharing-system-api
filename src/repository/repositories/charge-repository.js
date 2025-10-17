@@ -1,6 +1,6 @@
-import BaseRepository from '../base-repository.js';
-import Charge from '../../model/models/charge.js';
 import { Op } from 'sequelize';
+import Charge from '../../model/models/charge.js';
+import BaseRepository from '../base-repository.js';
 
 export default class ChargeRepository extends BaseRepository {
   constructor() { super( Charge ); }
@@ -10,7 +10,7 @@ export default class ChargeRepository extends BaseRepository {
       () => this._model.findAll(
         {
           where: {
-            requestedAt: { [ Op.lte ]: requestPeriod }, 
+            requestedAt: { [ Op.gte ]: requestPeriod }, 
             completedAt: { [ Op.is ]: null }
           }
         }

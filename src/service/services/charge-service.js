@@ -1,9 +1,13 @@
 import BaseService from '../base-service.js';
-import Result from '../../model/shared/result.js';
-import { NOT_FOUND_ERROR } from '../../model/shared/enum/error-types.js';
 
 export default class ChargeService extends BaseService {
   constructor( chargeRepository ) { super( chargeRepository ); }
+
+  findIncomplete() {
+    return this._modelRepository.findAllByRequestPeriodAndNullCompletionTime(
+        new Date( Date.now() - 12 * 60 * 60 * 1000 ) // 12 hours ago
+      );
+  }
   
   complete( charge ) {
     return this.updateById( charge.id, { completedAt: Date.now() } );
@@ -16,17 +20,5 @@ export default class ChargeService extends BaseService {
       return Math.ceil( ( elapsedHours - 2 ) / 0.5 ) * 5;
 
     return 0;
-  }
-
-  async findIncomplete() {
-    const findResult =
-      await this._modelRepository.findAllByRequestPeriodAndNullCompletionTime(
-        new Date( Date.now() - 12 * 60 * 60 * 1000 ) // 12 hours ago
-      );
-    
-    if ( findResult.isSuccess && findResult.value.length === 0 )
-      return Result.failure( NOT_FOUND_ERROR, 'No incomplete charges left.' );
-
-    return findResult;
   }
 }

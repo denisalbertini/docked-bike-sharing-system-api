@@ -1,3 +1,4 @@
 export const 
 EMAIL_VERIFICATION = 'email_verification', 
-ACCESS = 'access';
+ACCESS = 'access', 
+CHARGE_FEES = 'charge_fees';
