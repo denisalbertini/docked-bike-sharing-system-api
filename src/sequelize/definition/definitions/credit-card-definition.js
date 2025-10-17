@@ -7,12 +7,12 @@ function defineModel( sequelize ) {
   CreditCard.init(
     {
       ...defaultAttributes, 
-      number: {
+      creditCardNumber: {
         type: DataTypes.CHAR( 19 ), 
         allowNull: false, 
         unique: true, 
         validate: {
-          is: /\b\d{19}\b/
+          is: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})\b/
         }
       }, 
       holderName: {
@@ -23,10 +23,9 @@ function defineModel( sequelize ) {
         }
       }, 
       expirationDate: {
-        type: DataTypes.DATEONLY, 
-        allowNull: false, 
+        type: DataTypes.STRING( 7 ),
         validate: {
-          isDate: true
+          is: /^(0[1-9]|1[0-2])\/\d{4}$/
         }
       }
     }, 
