@@ -1,7 +1,7 @@
-import BaseFacade from '../base-facade.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import Result from '../../model/shared/result.js';
 import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class DockRemovalFacade extends BaseFacade {
   #dockService;
@@ -17,15 +17,25 @@ export default class DockRemovalFacade extends BaseFacade {
     this.#transaction = transaction;
   }
 
-  async createDockRemoval( employeeId, dockSerialNumber, action ) {
+  async createDockRemoval( { employeeId, dockSerial, action } ) {
+    const failures = [];
+    
     // Checks the dock's status
     const dockOccupiedResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, 
-      ...dockStatus.filter( status => status !== dockStatus.OCCUPIED )
+      dockSerial, 
+      ...Object.values( dockStatus ).filter( s => s !== dockStatus.OCCUPIED )
     );
-    if ( dockOccupiedResult.isFailure ) return dockOccupiedResult;
+    if ( dockOccupiedResult.isFailure ) failures.push( dockOccupiedResult );
+
+    // Gets the new dock status
+    const getDockStatusResult = this.#dockService.getStatusByAction( action );
+    if ( getDockStatusResult.isFailure ) failures.push( getDockStatusResult );
+
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
 
     const dock = dockOccupiedResult.value;
+    const newDockStatus = getDockStatusResult.value;
 
     // Tries to finalize the process with a transaction
     try {
@@ -35,37 +45,38 @@ export default class DockRemovalFacade extends BaseFacade {
       const createDockRemoval = await this.createRecord(
         { employeeId, dockId: dock.id }
       );
-      if ( createDockRemoval.isFailure ) {
-        await this.#transaction.rollback();
-        return createDockRemoval;
-      }
-
-      const dockRemoval = createDockRemoval.value;
-
-      // Gets the new dock status
-      const getDockStatusResult = this.#dockService.getStatusByAction( action );
-      if ( getDockStatusResult.isFailure ) {
-        await this.#transaction.rollback();
-        return getDockStatusResult;
-      }
-
-      const newDockStatus = getDockStatusResult.value;
+      if ( createDockRemoval.isFailure ) failures.push( createDockRemoval );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
         dock.id, newDockStatus
       );
-      if ( updateDockResult.isFailure ) {
+      if ( updateDockResult.isFailure ) failures.push( updateDockResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return updateDockResult;
+        return Result.mergeFailures( failures );
+      }
+
+      const dockRemoval = createDockRemoval.value;
+
+      const successData = {
+        requestedAt: dockRemoval.requestedAt.toString(), 
+        dockId: dockRemoval.dockId, 
+        employeeId: dockRemoval.employeeId
       }
 
       await this.#transaction.commit();
 
-      return Result.success( dockRemoval );
+      return Result.success( successData );
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+            
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
   }
 }

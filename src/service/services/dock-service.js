@@ -1,10 +1,11 @@
-import BaseService from '../base-service.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-  NOT_FOUND_ERROR, 
-  PRECONDITION_FAILED_ERROR
+  NOT_FOUND_ERROR,
+  PRECONDITION_FAILED_ERROR,
+  VALIDATION_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
-import dockStatus from '../../model/shared/enum/dock-status.js';
+import BaseService from '../base-service.js';
 
 export default class DockService extends BaseService {
   constructor( dockRepository ) { super( dockRepository ); }
@@ -20,16 +21,27 @@ export default class DockService extends BaseService {
     return findResult;
   }
 
-  async checkStatusBySerialNumber( serialNumber, status ) {
+  async checkStatusBySerialNumber( serialNumber, ...status ) {
     const findResult = await this.findBySerialNumber( serialNumber );
 
-    if ( findResult.isSuccess && findResult.value.status !== status )
+    if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
         PRECONDITION_FAILED_ERROR, 
-        `Dock is not ${ status.replace( '_', ' ' ) }.`
+        `Dock is not ${ status.join( ', ' ) }.`
       );
 
     return findResult;
+  }
+
+  getStatusByAction( action ) {
+    switch ( action ) {
+      case 'REPAIR':
+        return Result.success( dockStatus.UNDER_MAINTENANCE );
+      case 'RETIRE':
+        return Result.success( dockStatus.DECOMMISSIONED );
+      default:
+        return Result.failure( VALIDATION_ERROR, 'Action not supported.' );
+    }
   }
 
   updateStatusById( id, status ) {
@@ -45,20 +57,6 @@ export default class DockService extends BaseService {
       );
 
     return findResult;
-  }
-
-  getStatusByAction( action ) {
-    switch ( action ) {
-      case 'REPAIR':
-        return Result.success( dockStatus.UNDER_MAINTENANCE );
-      case 'RETIRE':
-        return Result.success( dockStatus.DECOMMISSIONED );
-      default:
-        return Result.failure(
-          VALIDATION_ERROR, 
-          'Action not supported.'
-        );
-    }
   }
 
   async findAllByStationId( stationId ) {

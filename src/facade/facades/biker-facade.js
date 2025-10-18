@@ -118,6 +118,8 @@ export default class BikerFacade extends BaseFacade {
 
       return Result.success( successData );
     } catch ( error ) {
+      await this.#transaction.rollback();
+      
       if ( error instanceof BaseError )
         return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 
@@ -179,6 +181,8 @@ export default class BikerFacade extends BaseFacade {
 
       return Result.success( successData );
     } catch ( error ) {
+      await this.#transaction.rollback();
+      
       if ( error instanceof BaseError )
         return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 
@@ -229,6 +233,8 @@ export default class BikerFacade extends BaseFacade {
 
       return Result.success();
     } catch ( error ) {
+      await this.#transaction.rollback();
+      
       if ( error instanceof BaseError )
         return Result.failure( INTERNAL_SERVER_ERROR, error.message );
 

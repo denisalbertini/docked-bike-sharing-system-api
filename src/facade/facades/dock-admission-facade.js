@@ -1,7 +1,8 @@
-import BaseFacade from '../base-facade.js';
+import { BaseError } from 'sequelize';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import Result from '../../model/shared/result.js';
 import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class DockAdmissionFacade extends BaseFacade {
   #dockService;
@@ -20,21 +21,25 @@ export default class DockAdmissionFacade extends BaseFacade {
     this.#transaction = transaction;
   }
 
-  async createDockAdmission( employeeId, dockSerialNumber, stationSerialNumber ) {
+  async createDockAdmission( { employeeId, dockSerial, stationSerial } ) {
+    const failures = [];
+    
     // Checks the dock's status
     const dockStatusResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, dockStatus.AVAILABLE, dockStatus.UNDER_MAINTENANCE
+      dockSerial, dockStatus.OPERATIONAL, dockStatus.UNDER_MAINTENANCE
     );
-    if ( dockStatusResult.isFailure ) return dockStatusResult;
-
-    const dock = dockStatusResult.value;
+    if ( dockStatusResult.isFailure ) failures.push( dockStatusResult );
 
     // Finds the station
     const findStationResult = await this.#stationService.findBySerialNumber(
-      stationSerialNumber
+      stationSerial
     );
-    if ( findStationResult.isFailure ) return findStationResult;
+    if ( findStationResult.isFailure ) failures.push( findStationResult );
 
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
+
+    const dock = dockStatusResult.value;
     const station = findStationResult.value;
 
     // Tries to finalize the process with a transaction
@@ -45,28 +50,40 @@ export default class DockAdmissionFacade extends BaseFacade {
       const createAdmissionResult = await this.createRecord(
         { employeeId, dockId: dock.id }
       );
-      if ( createAdmissionResult.isFailure ) {
-        await this.#transaction.rollback();
-        return createAdmissionResult;
-      }
-
-      const dockAdmission = createAdmissionResult.value;
+      if ( createAdmissionResult.isFailure )
+        failures.push( createAdmissionResult );
 
       // Updates the dock
       const dockUpdateResult = await this.#dockService.updateById(
         dock.id, { status: dockStatus.AVAILABLE, stationId: station.id }
       );
-      if ( dockUpdateResult.isFailure ) {
+      if ( dockUpdateResult.isFailure )
+        failures.push( dockUpdateResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return dockUpdateResult;
+        return Result.mergeFailures( failures );
+      }
+
+      const dockAdmission = createAdmissionResult.value;
+
+      const successData = {
+        requestedAt: dockAdmission.requestedAt.toString(), 
+        dockId: dockAdmission.dockId, 
+        employeeId: dockAdmission.employeeId
       }
 
       await this.#transaction.commit();
 
-      return Result.success( dockAdmission );
+      return Result.success( successData );
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+            
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
   }
 }

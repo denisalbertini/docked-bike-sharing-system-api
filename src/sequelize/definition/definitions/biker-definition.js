@@ -8,7 +8,7 @@ import Cpf from "../../../model/shared/cpf.js";
 import status from "../../../model/shared/enum/biker-status.js";
 import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Biker.init(
     {
       ...defaultAttributes, 
@@ -81,7 +81,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Biker.hasOne( Passport, { foreignKey: 'bikerId' } );
   Biker.hasMany(
     Charge, 
@@ -96,6 +96,3 @@ function defineAssociations() {
     { foreignKey: { name: 'creditCardId', allowNull: false } }
   );
 }
-
-export { defineAssociations, defineModel };
-

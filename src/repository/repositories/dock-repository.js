@@ -1,12 +1,12 @@
-import BaseRepository from "../base-repository.js";
 import Dock from '../../model/models/dock.js';
+import BaseRepository from "../base-repository.js";
 
 export default class DockRepository extends BaseRepository {
   constructor() { super( Dock ); }
 
-  findBySerialNumber( serialNumber ) {
+  findBySerialNumber( dockSerial ) {
     return this._handleOperation(
-      () => this._model.findOne( { where: { serialNumber } } )
+      () => this._model.findOne( { where: { dockSerial } } )
     );
   }
 

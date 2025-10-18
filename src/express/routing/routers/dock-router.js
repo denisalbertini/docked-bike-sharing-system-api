@@ -1,11 +1,11 @@
 import express from 'express';
 import {
-  employeeAuthMiddleware, 
+  employeeAuthMiddleware,
   operatorAuthMiddleware
 } from "../auth-middleware.js";
 import {
-  dockController, 
-  dockAdmissionController, 
+  dockAdmissionController,
+  dockController,
   dockRemovalController
 } from '../controller-instances.js';
 
@@ -16,7 +16,7 @@ const router = express.Router();
 router.use( [ '/', '/:id' ], employeeAuthMiddleware );
 router.use( [ '/admission', '/removal' ], operatorAuthMiddleware );
 
-// Routes
+// Protected routes
 router.route( '/' )
   .get( dockController.listRecords )
   .post( dockController.createRecord );

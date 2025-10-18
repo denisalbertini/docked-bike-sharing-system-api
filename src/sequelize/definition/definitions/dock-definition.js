@@ -1,16 +1,15 @@
-import { DataTypes } from "sequelize";
-import ForeignKeyConstraintError from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Dock from "../../../model/models/dock.js";
-import status from '../../../model/shared/enum/dock-status.js';
+import ForeignKeyConstraintError, { DataTypes } from "sequelize";
 import BikeAdmission from "../../../model/models/bike-admission.js";
+import Bike from "../../../model/models/bike.js";
 import DockAdmission from "../../../model/models/dock-admission.js";
 import DockRemoval from "../../../model/models/dock-removal.js";
+import Dock from "../../../model/models/dock.js";
 import Rental from "../../../model/models/rental.js";
-import Bike from "../../../model/models/bike.js";
 import Station from "../../../model/models/station.js";
+import status from '../../../model/shared/enum/dock-status.js';
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Dock.init(
     {
       ...defaultAttributes, 
@@ -51,6 +50,10 @@ function defineModel( sequelize ) {
       paranoid: true, 
       ...defaultOptions( Dock.name ), 
       hooks: {
+        beforeCreate: ( dock, _options ) => {
+          if ( dock.status !== status.OPERATIONAL )
+            dock.status = status.OPERATIONAL;
+        }, 
         beforeDestroy: ( dock, _options ) => {
           if ( dock.bikeId !== null )
             throw new ForeignKeyConstraintError( 'Dock has a bike attached.' );
@@ -60,7 +63,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Dock.hasMany(
     BikeAdmission, 
     { foreignKey: { name: 'dockId', allowNull: false } }
@@ -90,5 +93,3 @@ function defineAssociations() {
   Dock.belongsTo( Bike, { foreignKey: 'bikeId' } );
   Dock.belongsTo( Station, { foreignKey: 'stationId' } );
 }
-
-export { defineModel, defineAssociations };

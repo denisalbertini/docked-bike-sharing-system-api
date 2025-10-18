@@ -46,7 +46,7 @@ enum employee_role {
 
 Table bike {
   id uuid [pk]
-  serial_number char(6) [not null, unique]
+  bike_serial char(6) [not null, unique]
   brand varchar(100) [not null]
   model varchar(100) [not null]
   manufacture_year integer [not null]
@@ -78,7 +78,7 @@ Table bike_removal {
 
 Table dock {
   id uuid [pk]
-  serial_number char(6) [not null, unique]
+  dock_serial char(6) [not null, unique]
   model varchar(100) [not null]
   manufacture_date date [not null]
   status dock_status [not null, default: 'OPERATIONAL']
@@ -111,7 +111,7 @@ Table dock_removal {
 
 Table station {
   id uuid [pk]
-  serial_number char(6) [not null, unique]
+  station_serial char(6) [not null, unique]
   name varchar(255) [not null]
   location varchar(255) [not null]
 }

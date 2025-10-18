@@ -1,11 +1,11 @@
-import BaseFacade from '../base-facade.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import Result from '../../model/shared/result.js';
 import {
-  INTERNAL_SERVER_ERROR, 
+  INTERNAL_SERVER_ERROR,
   VALIDATION_ERROR
 } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class BikeRemovalFacade extends BaseFacade {
   #bikeService;
