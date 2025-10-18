@@ -1,10 +1,10 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
+import Biker from "../../../model/models/biker.js";
 import Charge from "../../../model/models/charge.js";
 import Rental from "../../../model/models/rental.js";
-import Biker from "../../../model/models/biker.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Charge.init(
     {
       ...defaultAttributes, 
@@ -29,7 +29,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Charge.hasMany(
     Rental, 
     {
@@ -49,5 +49,3 @@ function defineAssociations() {
     { foreignKey: { name: 'bikerId', allowNull: false } }
   );
 }
-
-export { defineModel, defineAssociations };

@@ -5,7 +5,11 @@ import app from '../../express/app.js';
 import Biker from '../../model/models/biker';
 import Charge from '../../model/models/charge';
 import CreditCard from '../../model/models/credit-card';
-import { bikerData, chargeData, creditCardData } from '../test-data';
+import {
+  createBiker,
+  createCharge,
+  createCreditCard,
+} from '../data-factory.js';
 import { schedulerToken } from '../tokens';
 import truncateAllTables from '../truncate-tables.js';
 
@@ -29,55 +33,79 @@ describe('/late-fees', () => {
     const method = 'post';
 
     describe('200', () => {
-      const creditCard = creditCardData[0];
-      const biker = bikerData[0];
-      const moreThan12HoursAgoCharge = chargeData[0];
-      const lessThan12HoursAgoCharges = chargeData.slice(1, 3);
+      const creditCard = createCreditCard();
+      const biker = createBiker(false, creditCard.id, { cpf: '23847541064' });
+
+      const moreThan12HoursAgoCharge = createCharge(biker.id, {
+        requestedAt: '2024-01-14T20:30:00-03:00',
+      });
+
+      const lessThan12HoursAgoCharge1 = createCharge(biker.id, {
+        requestedAt: '2024-01-15T11:30:00-03:00',
+      });
+      const lessThan12HoursAgoCharge2 = createCharge(biker.id, {
+        requestedAt: '2024-01-15T13:30:00-03:00',
+      });
 
       beforeAll(async () => {
         await truncateAllTables();
         await CreditCard.create(creditCard);
         await Biker.bulkCreate([biker]);
-        await Charge.bulkCreate(chargeData.slice(0, 3));
+        await Charge.bulkCreate([
+          moreThan12HoursAgoCharge,
+          lessThan12HoursAgoCharge1,
+          lessThan12HoursAgoCharge2,
+        ]);
       });
 
-      const testCases = [{ description: 'Success' }];
-
-      test.each(testCases)('$description', async () => {
-        const res = await request(app)[method](path).set(headers);
-
-        expect(res.status).toBe(204);
-        expect(res.body).toStrictEqual({});
-
-        const unchangedChargeRecord = await Charge.findOne({
-          where: { id: moreThan12HoursAgoCharge.id },
-        });
-        const completedCharges = await Charge.findAll({
-          where: {
-            id: { [Op.in]: lessThan12HoursAgoCharges.map(c => c.id) },
-          },
-        });
-
-        expect(unchangedChargeRecord).toStrictEqual(
-          expect.objectContaining({
-            id: moreThan12HoursAgoCharge.id,
+      const testCases = [
+        {
+          description: 'Success',
+          expectedUnchangedRecord: {
+            ...moreThan12HoursAgoCharge,
             requestedAt: new Date(moreThan12HoursAgoCharge.requestedAt),
-            completedAt: new Date(moreThan12HoursAgoCharge.completedAt),
-          })
-        );
+            completedAt: null,
+            amount: moreThan12HoursAgoCharge.amount.toFixed(2),
+          },
+          expectedCompleted: [
+            {
+              ...lessThan12HoursAgoCharge1,
+              requestedAt: new Date(lessThan12HoursAgoCharge1.requestedAt),
+              completedAt: fakeDate,
+              amount: moreThan12HoursAgoCharge.amount.toFixed(2),
+            },
+            {
+              ...lessThan12HoursAgoCharge2,
+              requestedAt: new Date(lessThan12HoursAgoCharge2.requestedAt),
+              completedAt: fakeDate,
+              amount: moreThan12HoursAgoCharge.amount.toFixed(2),
+            },
+          ],
+        },
+      ];
 
-        expect(completedCharges).toStrictEqual(
-          expect.arrayContaining(
-            lessThan12HoursAgoCharges.map(c =>
-              expect.objectContaining({
-                id: c.id,
-                requestedAt: new Date(c.requestedAt),
-                completedAt: fakeDate,
-              })
-            )
-          )
-        );
-      });
+      test.each(testCases)(
+        '$description',
+        async ({ expectedUnchangedRecord, expectedCompleted }) => {
+          const res = await request(app)[method](path).set(headers);
+
+          const unchangedChargeRecord = await Charge.findOne({
+            where: { id: expectedUnchangedRecord.id },
+          });
+          const completedCharges = await Charge.findAll({
+            where: { id: { [Op.in]: expectedCompleted.map(c => c.id) } },
+          });
+
+          expect(res.status).toBe(204);
+          expect(res.body).toStrictEqual({});
+          expect(unchangedChargeRecord.dataValues).toStrictEqual(
+            expectedUnchangedRecord
+          );
+          expect(completedCharges.map(c => c.dataValues)).toStrictEqual(
+            expectedCompleted
+          );
+        }
+      );
     });
   });
 });
