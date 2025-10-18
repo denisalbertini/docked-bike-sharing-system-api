@@ -8,16 +8,14 @@ const router = express.Router();
 // Auth middlewares
 router.use( [ '/', '/:id' ], adminAuthMiddleware );
 
-// Routes
+// Protected routes
 router.route( '/' )
-  .get( employeeController.listRecords );
+  .get( employeeController.listRecords )
+  .post( employeeController.createRecord );
 
 router.route( '/:id' )
   .get( employeeController.getRecord )
   .put( employeeController.updateRecord )
   .delete( employeeController.deleteRecord );
-
-router.route( '/login' )
-  .post( employeeController.login );
 
 export default router;

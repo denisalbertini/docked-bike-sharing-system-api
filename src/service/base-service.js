@@ -1,6 +1,6 @@
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
-import Result from '../model/shared/result.js';
 import { NOT_FOUND_ERROR } from '../model/shared/enum/error-types.js';
+import Result from '../model/shared/result.js';
 
 export default class BaseService {
   _modelRepository;
@@ -38,8 +38,8 @@ export default class BaseService {
     return result;
   }
 
-  async create( data ) {
-    return await this._modelRepository.create( data );
+  create( data ) {
+    return this._modelRepository.create( data );
   }
 
   async updateById( id, data ) {

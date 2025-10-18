@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Employee from "../../../model/models/employee.js";
-import Cpf from "../../../model/shared/cpf.js";
-import roles from "../../../model/shared/enum/employee-role.js";
 import BikeRemoval from "../../../model/models/bike-removal.js";
 import DockAdmission from "../../../model/models/dock-admission.js";
 import DockRemoval from "../../../model/models/dock-removal.js";
+import Employee from "../../../model/models/employee.js";
+import Cpf from "../../../model/shared/cpf.js";
+import roles from "../../../model/shared/enum/employee-role.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Employee.init(
     {
       ...defaultAttributes, 
@@ -34,7 +34,7 @@ function defineModel( sequelize ) {
         type: DataTypes.STRING, 
         allowNull: false, 
         validate: {
-          is: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b/
+          is: /\b([A-Z][a-z]+(?:[-'][A-Z][a-z]+)*\s)+[A-Z][a-z]+(?:[-'][A-Z][a-z]+)*\b/
         }
       }, 
       birthDate: {
@@ -61,7 +61,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Employee.hasMany(
     BikeRemoval, 
     { foreignKey: { name: 'employeeId', allowNull: false } }
@@ -75,5 +75,3 @@ function defineAssociations() {
     { foreignKey: { name: 'employeeId', allowNull: false } }
   );
 }
-
-export { defineModel, defineAssociations };
