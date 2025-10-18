@@ -26,7 +26,7 @@ export default class DockRepository extends BaseRepository {
 
   findAllByStationId( stationId ) {
     return this._handleOperation(
-      () => this._model.findAll( { where: stationId } )
+      () => this._model.findAll( { where: { stationId } } )
     );
   }
 }

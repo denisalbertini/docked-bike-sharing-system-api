@@ -8,13 +8,12 @@ const router = express.Router();
 // Auth middlewares
 router.use( [ '/', '/:id' ], employeeAuthMiddleware );
 
-// Routes
+// Protected routes
 router.route( '/' )
   .get( stationController.listRecords )
   .post( stationController.createRecord );
 
 router.route( '/:id' )
-  .put( stationController.updateRecord )
   .delete( stationController.deleteRecord );
 
 export default router;

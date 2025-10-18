@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Station from "../../../model/models/station.js";
 import Dock from "../../../model/models/dock.js";
+import Station from "../../../model/models/station.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Station.init(
     {
       ...defaultAttributes, 
@@ -37,8 +37,6 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Station.hasMany( Dock, { foreignKey: 'stationId' } );
 }
-
-export { defineModel, defineAssociations };

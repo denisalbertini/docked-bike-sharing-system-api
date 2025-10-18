@@ -7,6 +7,6 @@ export default class StationController extends BaseController {
     this._handleOperation(
       () => this._modelFacade.deleteStation( req.params.id ), 
       res, 
-      200
+      204
     );
 }
