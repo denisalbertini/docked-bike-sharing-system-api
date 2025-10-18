@@ -1,12 +1,12 @@
-import BaseRepository from "../base-repository.js";
 import Bike from '../../model/models/bike.js';
+import BaseRepository from "../base-repository.js";
 
 export default class BikeRepository extends BaseRepository {
   constructor() { super( Bike ); }
 
-  findBySerialNumber( serialNumber ) {
+  findBySerialNumber( bikeSerial ) {
     return this._handleOperation(
-      () => this._model.findOne( { where: { serialNumber } } )
+      () => this._model.findOne( { where: { bikeSerial } } )
     );
   }
 }

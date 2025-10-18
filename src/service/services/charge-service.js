@@ -1,3 +1,5 @@
+import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
 
 export default class ChargeService extends BaseService {
@@ -14,11 +16,16 @@ export default class ChargeService extends BaseService {
   }
 
   calculateAdditionalAmount( startTime, now ) {
-    const elapsedHours = ( now - startTime ) / ( 1000 * 60 * 60 );
+    try {
+      const elapsedHours = ( now - startTime ) / ( 1000 * 60 * 60 );
 
-    if ( elapsedHours > 2 )
-      return Math.ceil( ( elapsedHours - 2 ) / 0.5 ) * 5;
+      let amount = 0;
+      if ( elapsedHours > 2 )
+        amount = Math.ceil( ( elapsedHours - 2 ) / 0.5 ) * 5;
 
-    return 0;
+      return Result.success( amount );
+    } catch ( error ) {
+      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+    }
   }
 }

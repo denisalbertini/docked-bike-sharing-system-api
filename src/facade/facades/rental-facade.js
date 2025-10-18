@@ -1,12 +1,13 @@
-import BaseFacade from '../base-facade.js';
-import Result from '../../model/shared/result.js';
+import { BaseError } from 'sequelize';
+import bikeStatus from '../../model/shared/enum/bike-status.js';
+import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
   INTERNAL_SERVER_ERROR,
-  NOT_FOUND_ERROR, 
+  NOT_FOUND_ERROR,
   PRECONDITION_FAILED_ERROR
 } from '../../model/shared/enum/error-types.js';
-import dockStatus from '../../model/shared/enum/dock-status.js';
-import bikeStatus from '../../model/shared/enum/bike-status.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class RentalFacade extends BaseFacade {
   #bikerService;
@@ -40,123 +41,121 @@ export default class RentalFacade extends BaseFacade {
     this.#transaction = transaction;
   }
 
-  async createRental( { bikerId, dockSerialNumber } ) {
+  async createRental( { bikerId, bikeSerial, dockSerial } ) {
+    const failures = [];
+    
     // Verifies if the biker is already renting
     const bikerRentingResult =
       await this._modelService.findUnfinishedByBikerId( bikerId );
-    if ( bikerRentingResult.isSuccess )
-      return Result.failure(
-        PRECONDITION_FAILED_ERROR, 
-        'Biker is already renting.'
-      );
-    else if ( bikerRentingResult.errorType !== NOT_FOUND_ERROR )
-      return bikerRentingResult;
-
-    // Verifies if the dock is holding a bike
-    const dockOccupiedResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, dockStatus.OCCUPIED
+    if ( bikerRentingResult.isSuccess ) failures.push(
+      Result.failure( PRECONDITION_FAILED_ERROR, 'Biker is already renting.' )
     );
-    if ( dockOccupiedResult.isFailure ) return dockOccupiedResult;
+    else if ( bikerRentingResult.errorType !== NOT_FOUND_ERROR )
+      failures.push( bikerRentingResult );
 
-    const dock = dockOccupiedResult.value;
+    // Verifies if the dock is occupied
+    const dockOccupiedResult = await this.#dockService.checkStatusBySerialNumber(
+      dockSerial, dockStatus.OCCUPIED
+    );
+    if ( dockOccupiedResult.isFailure ) failures.push( dockOccupiedResult );
 
     // Verifies if the bike is available
-    const bikeAvailableResult = await this.#bikeService.checkStatusById(
-      dock.bikeId, bikeStatus.AVAILABLE
+    const bikeAvailableResult = await this.#bikeService.checkStatusBySerialNumber(
+      bikeSerial, bikeStatus.AVAILABLE
     );
-    if ( bikeAvailableResult.isFailure ) return bikeAvailableResult;
+    if ( bikeAvailableResult.isFailure ) failures.push( bikeAvailableResult );
 
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
+
+    const dock = dockOccupiedResult.value;
     const bike = bikeAvailableResult.value;
 
     // Tries to finalize the process in a transaction
-    const initialChargeAmount = 10;
-    let rental;
-
     try {
       await this.#transaction.start();
 
       // Creates the charge
+      var initialChargeAmount = 10;
       const createChargeResult = await this.#chargeService.create(
         { amount: initialChargeAmount, bikerId }
       );
-      if ( createChargeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return createChargeResult;
-      }
+      if ( createChargeResult.isFailure ) failures.push( createChargeResult );
 
-      const charge = createChargeResult.value;
+      const charge = createChargeResult.value ?? {};
 
       // Process the payment
-      const chargeAttemptResult =
-        this.#ccAdminService.processPayment( charge );
-      if ( chargeAttemptResult.isFailure ) {
-        await this.#transaction.rollback();
-        return chargeAttemptResult;
-      }
+      const chargeAttemptResult = this.#ccAdminService.processPayment( charge );
+      if ( chargeAttemptResult.isFailure ) failures.push( chargeAttemptResult );
 
       // Updates the charge
-      const completeChargeResult =
-        await this.#chargeService.complete( charge );
-      if ( completeChargeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return completeChargeResult;
-      }
+      const completeChargeResult = await this.#chargeService.complete( charge );
+      if ( completeChargeResult.isFailure ) failures.push( completeChargeResult );
 
       // Creates the rental
       const createRentalResult = await this.createRecord(
         {
           bikerId, 
           bikeId: bike.id, 
-          rentedFromdockId: dock.id, 
+          rentedFromDockId: dock.id, 
           initialChargeId: charge.id
         }
       );
-      if ( createRentalResult.isFailure ) {
-        await this.#transaction.rollback();
-        return createRentalResult;
-      }
+      if ( createRentalResult.isFailure ) failures.push( createRentalResult );
 
-      rental = createRentalResult.value;
+      var rental = createRentalResult.value ?? {};
 
       // Updates the bike's status
       const updateBikeResult =
         await this.#bikeService.updateStatusById( bike.id, bikeStatus.RENTED );
-      if ( updateBikeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return updateBikeResult;
-      }
+      if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult =
         await this.#dockService.updateStatusById( dock.id, dockStatus.AVAILABLE );
-      if ( updateDockResult.isFailure ) {
+      if ( updateDockResult.isFailure ) failures.push( updateDockResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return updateDockResult;
+        return Result.mergeFailures( failures );
       }
+
+      var successData = {
+        startedAt: rental.startedAt.toString(), 
+        bikerId: rental.bikerId, 
+        bikeId: rental.bikeId, 
+        dockId: rental.rentedFromDockId
+      };
 
       await this.#transaction.commit();
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
 
-    const rentalResult = Result.success( rental );
+    const rentalResult = Result.success( successData );
 
     // Tries to send an email with the rental's info
-    const findStationResult =
-      await this.#stationService.findById( dock.stationId );
-    const findBikerResult =
-      await this.#bikerService.findById( bikerId );
-    if (
-      findStationResult.isFailure || 
-      findBikerResult.isFailure
-    ) return rentalResult;
+    const findStationResult = await this.#stationService.findById(
+      dock.stationId
+    );
+    const findBikerResult = await this.#bikerService.findById(
+      bikerId
+    );
+    if ( findStationResult.isFailure || findBikerResult.isFailure )
+      return rentalResult;
 
     const station = findStationResult.value;
     const biker = findBikerResult.value;
+
     const rentalInfo = {
       station: station.name, 
-      time: rental.startedAt, 
+      time: rental.startedAt.toString(), 
       chargeAmount: initialChargeAmount
     };
     
@@ -165,62 +164,68 @@ export default class RentalFacade extends BaseFacade {
     return rentalResult;
   }
 
-  async registerReturn( { dockSerialNumber, bikeSerialNumber } ) {
-    // Verifies if the dock is available
-    const dockAvailableResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, dockStatus.AVAILABLE
-    );
-    if ( dockAvailableResult.isFailure ) return dockAvailableResult;
-
-    const dock = dockAvailableResult.value;
-
+  async registerReturn( { bikeSerial, dockSerial } ) {
+    const failures = [];
+    
     // Verifies if the bike is rented
     const bikeRentedResult = await this.#bikeService.checkStatusBySerialNumber(
-      bikeSerialNumber, bikeStatus.RENTED
+      bikeSerial, bikeStatus.RENTED
     );
-    if ( bikeRentedResult.isFailure ) return bikeRentedResult;
+    if ( bikeRentedResult.isFailure ) failures.push( bikeRentedResult );
+    
+    // Verifies if the dock is available
+    const dockAvailableResult = await this.#dockService.checkStatusBySerialNumber(
+      dockSerial, dockStatus.AVAILABLE
+    );
+    if ( dockAvailableResult.isFailure ) failures.push( dockAvailableResult );
 
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
+    
+    const dock = dockAvailableResult.value;
     const bike = bikeRentedResult.value;
 
     // Finds the rental
-    const findRentalResult =
-      await this._modelService.findUnfinishedByBikeId( bike.id );
+    const findRentalResult = await this._modelService.findUnfinishedByBikeId(
+      bike.id
+    );
     if ( findRentalResult.isFailure ) return findRentalResult;
 
     const rental = findRentalResult.value;
 
     // Calculates additional charge amount
-    const additionalChargeAmount =
-      this.#chargeService.calculateAdditionalAmount( rental.startedAt, Date.now() );
+    const additionalChargeResult = this.#chargeService.calculateAdditionalAmount(
+      rental.startedAt, Date.now()
+    );
+    if ( additionalChargeResult.isFailure ) return additionalChargeResult;
+
+    const additionalChargeAmount = additionalChargeResult.value;
 
     // Tries to finalize the process with a transaction
     try {
       await this.#transaction.start();
 
-      // Creates the additional charge
-      let charge;
+      // Process the additional charge
       if ( additionalChargeAmount > 0 ) {
         const createChargeResult = await this.#chargeService.create(
           { amount: additionalChargeAmount, bikerId: rental.bikerId }
         );
-        if ( createChargeResult.isFailure ) {
-          await this.#transaction.rollback();
-          return createChargeResult;
-        }
+        if ( createChargeResult.isFailure ) failures.push( createChargeResult );
 
-        charge = createChargeResult.value;
+        var charge = createChargeResult.value ?? {};
 
         // Process the charge
-        const chargeAttemptResult =
-          this.#ccAdminService.processPayment( charge );
-        if ( chargeAttemptResult.isFailure ) {
-          await this.#transaction.rollback();
-          return chargeAttemptResult;
+        const paymentResult = this.#ccAdminService.processPayment( charge );
+
+        // Updates the charge
+        if ( paymentResult.isSuccess ) {
+          const completeChargeResult = await this.#chargeService.complete( charge );
+          if ( completeChargeResult.isFailure ) failures.push( completeChargeResult );
         }
       }
 
       // Updates the rental info
-      const updateRentalResult = await this._modelService.finishById(
+      const updateRentalResult = await this._modelService.updateById(
         rental.id, 
         {
           finishedAt: Date.now(), 
@@ -228,50 +233,63 @@ export default class RentalFacade extends BaseFacade {
           extraChargeId: charge ? charge.id : null
         }
       );
-      if ( updateRentalResult.isFailure ) {
-        await this.#transaction.rollback();
-        return updateRentalResult;
-      }
+      if ( updateRentalResult.isFailure ) failures.push( updateRentalResult );
 
       // Updates the bike's status
-      const updateBikeResult =
-        await this.#bikeService.updateStatusById( bike.id, bikeStatus.AVAILABLE );
-      if ( updateBikeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return updateBikeResult;
-      }
+      const updateBikeResult = await this.#bikeService.updateStatusById(
+        bike.id, bikeStatus.AVAILABLE
+      );
+      if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
-      const updateDockResult =
-        await this.#dockService.updateStatusById( dock.id, dockStatus.OCCUPIED );
-      if ( updateDockResult.isFailure ) {
+      const updateDockResult = await this.#dockService.updateStatusById(
+        dock.id, dockStatus.OCCUPIED
+      );
+      if ( updateDockResult.isFailure ) failures.push( updateDockResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return updateDockResult;
+        return Result.mergeFailures( failures );
       }
+
+      var updatedRental = updateRentalResult.value;
+
+      var successData = {
+        finishedAt: updatedRental.finishedAt.toString(), 
+        bikerId: updatedRental.bikerId, 
+        bikeId: updatedRental.bikeId, 
+        dockId: updatedRental.returnedToDockId
+      };
 
       await this.#transaction.commit();
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
 
-    const rentalResult = Result.success( rental );
+    const rentalResult = Result.success( successData );
 
     // Tries to send an email with the rental's info
-    const findStationResult =
-      await this.#stationService.findById( dock.stationId );
-    const findBikerResult =
-      await this.#bikerService.findById( rental.bikerId );
-    if (
-      findStationResult.isFailure || 
-      findBikerResult.isFailure
-    ) return rentalResult;
+    const findStationResult = await this.#stationService.findById(
+      dock.stationId
+    );
+    const findBikerResult = await this.#bikerService.findById(
+      rental.bikerId
+    );
+    if ( findStationResult.isFailure || findBikerResult.isFailure )
+      return rentalResult;
 
     const station = findStationResult.value;
     const biker = findBikerResult.value;
+
     const rentalInfo = {
       station: station.name, 
-      time: rental.finishedAt, 
+      time: updatedRental.finishedAt.toString(), 
       chargeAmount: additionalChargeAmount
     };
     

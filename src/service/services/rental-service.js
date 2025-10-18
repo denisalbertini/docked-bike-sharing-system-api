@@ -1,17 +1,31 @@
+import { NOT_FOUND_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
 
 export default class RentalService extends BaseService {
   constructor( rentalRepository ) { super( rentalRepository ); }
   
-  findUnfinishedByBikeId( bikeId ) {
-    return this._modelRepository.findByNullFinishTimeAndBikeId( bikeId );
+  async findUnfinishedByBikerId( bikerId ) {
+    const findResult = await this._modelRepository.findByNullFinishTimeAndBikerId(
+      bikerId
+    );
+
+    if ( findResult.isSuccess && findResult.value === null ) return Result.failure(
+      NOT_FOUND_ERROR, 'Rental not found.'
+    );
+
+    return findResult;
   }
   
-  findUnfinishedByBikerId( bikerId ) {
-    return this._modelRepository.findByNullFinishTimeAndBikerId( bikerId );
-  }
+  async findUnfinishedByBikeId( bikeId ) {
+    const findResult = await this._modelRepository.findByNullFinishTimeAndBikeId(
+      bikeId
+    );
 
-  finishById( id, data ) {
-    return this.updateById( id, data );
+    if ( findResult.isSuccess && findResult.value === null ) return Result.failure(
+      NOT_FOUND_ERROR, 'Rental not found.'
+    );
+
+    return findResult;
   }
 }

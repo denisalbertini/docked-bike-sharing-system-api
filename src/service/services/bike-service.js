@@ -1,10 +1,10 @@
-import BaseService from '../base-service.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
-import Result from '../../model/shared/result.js';
 import {
-  PRECONDITION_FAILED_ERROR, 
-  NOT_FOUND_ERROR
+  NOT_FOUND_ERROR,
+  PRECONDITION_FAILED_ERROR
 } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseService from '../base-service.js';
 
 export default class BikeService extends BaseService {
   constructor( bikeRepository ) { super( bikeRepository ); }
@@ -26,7 +26,7 @@ export default class BikeService extends BaseService {
     if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
         PRECONDITION_FAILED_ERROR, 
-        'Bike does not match preconditions.'
+        `Bike is not ${ status.join( ', ' )}.`
       );
 
     return findResult;
@@ -38,7 +38,7 @@ export default class BikeService extends BaseService {
     if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
         PRECONDITION_FAILED_ERROR, 
-        `Bike is not ${ status.join( ', ' ).replace( '_', ' ' ) }.`
+        `Bike is not ${ status.join( ', ' )}.`
       );
 
     return findResult;

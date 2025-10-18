@@ -26,7 +26,7 @@ export function defineModel( sequelize ) {
         type: DataTypes.STRING, 
         allowNull: false, 
         validate: {
-          is: /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)+\b/
+          is: /^(?:(?:Mr|Mrs|Ms|Miss|Dr)\.? )?(?:[a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*(?: [a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*)*)$/
         }
       }, 
       birthDate: {

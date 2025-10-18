@@ -8,7 +8,7 @@ const router = express.Router();
 // Auth middlewares
 router.use( [ '/', '/return' ], bikerAuthMiddleware );
 
-// Routes
+// Protected routes
 router.route( '/' )
   .post( rentalController.createRecord );
 

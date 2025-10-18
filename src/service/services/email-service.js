@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
-import Result from '../../model/shared/result.js';
 import { INTERNAL_SERVER_ERROR } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
 
 export default class EmailService {
   #createTransporter() {
