@@ -1,8 +1,7 @@
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-  INTERNAL_SERVER_ERROR,
-  VALIDATION_ERROR
+  INTERNAL_SERVER_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
@@ -25,28 +24,24 @@ export default class BikeRemovalFacade extends BaseFacade {
   }
 
   async createBikeRemoval(
-    { employeeId, bikeSerialNumber, dockSerialNumber, action }
+    { employeeId, bikeSerial, dockSerial, action }
   ) {
-    const errors = [];
+    const failures = [];
         
     // Checks the bike's status
     const bikeStatusResult = await this.#bikeService.checkStatusBySerialNumber(
-      bikeSerialNumber, bikeStatus.MAINTENANCE_REQUESTED
+      bikeSerial, bikeStatus.MAINTENANCE_REQUESTED
     );
-    if ( bikeStatusResult.isFailure ) errors.push( ...bikeStatusResult.errors );
+    if ( bikeStatusResult.isFailure ) failures.push( bikeStatusResult );
 
     // Checks the dock's status
     const dockStatusResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, dockStatus.OCCUPIED
+      dockSerial, dockStatus.OCCUPIED
     );
-    if ( dockStatusResult.isFailure ) errors.push( ...dockStatusResult.errors );
+    if ( dockStatusResult.isFailure ) failures.push( dockStatusResult );
 
-    if ( errors.length > 0 ) return Result.failure(
-      bikeStatusResult.errorType === dockStatusResult.errorType ? 
-      bikeStatusResult.errorType : 
-      VALIDATION_ERROR, 
-      ...errors
-    );
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
 
     const bike = bikeStatusResult.value;
     const dock = dockStatusResult.value;
@@ -56,56 +51,53 @@ export default class BikeRemovalFacade extends BaseFacade {
       await this.#transaction.start();
 
       // Creates the removal record
-      const createBikeRemovalResult = await this.createRecord(
+      const createRemovalResult = await this.createRecord(
         { employeeId, bikeId: bike.id }
       );
-      if ( createBikeRemovalResult.isFailure ) {
-        await this.#transaction.rollback();
-        return createBikeRemovalResult;
-      }
-
-      const bikeRemoval = createBikeRemovalResult.value;
+      if ( createRemovalResult.isFailure ) failures.push( createRemovalResult );
 
       // Gets the new bike status
       const newBikeStatusResult = this.#bikeService.getStatusByAction( action );
-      if ( newBikeStatusResult.isFailure ) {
-        await this.#transaction.rollback();
-        return newBikeStatusResult;
-      }
+      if ( newBikeStatusResult.isFailure ) failures.push( newBikeStatusResult );
 
-      const newBikeStatus = newBikeStatusResult.value;
+      const newBikeStatus = newBikeStatusResult.value ?? {};
       
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
         bike.id, newBikeStatus
       );
-      if ( updateBikeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return updateBikeResult;
-      }
+      if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
         dock.id, dockStatus.AVAILABLE
       );
-      if ( updateDockResult.isFailure ) {
+      if ( updateDockResult.isFailure ) failures.push( updateDockResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return updateDockResult;
+        return Result.mergeFailures( failures );
+      }
+
+      const bikeRemoval = createRemovalResult.value;
+
+      const successData = {
+        requestedAt: bikeRemoval.requestedAt.toString(), 
+        bikeId: bikeRemoval.bikeId, 
+        employeeId: bikeRemoval.employeeId
       }
 
       await this.#transaction.commit();
 
-      return Result.success(
-        {
-          id: bikeRemoval.id, 
-          requestedAt: bikeRemoval.requestedAt.toString(), 
-          bikeId: bikeRemoval.bikeId, 
-          employeeId: bikeRemoval.employeeId
-        }
-      );
+      return Result.success( successData );
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
   }
 }

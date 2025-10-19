@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Bike from "../../../model/models/bike.js";
-import status from "../../../model/shared/enum/bike-status.js";
-import Dock from "../../../model/models/dock.js";
 import BikeAdmission from "../../../model/models/bike-admission.js";
 import BikeRemoval from "../../../model/models/bike-removal.js";
+import Bike from "../../../model/models/bike.js";
+import Dock from "../../../model/models/dock.js";
 import Rental from "../../../model/models/rental.js";
+import status from "../../../model/shared/enum/bike-status.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Bike.init(
     {
       ...defaultAttributes, 
@@ -53,12 +53,18 @@ function defineModel( sequelize ) {
     {
       sequelize, 
       paranoid: true, 
-      ...defaultOptions( Bike.name )
+      ...defaultOptions( Bike.name ), 
+      hooks: {
+        beforeCreate: ( bike, _options ) => {
+          if ( bike.status !== status.NEW )
+            bike.status = status.NEW;
+        }
+      }
     }
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Bike.hasOne( Dock, { foreignKey: 'bikeId' } );
   Bike.hasMany(
     BikeAdmission, 
@@ -73,5 +79,3 @@ function defineAssociations() {
     { foreignKey: { name: 'bikeId', allowNull: false } }
   );
 }
-
-export { defineModel, defineAssociations };

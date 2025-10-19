@@ -1,11 +1,11 @@
-import BaseFacade from '../base-facade.js';
+import { BaseError } from 'sequelize';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import Result from '../../model/shared/result.js';
 import {
-  INTERNAL_SERVER_ERROR, 
-  VALIDATION_ERROR
+  INTERNAL_SERVER_ERROR
 } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class BikeAdmissionFacade extends BaseFacade {
   #bikeService;
@@ -24,27 +24,23 @@ export default class BikeAdmissionFacade extends BaseFacade {
     this.#transaction = transaction;
   }
 
-  async createBikeAdmission( { bikeSerialNumber, dockSerialNumber } ) {
-    const errors = [];
+  async createBikeAdmission( { bikeSerial, dockSerial } ) {
+    const failures = [];
     
     // Checks the bike's status
     const bikeStatusResult = await this.#bikeService.checkStatusBySerialNumber(
-      bikeSerialNumber, bikeStatus.NEW, bikeStatus.UNDER_MAINTENANCE
+      bikeSerial, bikeStatus.NEW, bikeStatus.UNDER_MAINTENANCE
     );
-    if ( bikeStatusResult.isFailure ) errors.push( ...bikeStatusResult.errors );
+    if ( bikeStatusResult.isFailure ) failures.push( bikeStatusResult );
 
     // Checks the dock's status
     const dockStatusResult = await this.#dockService.checkStatusBySerialNumber(
-      dockSerialNumber, dockStatus.AVAILABLE
+      dockSerial, dockStatus.AVAILABLE
     );
-    if ( dockStatusResult.isFailure ) errors.push( ...dockStatusResult.errors );
+    if ( dockStatusResult.isFailure ) failures.push( dockStatusResult );
 
-    if ( errors.length > 0 ) return Result.failure(
-      bikeStatusResult.errorType === dockStatusResult.errorType ? 
-      bikeStatusResult.errorType : 
-      VALIDATION_ERROR, 
-      ...errors
-    );
+    // Checks for failures
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
 
     const bike = bikeStatusResult.value;
     const dock = dockStatusResult.value;
@@ -54,47 +50,47 @@ export default class BikeAdmissionFacade extends BaseFacade {
       await this.#transaction.start();
 
       // Creates the admission record
-      const createBikeAdmissionResult = await this.createRecord(
+      const createAdmissionResult = await this.createRecord(
         { bikeId: bike.id, dockId: dock.id }
       );
-      if ( createBikeAdmissionResult.isFailure ) {
-        await this.#transaction.rollback();
-        return createBikeAdmissionResult;
-      }
-
-      const bikeAdmission = createBikeAdmissionResult.value;
+      if ( createAdmissionResult.isFailure ) failures.push( createAdmissionResult );
 
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
         bike.id, bikeStatus.AVAILABLE
       );
-      if ( updateBikeResult.isFailure ) {
-        await this.#transaction.rollback();
-        return updateBikeResult;
-      }
+      if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
         dock.id, dockStatus.OCCUPIED
       );
-      if ( updateDockResult.isFailure ) {
+      if ( updateDockResult.isFailure ) failures.push( updateDockResult );
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
         await this.#transaction.rollback();
-        return updateDockResult;
+        return Result.mergeFailures( failures );
+      }
+
+      const bikeAdmission = createAdmissionResult.value;
+
+      const successData = {
+        requestedAt: bikeAdmission.requestedAt.toString(), 
+        bikeId: bikeAdmission.bikeId, 
+        dockId: bikeAdmission.dockId
       }
 
       await this.#transaction.commit();
 
-      return Result.success(
-        {
-          id: bikeAdmission.id, 
-          requestedAt: bikeAdmission.requestedAt.toString(), 
-          bikeId: bikeAdmission.bikeId, 
-          dockId: bikeAdmission.dockId
-        }
-      );
+      return Result.success( successData );
     } catch ( error ) {
       await this.#transaction.rollback();
-      return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+      
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
     }
   }
 }

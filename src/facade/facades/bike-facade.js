@@ -1,7 +1,7 @@
-import BaseFacade from '../base-facade.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import { NOT_FOUND_ERROR, PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class BikeFacade extends BaseFacade {
   #dockService;
@@ -12,28 +12,23 @@ export default class BikeFacade extends BaseFacade {
   }
 
   async deleteBike( bikeId ) {
-    const errors = []
+    const failures = [];
     
     // Checks the bike's status
     const bikeStatusResult = await this._modelService.checkStatusById(
       bikeId, bikeStatus.RETIRED
     );
-    if ( bikeStatusResult.isFailure ) {
-      if ( bikeStatusResult.errorType !== PRECONDITION_FAILED_ERROR )
-        return bikeStatusResult;
-      
-      errors.push( ...bikeStatusResult.errors );
-    }
+    if ( bikeStatusResult.isFailure ) failures.push( bikeStatusResult );
 
     // Checks if the bike is docked
     const bikeDockedResult = await this.#dockService.findByBikeId( bikeId );
-    if ( bikeDockedResult.isSuccess ) errors.push( 'Bike is docked.' );
+    if ( bikeDockedResult.isSuccess ) failures.push(
+      Result.failure( PRECONDITION_FAILED_ERROR, 'Bike is docked.' )
+    );
     else if ( bikeDockedResult.errorType !== NOT_FOUND_ERROR )
       return bikeDockedResult;
 
-    if ( errors.length > 0 ) return Result.failure(
-      PRECONDITION_FAILED_ERROR, ...errors
-    );
+    if ( failures.length > 0 ) return Result.mergeFailures( failures );
 
     // Deletes the bike
     return await this.deleteRecordById( bikeId );
