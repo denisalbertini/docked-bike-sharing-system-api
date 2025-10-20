@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Passport from "../../../model/models/passport.js";
 import Biker from "../../../model/models/biker.js";
+import Passport from "../../../model/models/passport.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Passport.init(
     {
       ...defaultAttributes, 
@@ -37,11 +37,9 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Passport.belongsTo(
     Biker, 
     { foreignKey: { name: 'bikerId', allowNull: false } }
   );
 }
-
-export { defineModel, defineAssociations };
