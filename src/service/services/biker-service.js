@@ -7,6 +7,7 @@ import {
   AUTHENTICATION_ERROR,
   FORBIDDEN_ERROR,
   INTERNAL_SERVER_ERROR,
+  NOT_FOUND_ERROR,
   PRECONDITION_FAILED_ERROR,
   VALIDATION_ERROR
 } from '../../model/shared/enum/error-types.js';
@@ -19,50 +20,38 @@ const jwtAsyncVerify = promisify( jwt.verify );
 export default class BikerService extends BaseService {
   constructor( bikerRepository ) { super( bikerRepository ); }
   
-  validate(
-    {
-      foreigner, 
-      cpf, 
-      passportNumber, 
-      expirationDate, 
-      countryCode, 
-      password, 
-      confirmationPassword, 
-      update = false
-    }
-  ) {
+  validateBeforeCreate( bikerData, passportData = null ) {
     const errors = [];
 
-    if ( !update && !foreigner && !cpf )
-      errors.push( 'CPF is mandatory for locals.' );
+    if ( !bikerData.cpf && !passportData )
+      errors.push( 'Biker must have a document.' );
 
-    if ( foreigner && cpf )
-      errors.push( 'Foreigners cannot have a cpf.' );
+    if ( bikerData.cpf && passportData )
+      errors.push( 'Biker can only have one document.' );
 
-    if ( foreigner && ( !passportNumber || !expirationDate || !countryCode ) )
-      errors.push( 'Passport data is mandatory for foreigners.' );
+    if ( bikerData.password !== bikerData.confirmationPassword )
+      errors.push( 'Passwords do not match.' );
 
-    if (!update) {
-      if (password !== confirmationPassword)
-        errors.push('Passwords do not match.');
-    } else {
-      if ( ( password || confirmationPassword ) && password !== confirmationPassword )
-        errors.push('Passwords do not match.');
-    }
-
-    if ( errors.length > 0 )
-      return Result.failure( VALIDATION_ERROR, ...errors );
+    if ( errors.length > 0 ) return Result.failure(
+      VALIDATION_ERROR, ...errors
+    );
 
     return Result.success();
   }
 
-  async create( data ) {
-    let hashedPassword;
+  async #hashPassword( password ) {
     try {
-      hashedPassword = await bcrypt.hash( data.password, 10 );
+      const hashedPassword = await bcrypt.hash( password, 10 );
+      return Result.success( hashedPassword );
     } catch ( error ) {
       return Result.failure( INTERNAL_SERVER_ERROR, error.message );
     }
+  }
+
+  async create( data ) {
+    const hashPasswordResult = await this.#hashPassword( data.password );
+    if ( hashPasswordResult.isFailure ) return hashPasswordResult;
+    const hashedPassword = hashPasswordResult.value;
 
     return super.create( { ...data, password: hashedPassword } );
   }
@@ -101,9 +90,11 @@ export default class BikerService extends BaseService {
     return await this.updateById( id, { status: status.ACTIVE } );
   }
 
-  async login( { email, password } ) {
-    const findResult = await this._modelRepository.findByEmail( email );
-    if ( findResult.isFailure ) return findResult;
+  async login( email, password ) {
+    const findResult = await this._modelRepository.findByEmailAndActiveStatus( email );
+    if ( findResult.isSuccess && findResult.value === null )
+      return Result.failure( NOT_FOUND_ERROR, 'Account does not exist.' );
+    else if ( findResult.isFailure ) return findResult;
 
     const biker = findResult.value;
 
@@ -125,15 +116,40 @@ export default class BikerService extends BaseService {
     }
   }
 
-  async updateById( id, data ) {
-    if ( data.password ) {
-      try {
-        var hashedPassword = await bcrypt.hash( data.password, 10 );
-      } catch ( error ) {
-        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
-      }
+  async validateBeforeUpdate( bikerId, bikerData, passportData = null ) {
+    const errors = [];
+    
+    if ( bikerData.cpf ) errors.push( 'CPF cannot be modified.' );
+
+    if ( passportData ) {
+      const findBikerResult = await this.findById( bikerId );
+      if ( findBikerResult.isFailure ) return findBikerResult;
+      const biker = findBikerResult.value;
+
+      if ( biker.cpf ) errors.push( 'Biker already has a document.' );
     }
 
-    return super.updateById( id, { ...data, password: hashedPassword ?? data.password } );
+    if (
+      bikerData.password && 
+      bikerData.password !== bikerData.confirmationPassword
+    ) errors.push( 'Passwords do not match' );
+
+    if ( errors.length > 0 ) return Result.failure(
+      VALIDATION_ERROR, ...errors
+    );
+
+    return Result.success();
+  }
+
+  async updateById( id, data ) {
+    if ( data.password ) {
+      const hashPasswordResult = await this.#hashPassword( data.password );
+      if ( hashPasswordResult.isFailure ) return hashPasswordResult;
+      var hashedPassword = hashPasswordResult.value;
+    }
+
+    return super.updateById(
+      id, { ...data, password: hashedPassword ?? data.password }
+    );
   }
 }
