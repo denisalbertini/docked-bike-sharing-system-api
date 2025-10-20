@@ -1,12 +1,12 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
-import Rental from "../../../model/models/rental.js";
 import Bike from "../../../model/models/bike.js";
 import Biker from "../../../model/models/biker.js";
 import Charge from "../../../model/models/charge.js";
 import Dock from "../../../model/models/dock.js";
+import Rental from "../../../model/models/rental.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   Rental.init(
     {
       ...defaultAttributes, 
@@ -24,7 +24,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   Rental.belongsTo(
     Bike, 
     { foreignKey: { name: 'bikeId', allowNull: false } }
@@ -62,5 +62,3 @@ function defineAssociations() {
     }
   );
 }
-
-export { defineModel, defineAssociations };

@@ -16,14 +16,14 @@ export function defineModel( sequelize ) {
         }
       }, 
       name: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING( 100 ), 
         allowNull: false, 
         validate: {
           len: [ 1, 256 ]
         }
       }, 
       location: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING( 100 ), 
         allowNull: false, 
         validate: {
           len: [ 1, 256 ]

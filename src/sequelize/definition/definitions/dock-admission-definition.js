@@ -1,10 +1,10 @@
 import { DataTypes } from "sequelize";
-import { defaultAttributes, defaultOptions } from "../default-definition.js";
 import DockAdmission from "../../../model/models/dock-admission.js";
 import Dock from "../../../model/models/dock.js";
 import Employee from "../../../model/models/employee.js";
+import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
-function defineModel( sequelize ) {
+export function defineModel( sequelize ) {
   DockAdmission.init(
     {
       ...defaultAttributes, 
@@ -21,7 +21,7 @@ function defineModel( sequelize ) {
   );
 }
 
-function defineAssociations() {
+export function defineAssociations() {
   DockAdmission.belongsTo(
     Dock, 
     { foreignKey: { name: 'dockId', allowNull: false } }
@@ -31,5 +31,3 @@ function defineAssociations() {
     { foreignKey: { name: 'employeeId', allowNull: false } }
   );
 }
-
-export { defineModel, defineAssociations };

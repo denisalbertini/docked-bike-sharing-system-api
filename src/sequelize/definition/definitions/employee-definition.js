@@ -31,10 +31,10 @@ export function defineModel( sequelize ) {
         }
       }, 
       name: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING( 100 ), 
         allowNull: false, 
         validate: {
-          is: /^(?:(?:Mr|Mrs|Ms|Miss|Dr)\.? )?(?:[a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*(?: [a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*)*)$/
+          is: /^[\p{L}\s'.-]+$/u
         }
       }, 
       birthDate: {
