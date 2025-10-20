@@ -44,18 +44,8 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const admin = createEmployee(
-          'EM-001',
-          '04130338056',
-          employeeRole.ADMIN,
-          { birthDate: '2000-06-15' }
-        );
-        const operator = createEmployee(
-          'EM-002',
-          '59013719090',
-          employeeRole.OPERATOR,
-          { birthDate: '2000-06-15' }
-        );
+        const admin = createEmployee('04130338056');
+        const operator = createEmployee('59013719090');
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -85,22 +75,18 @@ describe('/api/employees', () => {
       const method = 'post';
 
       describe('409', () => {
-        const conflictingEmployee = createEmployee(
-          'EM-001',
-          '60414127080',
-          employeeRole.OPERATOR
-        );
+        const conflictingEmployee = createEmployee('60414127080', {
+          registration: 'EM-001',
+        });
 
         beforeAll(async () => {
           await truncateAllTables();
           await Employee.create(conflictingEmployee);
         });
 
-        const newEmployee = createEmployee(
-          'EM-001',
-          '60414127080',
-          employeeRole.OPERATOR
-        );
+        const newEmployee = createEmployee('60414127080', {
+          registration: 'EM-001',
+        });
 
         const testCases = [
           {
@@ -137,13 +123,17 @@ describe('/api/employees', () => {
       });
 
       describe('400', () => {
-        const invalidEmployee = createEmployee('abc', 'abc', 'abc', {
-          name: 'abc',
+        const invalidEmployee = createEmployee('abc', {
+          registration: 'abc',
+          name: '',
           birthDate: 'abc',
+          role: 'abc',
         });
-        const nullEmployee = createEmployee(null, null, null, {
+        const nullEmployee = createEmployee(null, {
+          registration: null,
           name: null,
           birthDate: null,
+          role: null,
         });
 
         const testCases = [
@@ -192,18 +182,12 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const admin = createEmployee(
-          'EM-001',
-          '78378763005',
-          employeeRole.ADMIN,
-          { birthDate: '2000-06-15' }
-        );
-        const operator = createEmployee(
-          'EM-002',
-          '19194767092',
-          employeeRole.OPERATOR,
-          { birthDate: '2000-06-15' }
-        );
+        const admin = createEmployee('78378763005', {
+          role: employeeRole.ADMIN,
+        });
+        const operator = createEmployee('19194767092', {
+          role: employeeRole.OPERATOR,
+        });
 
         beforeAll(truncateAllTables);
 
@@ -286,12 +270,7 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const employee = createEmployee(
-          'EM-001',
-          '04130338056',
-          employeeRole.ADMIN,
-          { birthDate: '2000-06-15' }
-        );
+        const employee = createEmployee('04130338056');
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -325,16 +304,8 @@ describe('/api/employees', () => {
       const method = 'put';
 
       describe('409', () => {
-        const conflictingEmployee = createEmployee(
-          'EM-001',
-          '60414127080',
-          employeeRole.OPERATOR
-        );
-        const updateEmployee = createEmployee(
-          'EM-002',
-          '19857763081',
-          employeeRole.OPERATOR
-        );
+        const conflictingEmployee = createEmployee('60414127080');
+        const updateEmployee = createEmployee('19857763081');
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -378,18 +349,18 @@ describe('/api/employees', () => {
       });
 
       describe('400', () => {
-        const employee = createEmployee(
-          'EM-001',
-          '44493972076',
-          employeeRole.OPERATOR
-        );
-        const invalidEmployee = createEmployee('abc', 'abc', 'abc', {
-          name: 'abc',
+        const employee = createEmployee('44493972076');
+        const invalidEmployee = createEmployee('abc', {
+          registration: 'abc',
+          name: '',
           birthDate: 'abc',
+          role: 'abc',
         });
-        const nullEmployee = createEmployee(null, null, null, {
+        const nullEmployee = createEmployee(null, {
+          registration: null,
           name: null,
           birthDate: null,
+          role: null,
         });
 
         beforeAll(async () => {
@@ -445,17 +416,8 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const employee = createEmployee(
-          'EM-001',
-          '44493972076',
-          employeeRole.OPERATOR
-        );
-        const update = createEmployee(
-          'EM-002',
-          '19194767092',
-          employeeRole.OPERATOR,
-          { birthDate: '2000-06-15' }
-        );
+        const employee = createEmployee('44493972076');
+        const update = createEmployee('19194767092');
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -526,12 +488,7 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const employee = createEmployee(
-          'EM-001',
-          '04130338056',
-          employeeRole.ADMIN,
-          { birthDate: '2000-06-15' }
-        );
+        const employee = createEmployee('04130338056');
 
         beforeAll(async () => {
           await truncateAllTables();

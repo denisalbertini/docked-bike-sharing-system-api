@@ -7,7 +7,7 @@ export const createBike = (overrides = {}) => ({
   bikeSerial: RandExp.randexp(/BI-\d{3}/),
   brand: faker.vehicle.manufacturer(),
   model: faker.vehicle.model(),
-  manufactureYear: RandExp.randexp(/(19|20)\d{2}/),
+  manufactureYear: 2000,
   status: undefined,
   ...overrides,
 });
@@ -66,7 +66,7 @@ export const createEmployee = (cpf, overrides = {}) => ({
   registration: RandExp.randexp(/EM-\d{3}/),
   cpf,
   name: faker.person.fullName(),
-  birthDate: faker.date.birthdate(),
+  birthDate: '2000-06-15',
   role: faker.helpers.objectValue(employeeRole),
   ...overrides,
 });

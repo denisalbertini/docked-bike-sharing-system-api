@@ -34,7 +34,7 @@ describe('/late-fees', () => {
 
     describe('200', () => {
       const creditCard = createCreditCard();
-      const biker = createBiker(false, creditCard.id, { cpf: '23847541064' });
+      const biker = createBiker(creditCard.id, { cpf: '23847541064' });
 
       const moreThan12HoursAgoCharge = createCharge(biker.id, {
         requestedAt: '2024-01-14T20:30:00-03:00',
@@ -72,13 +72,13 @@ describe('/late-fees', () => {
               ...lessThan12HoursAgoCharge1,
               requestedAt: new Date(lessThan12HoursAgoCharge1.requestedAt),
               completedAt: fakeDate,
-              amount: moreThan12HoursAgoCharge.amount.toFixed(2),
+              amount: lessThan12HoursAgoCharge1.amount.toFixed(2),
             },
             {
               ...lessThan12HoursAgoCharge2,
               requestedAt: new Date(lessThan12HoursAgoCharge2.requestedAt),
               completedAt: fakeDate,
-              amount: moreThan12HoursAgoCharge.amount.toFixed(2),
+              amount: lessThan12HoursAgoCharge2.amount.toFixed(2),
             },
           ],
         },

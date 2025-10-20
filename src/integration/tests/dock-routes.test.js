@@ -7,7 +7,6 @@ import Dock from '../../model/models/dock.js';
 import Employee from '../../model/models/employee.js';
 import Station from '../../model/models/station.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import employeeRole from '../../model/shared/enum/employee-role.js';
 import { PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
 import { createDock, createEmployee, createStation } from '../data-factory.js';
 import { operatorToken } from '../tokens.js';
@@ -23,7 +22,7 @@ describe('/api/docks', () => {
       const method = 'get';
 
       describe('200', () => {
-        const docks = [createDock('DO-001'), createDock('DO-002')];
+        const docks = [createDock(), createDock()];
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -59,7 +58,7 @@ describe('/api/docks', () => {
       describe('200', () => {
         beforeAll(truncateAllTables);
 
-        const dock = createDock('DO-001');
+        const dock = createDock();
 
         const testCases = [
           {
@@ -101,7 +100,7 @@ describe('/api/docks', () => {
       const method = 'get';
 
       describe('200', () => {
-        const dock = createDock('DO-001');
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -135,14 +134,14 @@ describe('/api/docks', () => {
       const method = 'put';
 
       describe('200', () => {
-        const dock = createDock('DO-001');
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
           await Dock.create(dock);
         });
 
-        const updateData = createDock('DO-002', {
+        const updateData = createDock({
           status: dockStatus.AVAILABLE,
         });
 
@@ -181,7 +180,7 @@ describe('/api/docks', () => {
       const method = 'delete';
 
       describe('204', () => {
-        const dock = createDock('DO-001');
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -228,16 +227,16 @@ describe('/api/docks', () => {
       const method = 'post';
 
       describe('412', () => {
-        const availableDock = createDock('DO-001', {
+        const availableDock = createDock({
           status: dockStatus.AVAILABLE,
         });
-        const decommissionedDock = createDock('DO-002', {
+        const decommissionedDock = createDock({
           status: dockStatus.DECOMMISSIONED,
         });
-        const maintenanceRequestedDock = createDock('DO-003', {
+        const maintenanceRequestedDock = createDock({
           status: dockStatus.MAINTENANCE_REQUESTED,
         });
-        const occupiedDock = createDock('DO-004', {
+        const occupiedDock = createDock({
           status: dockStatus.OCCUPIED,
         });
 
@@ -287,18 +286,14 @@ describe('/api/docks', () => {
       });
 
       describe('201', () => {
-        const station = createStation('ST-001');
-        const operationalDock = createDock('DO-001', {
+        const station = createStation();
+        const operationalDock = createDock({
           status: dockStatus.OPERATIONAL,
         });
-        const underMaintenanceDock = createDock('DO-002', {
+        const underMaintenanceDock = createDock({
           status: dockStatus.UNDER_MAINTENANCE,
         });
-        const employee = createEmployee(
-          'EM-001',
-          '47537987041',
-          employeeRole.OPERATOR
-        );
+        const employee = createEmployee('47537987041');
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -379,7 +374,7 @@ describe('/api/docks', () => {
       const method = 'post';
 
       describe('412', () => {
-        const occupiedDock = createDock('DO-001', {
+        const occupiedDock = createDock({
           status: dockStatus.OCCUPIED,
         });
 
@@ -412,27 +407,23 @@ describe('/api/docks', () => {
       });
 
       describe('201', () => {
-        const station = createStation('ST-001');
-        const availableDock = createDock('DO-001', {
+        const station = createStation();
+        const availableDock = createDock({
           status: dockStatus.AVAILABLE,
         });
-        const decommissionedDock = createDock('DO-002', {
+        const decommissionedDock = createDock({
           status: dockStatus.DECOMMISSIONED,
         });
-        const maintenanceRequestedDock = createDock('DO-003', {
+        const maintenanceRequestedDock = createDock({
           status: dockStatus.MAINTENANCE_REQUESTED,
         });
-        const operationalDock = createDock('DO-004', {
+        const operationalDock = createDock({
           status: dockStatus.OPERATIONAL,
         });
-        const underMaintenanceDock = createDock('DO-005', {
+        const underMaintenanceDock = createDock({
           status: dockStatus.UNDER_MAINTENANCE,
         });
-        const employee = createEmployee(
-          'EM-001',
-          '47537987041',
-          employeeRole.OPERATOR
-        );
+        const employee = createEmployee('47537987041');
 
         beforeAll(async () => {
           await truncateAllTables();

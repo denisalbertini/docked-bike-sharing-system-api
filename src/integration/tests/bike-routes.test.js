@@ -9,7 +9,6 @@ import Dock from '../../model/models/dock.js';
 import Employee from '../../model/models/employee.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import employeeRole from '../../model/shared/enum/employee-role.js';
 import {
   NOT_FOUND_ERROR,
   PRECONDITION_FAILED_ERROR,
@@ -51,7 +50,7 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const bikes = [createBike('BI-001'), createBike('BI-002')];
+        const bikes = [createBike(), createBike()];
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -82,14 +81,14 @@ describe('/api/bikes', () => {
       const method = 'post';
 
       describe('409', () => {
-        const conflictingBike = createBike('BI-001');
+        const conflictingBike = createBike();
 
         beforeAll(async () => {
           await truncateAllTables();
           await Bike.create(conflictingBike);
         });
 
-        const newBike = createBike('BI-001');
+        const newBike = createBike({ bikeSerial: conflictingBike.bikeSerial });
 
         const testCases = [
           {
@@ -119,13 +118,15 @@ describe('/api/bikes', () => {
       });
 
       describe('400', () => {
-        const invalidBike = createBike('abc', {
+        const invalidBike = createBike({
+          bikeSerial: 'abc',
           brand: 'a'.repeat(101),
           model: '',
           manufactureYear: 'abc',
           status: 'abc',
         });
-        const nullBike = createBike(null, {
+        const nullBike = createBike({
+          bikeSerial: null,
           brand: null,
           model: null,
           manufactureYear: null,
@@ -175,7 +176,7 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const bike = createBike('BI-001');
+        const bike = createBike();
 
         beforeAll(truncateAllTables);
 
@@ -243,7 +244,7 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const bike = createBike('BI-001');
+        const bike = createBike();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -278,8 +279,8 @@ describe('/api/bikes', () => {
       const method = 'put';
 
       describe('409', () => {
-        const conflictingBike = createBike('BI-001');
-        const bikeToUpdate = createBike('BI-002', { id: faker.string.uuid() });
+        const conflictingBike = createBike();
+        const bikeToUpdate = createBike({ id: faker.string.uuid() });
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -338,16 +339,14 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const bike = createBike('BI-001');
+        const bike = createBike();
 
         beforeAll(async () => {
           await truncateAllTables();
           await Bike.create(bike);
         });
 
-        const updateData = createBike('BI-002', {
-          status: bikeStatus.AVAILABLE,
-        });
+        const updateData = createBike({ status: bikeStatus.AVAILABLE });
 
         const testCases = [
           {
@@ -384,8 +383,8 @@ describe('/api/bikes', () => {
       const method = 'delete';
 
       describe('412', () => {
-        const bike = createBike('BI-001');
-        const dock = createDock('DO-001', { bikeId: bike.id });
+        const bike = createBike();
+        const dock = createDock({ bikeId: bike.id });
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -439,7 +438,7 @@ describe('/api/bikes', () => {
       });
 
       describe('204', () => {
-        const bike = createBike('BI-001', { status: bikeStatus.RETIRED });
+        const bike = createBike({ status: bikeStatus.RETIRED });
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -483,8 +482,8 @@ describe('/api/bikes', () => {
       const method = 'post';
 
       describe('412', () => {
-        const bike = createBike('BI-001', { status: bikeStatus.AVAILABLE });
-        const dock = createDock('DO-001');
+        const bike = createBike({ status: bikeStatus.AVAILABLE });
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -561,11 +560,11 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const newBike = createBike('BI-001', { status: bikeStatus.NEW });
-        const underMaintenanceBike = createBike('BI-002', {
+        const newBike = createBike({ status: bikeStatus.NEW });
+        const underMaintenanceBike = createBike({
           status: bikeStatus.UNDER_MAINTENANCE,
         });
-        const dock = createDock('DO-001', { status: dockStatus.AVAILABLE });
+        const dock = createDock({ status: dockStatus.AVAILABLE });
 
         beforeEach(async () => {
           await truncateAllTables();
@@ -680,8 +679,8 @@ describe('/api/bikes', () => {
       const method = 'post';
 
       describe('412', () => {
-        const bike = createBike('BI-001');
-        const dock = createDock('DO-001');
+        const bike = createBike();
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -758,15 +757,11 @@ describe('/api/bikes', () => {
       });
 
       describe('200', () => {
-        const employee = createEmployee(
-          'EM-001',
-          '29596382047',
-          employeeRole.OPERATOR
-        );
-        const maintenanceRequestedBike = createBike('BI-002', {
+        const employee = createEmployee('29596382047');
+        const maintenanceRequestedBike = createBike({
           status: bikeStatus.MAINTENANCE_REQUESTED,
         });
-        const dock = createDock('DO-001', { status: dockStatus.OCCUPIED });
+        const dock = createDock({ status: dockStatus.OCCUPIED });
 
         beforeEach(async () => {
           await truncateAllTables();

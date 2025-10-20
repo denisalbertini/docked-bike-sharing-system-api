@@ -45,7 +45,7 @@ describe('/api/stations', () => {
       });
 
       describe('200', () => {
-        const stations = [createStation('ST-001'), createStation('ST-002')];
+        const stations = [createStation(), createStation()];
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -72,14 +72,16 @@ describe('/api/stations', () => {
       const method = 'post';
 
       describe('409', () => {
-        const station = createStation('ST-001');
+        const station = createStation();
 
         beforeAll(async () => {
           await truncateAllTables();
           await Station.create(station);
         });
 
-        const newStation = createStation('ST-001');
+        const newStation = createStation({
+          stationSerial: station.stationSerial,
+        });
 
         const testCases = [
           {
@@ -109,8 +111,16 @@ describe('/api/stations', () => {
       });
 
       describe('400', () => {
-        const invalidStation = createStation('abc', { name: '', location: '' });
-        const nullStation = createStation(null, { name: null, location: null });
+        const invalidStation = createStation({
+          stationSerial: 'abc',
+          name: '',
+          location: '',
+        });
+        const nullStation = createStation({
+          stationSerial: null,
+          name: null,
+          location: null,
+        });
 
         const testCases = [
           {
@@ -154,7 +164,7 @@ describe('/api/stations', () => {
       });
 
       describe('200', () => {
-        const station = createStation('ST-001');
+        const station = createStation();
 
         beforeAll(truncateAllTables);
 
@@ -194,8 +204,8 @@ describe('/api/stations', () => {
       const method = 'delete';
 
       describe('412', () => {
-        const station = createStation('ST-001');
-        const dock = createDock('DO-001', { stationId: station.id });
+        const station = createStation();
+        const dock = createDock({ stationId: station.id });
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -251,7 +261,7 @@ describe('/api/stations', () => {
       });
 
       describe('200', () => {
-        const station = createStation('ST-001');
+        const station = createStation();
 
         beforeAll(async () => {
           await truncateAllTables();

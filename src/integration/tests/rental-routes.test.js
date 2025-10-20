@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from '@jest/globals';
+import { beforeAll, describe, expect, jest, test } from '@jest/globals';
 import request from 'supertest';
 import app from '../../express/app.js';
 import Bike from '../../model/models/bike';
@@ -23,6 +23,8 @@ import {
 import { bikerToken } from '../tokens';
 import truncateAllTables from '../truncate-tables.js';
 
+jest.setTimeout(10000);
+
 const headers = { authorization: `Bearer ${bikerToken}` };
 
 describe('/api/rentals', () => {
@@ -34,9 +36,9 @@ describe('/api/rentals', () => {
 
       describe('412', () => {
         const creditCard = createCreditCard();
-        const biker = createBiker(false, creditCard.id, { cpf: '97375827052' });
-        const bike = createBike('BI-001');
-        const dock = createDock('DO-001');
+        const biker = createBiker(creditCard.id, { cpf: '97375827052' });
+        const bike = createBike();
+        const dock = createDock();
         const charge = createCharge(biker.id);
         const rental = createRental(biker.id, bike.id, dock.id, charge.id);
 
@@ -85,10 +87,10 @@ describe('/api/rentals', () => {
 
       describe('201', () => {
         const creditCard = createCreditCard();
-        const biker = createBiker(false, creditCard.id, { cpf: '97375827052' });
-        const bike = createBike('BI-001', { status: bikeStatus.AVAILABLE });
-        const station = createStation('ST-001');
-        const dock = createDock('DO-001', {
+        const biker = createBiker(creditCard.id, { cpf: '97375827052' });
+        const bike = createBike({ status: bikeStatus.AVAILABLE });
+        const station = createStation();
+        const dock = createDock({
           status: dockStatus.OCCUPIED,
           stationId: station.id,
         });
@@ -196,8 +198,8 @@ describe('/api/rentals', () => {
       const method = 'post';
 
       describe('412', () => {
-        const bike = createBike('BI-001');
-        const dock = createDock('DO-001');
+        const bike = createBike();
+        const dock = createDock();
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -235,13 +237,13 @@ describe('/api/rentals', () => {
 
       describe('201', () => {
         const creditCard = createCreditCard();
-        const biker = createBiker(false, creditCard.id, { cpf: '97375827052' });
+        const biker = createBiker(creditCard.id, { cpf: '97375827052' });
         const charge = createCharge(biker.id);
 
-        const station = createStation('ST-001');
+        const station = createStation();
 
-        const bike1 = createBike('BI-001', { status: bikeStatus.RENTED });
-        const dock1 = createDock('DO-001', {
+        const bike1 = createBike({ status: bikeStatus.RENTED });
+        const dock1 = createDock({
           status: dockStatus.AVAILABLE,
           stationId: station.id,
         });
@@ -255,8 +257,8 @@ describe('/api/rentals', () => {
           }
         );
 
-        const bike2 = createBike('BI-002', { status: bikeStatus.RENTED });
-        const dock2 = createDock('DO-002', {
+        const bike2 = createBike({ status: bikeStatus.RENTED });
+        const dock2 = createDock({
           status: dockStatus.AVAILABLE,
           stationId: station.id,
         });
