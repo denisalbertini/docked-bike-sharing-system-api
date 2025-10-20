@@ -53,13 +53,11 @@ export default class CreditCardService extends BaseService {
   }
 
   #validateExpirationDate( expirationDate ) {
+    if ( !/^(0[1-9]|1[0-2])\/\d{2}$/.test( expirationDate ) ) return false;
+    
     const [ monthStr, yearStr ] = expirationDate.split( '/' );
-    if ( monthStr.length !== 2 || yearStr.length !== 2 )
-      return false;
-
     const month = parseInt( monthStr, 10 );
     const year = parseInt( yearStr, 10 );
-    if ( isNaN( month ) || isNaN( year ) ) return false;
 
     const fullYear = 2000 + year;
 
