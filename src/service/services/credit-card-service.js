@@ -53,16 +53,22 @@ export default class CreditCardService extends BaseService {
   }
 
   #validateExpirationDate( expirationDate ) {
-    const [ month, year ] = expirationDate.split( '/' ).map( Number );
+    const [ monthStr, yearStr ] = expirationDate.split( '/' );
+    const month = parseInt( monthStr, 10 );
+    const year = parseInt( yearStr, 10 );
+    if ( isNaN( month ) || isNaN( year ) ) return false;
+
+    const fullYear = 2000 + year;
+
     const now = new Date();
-    const date = new Date( year, month - 1, 1 );
-    
-    return (
-      month >= 1 &&
-      month <= 12 &&
-      year >= now.getFullYear() &&
-      date >= new Date( now.getFullYear(), now.getMonth(), 1 )
-    );
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if ( month < 1 || month > 12 ) return false;
+    if ( fullYear < currentYear ) return false;
+    if ( fullYear === currentYear && month < currentMonth ) return false;
+
+    return true;
   }
 
   #validateCvv( cvv ) {
