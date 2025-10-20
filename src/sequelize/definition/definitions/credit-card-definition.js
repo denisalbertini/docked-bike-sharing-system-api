@@ -16,16 +16,16 @@ export function defineModel( sequelize ) {
         }
       }, 
       holderName: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING( 100 ), 
         allowNull: false, 
         validate: {
-          is: /^(?:(?:Mr|Mrs|Ms|Miss|Dr)\.? )?(?:[a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*(?: [a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*)*)$/
+          is: /^[\p{L}\s'.-]+$/u
         }
       }, 
       expirationDate: {
         type: DataTypes.STRING( 7 ),
         validate: {
-          is: /^(0[1-9]|1[0-2])\/\d{4}$/
+          is: /^(0[1-9]|1[0-2])\/\d{2}$/
         }
       }
     }, 
