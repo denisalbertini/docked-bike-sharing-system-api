@@ -54,6 +54,9 @@ export default class CreditCardService extends BaseService {
 
   #validateExpirationDate( expirationDate ) {
     const [ monthStr, yearStr ] = expirationDate.split( '/' );
+    if ( monthStr.length !== 2 || yearStr.length !== 2 )
+      return false;
+
     const month = parseInt( monthStr, 10 );
     const year = parseInt( yearStr, 10 );
     if ( isNaN( month ) || isNaN( year ) ) return false;
