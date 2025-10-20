@@ -16,14 +16,14 @@ enum biker_status {
 
 Table credit_card {
   id uuid [pk]
-  creditCardNumber varchar(19) [not null]
+  credit_card_number varchar(19) [not null]
   holder_name varchar(100) [not null]
   expiration_date char(7) [not null]
 }
 
 Table passport {
   id uuid [pk]
-  passportNumber varchar(9) [not null, unique]
+  passport_number varchar(9) [not null, unique]
   expiration_date date [not null]
   country_code char(3) [not null]
   biker_id uuid
@@ -32,7 +32,7 @@ Table passport {
 Table employee {
   id uuid [pk]
   registration char(6) [not null, unique]
-  cpf varchar(11) [not null, unique]
+  cpf char(11) [not null, unique]
   name varchar(100) [not null]
   birth_date date [not null]
   role employee_role [not null]
