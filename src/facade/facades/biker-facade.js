@@ -27,17 +27,17 @@ export default class BikerFacade extends BaseFacade {
     // Validates the data
     const failures = [];
 
-    const bikerValidationResult = this._modelService.validate(
-      { ...bikerData, ...( passportData ?? {} ) }
+    const bikerValidationResult = this._modelService.validateBeforeCreate(
+      bikerData, passportData
     );
-    if ( bikerValidationResult.isFailure )
-      failures.push( bikerValidationResult );
+    if ( bikerValidationResult.isFailure ) failures.push( bikerValidationResult );
 
     const creditCardValidationResult = this.#creditCardService.validate(
       creditCardData
     );
-    if( creditCardValidationResult.isFailure )
-      failures.push( creditCardValidationResult );
+    if( creditCardValidationResult.isFailure ) failures.push(
+      creditCardValidationResult
+    );
 
     // Checks for failures
     if ( failures.length !== 0 ) return Result.mergeFailures( failures );
@@ -51,7 +51,7 @@ export default class BikerFacade extends BaseFacade {
         {
           creditCardNumber: creditCardData.creditCardNumber, 
           holderName: creditCardData.holderName, 
-          expirationDate: creditCardData.expirationDate, 
+          expirationDate: creditCardData.expirationDate
         }
       );
       if ( creditCardResult.isFailure ) failures.push( creditCardResult );
@@ -102,70 +102,6 @@ export default class BikerFacade extends BaseFacade {
         name: biker.name, 
         birthDate: biker.birthDate, 
         email: biker.email, 
-        foreigner: biker.foreigner, 
-        status: biker.status, 
-        ...( passport && {
-            passport: {
-              passportNumber: passport.passportNumber, 
-              expirationDate: passport.expirationDate, 
-              countryCode: passport.countryCode
-            }
-          }
-        )
-      };
-
-      await this.#transaction.commit();
-
-      return Result.success( successData );
-    } catch ( error ) {
-      await this.#transaction.rollback();
-      
-      if ( error instanceof BaseError )
-        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
-
-      throw error;
-    }
-  }
-
-  async updateBiker( bikerId, bikerData, passportData = null ) {
-    // Validates the data
-    const dataValidationResult = this._modelService.validate(
-      { ...bikerData, ...( passportData ?? {} ), update: true }
-    );
-    if ( dataValidationResult.isFailure ) return dataValidationResult;
-
-    // Tries to finalize the proccess with a transaction
-    try {
-      const failures = [];
-      
-      await this.#transaction.start();
-
-      // Updates the biker
-      const bikerUpdateResult = await this.updateRecordById( bikerId, bikerData );
-      if ( bikerUpdateResult.isFailure ) failures.push( bikerUpdateResult );
-
-      // Updates the passport
-      if ( passportData ) {
-        var passportUpdateResult = await this.#passportService.updateByBikerId(
-          bikerId, passportData
-        );
-        if ( passportUpdateResult.isFailure ) failures.push( passportUpdateResult );
-        else var passport = passportUpdateResult.value;
-      }
-
-      if ( failures.length > 0 ) {
-        await this.#transaction.rollback();
-        return Result.mergeFailures( failures );
-      }
-
-      const biker = bikerUpdateResult.value;
-
-      const successData = {
-        ...( biker.cpf && { cpf: biker.cpf } ), 
-        name: biker.name, 
-        birthDate: biker.birthDate, 
-        email: biker.email, 
-        foreigner: biker.foreigner, 
         status: biker.status, 
         ...( passport && {
             passport: {
@@ -194,7 +130,74 @@ export default class BikerFacade extends BaseFacade {
     return this._modelService.activateAccount( bikerId, token );
   }
 
-  async changeBikerCreditCard( bikerId, creditCardData ) {
+  login( { email, password } ) {
+    return this._modelService.login( email, password );
+  }
+
+  async updateBiker( bikerId, bikerData, passportData = null ) {
+    // Validates the data
+    const dataValidationResult = await this._modelService.validateBeforeUpdate(
+      bikerId, bikerData, passportData
+    );
+    if ( dataValidationResult.isFailure ) return dataValidationResult;
+
+    // Tries to finalize the proccess with a transaction
+    try {
+      const failures = [];
+      
+      await this.#transaction.start();
+
+      // Updates the biker
+      const bikerUpdateResult = await this.updateRecordById( bikerId, bikerData );
+      if ( bikerUpdateResult.isFailure ) failures.push( bikerUpdateResult );
+
+      // Updates the passport
+      if ( passportData ) {
+        const passportUpdateResult = await this.#passportService.updateByBikerId(
+          bikerId, passportData
+        );
+        if ( passportUpdateResult.isFailure ) failures.push( passportUpdateResult );
+        var passport = passportUpdateResult.value;
+      }
+
+      // Checks for failures
+      if ( failures.length > 0 ) {
+        await this.#transaction.rollback();
+        return Result.mergeFailures( failures );
+      }
+
+      const biker = bikerUpdateResult.value;
+
+      const successData = {
+        ...( biker.cpf && { cpf: biker.cpf } ), 
+        name: biker.name, 
+        birthDate: biker.birthDate, 
+        email: biker.email, 
+        status: biker.status, 
+        ...( passport && {
+            passport: {
+              passportNumber: passport.passportNumber, 
+              expirationDate: passport.expirationDate, 
+              countryCode: passport.countryCode
+            }
+          }
+        )
+      };
+
+      await this.#transaction.commit();
+
+      return Result.success( successData );
+    } catch ( error ) {
+      await this.#transaction.rollback();
+      
+      if ( error instanceof BaseError )
+        return Result.failure( INTERNAL_SERVER_ERROR, error.message );
+
+      throw error;
+    }
+  }
+
+  async changeCreditCard( bikerId, creditCardData ) {
     // Validates the data
     const validationResult = this.#creditCardService.validate( creditCardData );
     if ( validationResult.isFailure ) return validationResult;
@@ -240,9 +243,5 @@ export default class BikerFacade extends BaseFacade {
 
       throw error;
     }
-  }
-
-  login( data ) {
-    return this._modelService.login( data );
   }
 }
