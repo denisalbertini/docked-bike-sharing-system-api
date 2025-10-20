@@ -23,10 +23,10 @@ export function defineModel( sequelize ) {
         }
       }, 
       name: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING( 100 ), 
         allowNull: false, 
         validate: {
-          is: /^(?:(?:Mr|Mrs|Ms|Miss|Dr)\.? )?(?:[a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*(?: [a-zA-Z]+(?:[.'-]?[a-zA-Z]+)*)*)$/
+          is: /^[\p{L}\s'.-]+$/u
         }
       }, 
       birthDate: {
@@ -51,13 +51,6 @@ export function defineModel( sequelize ) {
           is: /\$2[aby]\$10\$[./A-Za-z0-9]{53}/
         }
       }, 
-      foreigner: {
-        type: DataTypes.BOOLEAN, 
-        allowNull: false, 
-        validate: {
-          isIn: [ [ true, false ] ]
-        }
-      }, 
       status: {
         type: DataTypes.ENUM, 
         values: Object.values( status ), 
@@ -73,8 +66,7 @@ export function defineModel( sequelize ) {
       ...defaultOptions( Biker.name ), 
       hooks: {
         beforeCreate: ( biker, _options ) => {
-          if ( biker.status !== status.PENDING )
-            biker.status = status.PENDING;
+          biker.status = status.PENDING;
         }
       }
     }

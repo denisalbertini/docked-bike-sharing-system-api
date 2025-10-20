@@ -5,7 +5,6 @@ Table biker {
   birth_date date [not null]
   email varchar(100) [not null, unique]
   password char(60) [not null]
-  foreigner boolean [not null]
   status biker_status [not null, default: 'PENDING']
   credit_card_id uuid [not null]
 }
