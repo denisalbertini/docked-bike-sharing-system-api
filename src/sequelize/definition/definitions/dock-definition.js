@@ -51,8 +51,7 @@ export function defineModel( sequelize ) {
       ...defaultOptions( Dock.name ), 
       hooks: {
         beforeCreate: ( dock, _options ) => {
-          if ( dock.status !== status.OPERATIONAL )
-            dock.status = status.OPERATIONAL;
+          dock.status = status.OPERATIONAL;
         }, 
         beforeDestroy: ( dock, _options ) => {
           if ( dock.bikeId !== null )

@@ -56,8 +56,7 @@ export function defineModel( sequelize ) {
       ...defaultOptions( Bike.name ), 
       hooks: {
         beforeCreate: ( bike, _options ) => {
-          if ( bike.status !== status.NEW )
-            bike.status = status.NEW;
+          bike.status = status.NEW;
         }
       }
     }
