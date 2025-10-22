@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "dotenvx run -f .env.dev -f .env -- cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
-    "dev": "dotenvx run -f .env.dev -f .env -- node src/index.js"
+    "dev": "dotenvx run -f .env.dev -f .env -- nodemon src/index.js",
+    "swagger": "node swagger.js"
   },
   "repository": {
     "type": "git",
@@ -29,12 +30,15 @@
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "randexp": "^0.5.3",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
     "cross-env": "^10.1.0",
     "jest": "^30.2.0",
-    "supertest": "^7.1.4"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
+    "swagger-autogen": "^2.23.7"
   }
 }
