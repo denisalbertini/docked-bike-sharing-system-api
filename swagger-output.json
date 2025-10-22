@@ -1,0 +1,1103 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "version": "1.0.0",
+    "title": "Docked Bike Sharing System API",
+    "description": ""
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Bikes",
+      "description": "Bike management endpoints"
+    },
+    {
+      "name": "Bikers",
+      "description": "Biker management endpoints"
+    },
+    {
+      "name": "Charges",
+      "description": "Charging operations"
+    },
+    {
+      "name": "Docks",
+      "description": "Dock management endpoints"
+    },
+    {
+      "name": "Employees",
+      "description": "Employee management endpoints"
+    },
+    {
+      "name": "Rentals",
+      "description": "Rental operations"
+    },
+    {
+      "name": "Stations",
+      "description": "Station management endpoints"
+    }
+  ],
+  "paths": {
+    "/api/bikes/": {
+      "get": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Get all bikes",
+        "description": "Retrieve a list of all bikes (Employee access required)",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved bike list",
+            "content": {
+              "application/json": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Bike"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Bikes not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Create a bike",
+        "description": "Create a new bike (Employee access required)",
+        "responses": {
+          "201": {
+            "description": "Bike created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bike"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "validationError": {
+                    "$ref": "#/components/examples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "409": {
+            "description": "Conflict - Bike cannot be created (e.g., conflicting serial)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "uniqueConstraintError": {
+                    "$ref": "#/components/examples/UniqueConstraintError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewBike"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bikes/{id}": {
+      "get": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Get bike by ID",
+        "description": "Retrieve a specific bike by its ID (Employee access required)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved bike",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bike"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Bike not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Update bike",
+        "description": "Update a bike (Employee access required)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Bike updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bike"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "validationError": {
+                    "$ref": "#/components/examples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Bike not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBike"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Delete bike",
+        "description": "Delete a bike (Employee access required)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Bike deleted successfully - No content"
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Bike not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed - Bike cannot be deleted (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "preconditionFailedError": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ]
+      }
+    },
+    "/api/bikes/admission": {
+      "post": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Admit bike to dock",
+        "description": "Admit a bike to a dock (Operator access required)",
+        "responses": {
+          "201": {
+            "description": "Bike admitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BikeAdmission"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Operator authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Equipment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed - Bike cannot be admitted (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "preconditionFailedError": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OperatorAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewBikeAdmission"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bikes/removal": {
+      "post": {
+        "tags": [
+          "Bikes"
+        ],
+        "summary": "Remove bike from dock",
+        "description": "Remove a bike from a dock (Operator access required)",
+        "responses": {
+          "201": {
+            "description": "Bike removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BikeRemoval"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Operator authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Equipment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFoundError": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed - Bike cannot be removed (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "preconditionFailedError": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OperatorAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewBikeRemoval"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bikers/": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bikers/{id}/confirm": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bikers/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bikers/{id}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bikers/{id}/credit-cards": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/charges/late-fees": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/docks/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/docks/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/docks/admission": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/docks/removal": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/employees/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/employees/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/rentals/": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/rentals/return": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/stations/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/stations/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/specs/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "EmployeeAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OperatorAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Bike": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "51235fe8-76fe-47d0-bcb7-49760f09eff5"
+          },
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Caloi"
+          },
+          "model": {
+            "type": "string",
+            "example": "Velox"
+          },
+          "manufactureYear": {
+            "type": "number",
+            "example": 2020
+          },
+          "status": {
+            "example": "NEW",
+            "type": "string",
+            "enum": [
+              "NEW",
+              "AVAILABLE",
+              "RENTED",
+              "MAINTENANCE_REQUESTED",
+              "UNDER_MAINTENANCE",
+              "RETIRED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "bikeSerial",
+          "brand",
+          "model",
+          "manufactureYear",
+          "status"
+        ]
+      },
+      "NewBike": {
+        "type": "object",
+        "properties": {
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "brand": {
+            "type": "string",
+            "example": "Caloi"
+          },
+          "model": {
+            "type": "string",
+            "example": "Velox"
+          },
+          "manufactureYear": {
+            "type": "number",
+            "example": 2020
+          }
+        },
+        "required": [
+          "bikeSerial",
+          "brand",
+          "model",
+          "manufactureYear"
+        ]
+      },
+      "UpdateBike": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "example": "Caloi"
+          },
+          "model": {
+            "type": "string",
+            "example": "Velox"
+          }
+        }
+      },
+      "BikeAdmission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c9ebf37a-d07c-468d-a643-214eee5ff51e"
+          },
+          "requestedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+          },
+          "bikeId": {
+            "type": "string",
+            "example": "8b665731-39a9-4817-9f15-ec4d5e9ce3dc"
+          },
+          "dockId": {
+            "type": "string",
+            "example": "227c0110-4b12-45ad-ba6a-785a494fb6e0"
+          }
+        },
+        "required": [
+          "id",
+          "requestedAt",
+          "bikeId",
+          "dockId"
+        ]
+      },
+      "NewBikeAdmission": {
+        "type": "object",
+        "properties": {
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "dockSerial": {
+            "type": "string",
+            "example": "DO-001"
+          }
+        },
+        "required": [
+          "bikeSerial",
+          "dockSerial"
+        ]
+      },
+      "BikeRemoval": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c9ebf37a-d07c-468d-a643-214eee5ff51e"
+          },
+          "requestedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+          },
+          "bikeId": {
+            "type": "string",
+            "example": "8b665731-39a9-4817-9f15-ec4d5e9ce3dc"
+          },
+          "employeeId": {
+            "type": "string",
+            "example": "227c0110-4b12-45ad-ba6a-785a494fb6e0"
+          }
+        },
+        "required": [
+          "id",
+          "requestedAt",
+          "bikeId",
+          "employeeId"
+        ]
+      },
+      "NewBikeRemoval": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string",
+            "example": "227c0110-4b12-45ad-ba6a-785a494fb6e0"
+          },
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "dockSerial": {
+            "type": "string",
+            "example": "DO-001"
+          },
+          "action": {
+            "example": "REPAIR",
+            "type": "string",
+            "enum": [
+              "REPAIR",
+              "RETIRE"
+            ]
+          }
+        },
+        "required": [
+          "employeeId",
+          "bikeSerial",
+          "dockSerial",
+          "action"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "errorType": {
+            "type": "string",
+            "enum": [
+              "AUTHENTICATION_ERROR",
+              "FORBIDDEN_ERROR",
+              "FOREIGN_KEY_CONSTRAINT_ERROR",
+              "INTERNAL_SERVER_ERROR",
+              "NOT_FOUND_ERROR",
+              "PRECONDITION_FAILED_ERROR",
+              "UNIQUE_CONSTRAINT_ERROR",
+              "VALIDATION_ERROR"
+            ]
+          },
+          "errors": {
+            "type": "array",
+            "example": [
+              "Error message 1",
+              "Error message 2"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "errorType",
+          "errors"
+        ]
+      }
+    },
+    "examples": {
+      "NotFoundError": {
+        "value": {
+          "errorType": "NOT_FOUND_ERROR",
+          "errors": [
+            "Records not found."
+          ]
+        }
+      },
+      "ValidationError": {
+        "value": {
+          "errorType": "VALIDATION_ERROR",
+          "errors": [
+            "Validation is on entity.field failed.",
+            "Validation len on entity.anotherField failed."
+          ]
+        }
+      },
+      "UniqueConstraintError": {
+        "value": {
+          "errorType": "UNIQUE_CONSTRAINT_ERROR",
+          "errors": [
+            "duplicating key value violates unique constraint \"entity_field_key\""
+          ]
+        }
+      },
+      "PreconditionFailedError": {
+        "value": {
+          "errorType": "PRECONDITION_FAILED_ERROR",
+          "errors": [
+            "Instance is not STATUS"
+          ]
+        }
+      }
+    }
+  }
+}

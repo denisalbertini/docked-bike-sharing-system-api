@@ -6,16 +6,30 @@ import chargeRouter from './charge-router.js';
 import dockRouter from './dock-router.js';
 import employeeRouter from './employee-router.js';
 import rentalRouter from './rental-router.js';
+import specRouter from './spec-router.js';
 import stationRouter from './station-router.js';
 
 const router = express.Router();
 
-router.use( '/bikes', bikeRouter );
+router.use(
+  '/bikes', bikeRouter
+  /*
+  #swagger.tags = ['Bikes']
+  #swagger.security = [ { "EmployeeAuth": [] } ]
+  #swagger.responses[401] = {
+    description: 'Unauthorized - Employee authentication required'
+  }
+  #swagger.responses[403] = {
+    description: 'Forbidden - Insufficient credentials'
+  }
+  */
+);
 router.use( '/bikers', bikerRouter );
 router.use( '/charges', chargeRouter );
 router.use( '/docks', dockRouter );
 router.use( '/employees', employeeRouter );
 router.use( '/rentals', rentalRouter );
 router.use( '/stations', stationRouter );
+router.use( '/specs', specRouter );
 
 export default router;

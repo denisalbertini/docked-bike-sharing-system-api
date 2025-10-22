@@ -559,7 +559,7 @@ describe('/api/bikes', () => {
         );
       });
 
-      describe('200', () => {
+      describe('201', () => {
         const newBike = createBike({ status: bikeStatus.NEW });
         const underMaintenanceBike = createBike({
           status: bikeStatus.UNDER_MAINTENANCE,
@@ -581,6 +581,7 @@ describe('/api/bikes', () => {
               dockSerial: dock.dockSerial,
             },
             expectedResBody: {
+              id: expect.any(String),
               bikeId: newBike.id,
               dockId: dock.id,
               requestedAt: expect.any(String),
@@ -610,6 +611,7 @@ describe('/api/bikes', () => {
               dockSerial: dock.dockSerial,
             },
             expectedResBody: {
+              id: expect.any(String),
               bikeId: underMaintenanceBike.id,
               dockId: dock.id,
               requestedAt: expect.any(String),
@@ -756,7 +758,7 @@ describe('/api/bikes', () => {
         );
       });
 
-      describe('200', () => {
+      describe('201', () => {
         const employee = createEmployee('29596382047');
         const maintenanceRequestedBike = createBike({
           status: bikeStatus.MAINTENANCE_REQUESTED,
@@ -781,6 +783,7 @@ describe('/api/bikes', () => {
               action: 'REPAIR',
             },
             expectedResBody: {
+              id: expect.any(String),
               bikeId: maintenanceRequestedBike.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
@@ -812,6 +815,7 @@ describe('/api/bikes', () => {
               action: 'RETIRE',
             },
             expectedResBody: {
+              id: expect.any(String),
               bikeId: maintenanceRequestedBike.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),

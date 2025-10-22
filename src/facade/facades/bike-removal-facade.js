@@ -83,9 +83,8 @@ export default class BikeRemovalFacade extends BaseFacade {
       const bikeRemoval = createRemovalResult.value;
 
       const successData = {
-        requestedAt: bikeRemoval.requestedAt.toString(), 
-        bikeId: bikeRemoval.bikeId, 
-        employeeId: bikeRemoval.employeeId
+        ...bikeRemoval.dataValues, 
+        requestedAt: bikeRemoval.requestedAt.toString()
       }
 
       await this.#transaction.commit();

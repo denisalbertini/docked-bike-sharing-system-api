@@ -76,9 +76,8 @@ export default class BikeAdmissionFacade extends BaseFacade {
       const bikeAdmission = createAdmissionResult.value;
 
       const successData = {
-        requestedAt: bikeAdmission.requestedAt.toString(), 
-        bikeId: bikeAdmission.bikeId, 
-        dockId: bikeAdmission.dockId
+        ...bikeAdmission.dataValues, 
+        requestedAt: bikeAdmission.requestedAt.toString()
       }
 
       await this.#transaction.commit();
