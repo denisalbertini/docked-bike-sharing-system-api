@@ -1,11 +1,11 @@
 import {
-  FOREIGN_KEY_CONSTRAINT_ERROR, 
-  INTERNAL_SERVER_ERROR, 
-  NOT_FOUND_ERROR, 
-  PRECONDITION_FAILED_ERROR, 
-  UNIQUE_CONSTRAINT_ERROR, 
+  FOREIGN_KEY_CONSTRAINT_ERROR,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND_ERROR,
+  PRECONDITION_FAILED_ERROR,
+  UNIQUE_CONSTRAINT_ERROR,
   VALIDATION_ERROR
-} from './enum/error-types';
+} from './enum/error-types.js';
 
 const constructorErrorMessage =
   'Do not use the "new" operator to instantiate Result. Use the static "success" and "failure" methods instead.';
