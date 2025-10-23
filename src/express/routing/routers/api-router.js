@@ -11,8 +11,7 @@ import stationRouter from './station-router.js';
 
 const router = express.Router();
 
-router.use(
-  '/bikes', bikeRouter
+router.use( '/bikes', bikeRouter
   /*
   #swagger.tags = ['Bikes']
   #swagger.security = [ { "EmployeeAuth": [] } ]
@@ -24,7 +23,12 @@ router.use(
   }
   */
 );
-router.use( '/bikers', bikerRouter );
+router.use( '/bikers', bikerRouter
+  /*
+  #swagger.tags = ['Bikers']
+  #swagger.security = [ { "BikerAuth": [] } ]
+  */
+);
 router.use( '/charges', chargeRouter );
 router.use( '/docks', dockRouter );
 router.use( '/employees', employeeRouter );

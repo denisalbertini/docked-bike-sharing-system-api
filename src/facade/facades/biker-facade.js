@@ -98,19 +98,9 @@ export default class BikerFacade extends BaseFacade {
       }
 
       const successData = {
-        ...( biker.cpf && { cpf: biker.cpf } ), 
-        name: biker.name, 
-        birthDate: biker.birthDate, 
-        email: biker.email, 
-        status: biker.status, 
-        ...( passport && {
-            passport: {
-              passportNumber: passport.passportNumber, 
-              expirationDate: passport.expirationDate, 
-              countryCode: passport.countryCode
-            }
-          }
-        )
+        creditCard: creditCard.dataValues, 
+        biker: biker.dataValues, 
+        ...( passport && { passport: passport.dataValues } )
       };
 
       await this.#transaction.commit();
@@ -169,19 +159,8 @@ export default class BikerFacade extends BaseFacade {
       const biker = bikerUpdateResult.value;
 
       const successData = {
-        ...( biker.cpf && { cpf: biker.cpf } ), 
-        name: biker.name, 
-        birthDate: biker.birthDate, 
-        email: biker.email, 
-        status: biker.status, 
-        ...( passport && {
-            passport: {
-              passportNumber: passport.passportNumber, 
-              expirationDate: passport.expirationDate, 
-              countryCode: passport.countryCode
-            }
-          }
-        )
+        biker: biker.dataValues, 
+        ...( passport && { passport: passport.dataValues } )
       };
 
       await this.#transaction.commit();

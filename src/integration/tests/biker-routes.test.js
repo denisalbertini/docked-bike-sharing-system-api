@@ -208,11 +208,18 @@ describe('/api/bikers', () => {
               creditCard,
             },
             expectedResBody: {
-              cpf: bikerWithCpf.cpf,
-              name: bikerWithCpf.name,
-              birthDate: bikerWithCpf.birthDate,
-              email: bikerWithCpf.email,
-              status: bikerStatus.PENDING,
+              creditCard: {
+                id: expect.any(String),
+                creditCardNumber: creditCard.creditCardNumber,
+                holderName: creditCard.holderName,
+                expirationDate: creditCard.expirationDate,
+              },
+              biker: {
+                ...bikerWithCpf,
+                password: expect.any(String),
+                status: bikerStatus.PENDING,
+                creditCardId: expect.any(String),
+              },
             },
             expectedCreditCardRecord: expect.objectContaining({
               id: expect.any(String),
@@ -240,15 +247,19 @@ describe('/api/bikers', () => {
               passport,
             },
             expectedResBody: {
-              name: bikerWithoutCpf.name,
-              birthDate: bikerWithoutCpf.birthDate,
-              email: bikerWithoutCpf.email,
-              status: bikerStatus.PENDING,
-              passport: {
-                passportNumber: passport.passportNumber,
-                expirationDate: passport.expirationDate,
-                countryCode: passport.countryCode,
+              creditCard: {
+                id: expect.any(String),
+                creditCardNumber: creditCard.creditCardNumber,
+                holderName: creditCard.holderName,
+                expirationDate: creditCard.expirationDate,
               },
+              biker: {
+                ...bikerWithoutCpf,
+                password: expect.any(String),
+                status: bikerStatus.PENDING,
+                creditCardId: expect.any(String),
+              },
+              passport: { ...passport, bikerId: bikerWithoutCpf.id },
             },
             expectedCreditCardRecord: expect.objectContaining({
               id: expect.any(String),
@@ -431,11 +442,14 @@ describe('/api/bikers', () => {
               },
             },
             expectedResBody: {
-              cpf: bikerWithCpf.cpf,
-              name: bikerUpdateData.name,
-              birthDate: bikerUpdateData.birthDate,
-              email: bikerUpdateData.email,
-              status: bikerStatus.ACTIVE,
+              biker: {
+                ...bikerUpdateData,
+                id: bikerWithCpf.id,
+                cpf: bikerWithCpf.cpf,
+                password: expect.any(String),
+                status: bikerStatus.ACTIVE,
+                creditCardId: expect.any(String),
+              },
             },
             expectedBikerRecord: {
               ...bikerUpdateData,
@@ -469,14 +483,17 @@ describe('/api/bikers', () => {
               passport: passportUpdateData,
             },
             expectedResBody: {
-              name: bikerUpdateData.name,
-              birthDate: bikerUpdateData.birthDate,
-              email: bikerUpdateData.email,
-              status: bikerStatus.ACTIVE,
+              biker: {
+                ...bikerUpdateData,
+                id: bikerWithoutCpf.id,
+                password: expect.any(String),
+                status: bikerStatus.ACTIVE,
+                creditCardId: expect.any(String),
+              },
               passport: {
-                passportNumber: passportUpdateData.passportNumber,
-                expirationDate: passportUpdateData.expirationDate,
-                countryCode: passportUpdateData.countryCode,
+                ...passportUpdateData,
+                id: passport.id,
+                bikerId: bikerWithoutCpf.id,
               },
             },
             expectedBikerRecord: {
@@ -650,7 +667,7 @@ describe('/api/bikers', () => {
     describe('PUT', () => {
       const method = 'put';
 
-      describe('200', () => {
+      describe('204', () => {
         const originalCreditCard = createCreditCard();
         const existingCreditCard = createCreditCard();
         const biker = createBiker(originalCreditCard.id, {
