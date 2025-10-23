@@ -24,6 +24,7 @@ const doc = {
       EmployeeAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       OperatorAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       BikerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      SchedulerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
     },
     schemas: {
       Bike: {

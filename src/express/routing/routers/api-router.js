@@ -29,7 +29,12 @@ router.use( '/bikers', bikerRouter
   #swagger.security = [ { "BikerAuth": [] } ]
   */
 );
-router.use( '/charges', chargeRouter );
+router.use( '/charges', chargeRouter
+  /*
+  #swagger.tags = ['Charges']
+  #swagger.security = [ { 'SchedulerAuth': [] } ]
+  */
+);
 router.use( '/docks', dockRouter );
 router.use( '/employees', employeeRouter );
 router.use( '/rentals', rentalRouter );

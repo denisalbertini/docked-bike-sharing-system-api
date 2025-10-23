@@ -10,6 +10,15 @@ router.use( [ '/late-fees' ], schedulerAuthMiddleware );
 
 // Protected routes
 router.route( '/late-fees' )
-  .post( chargeController.chargeLateFees );
+  .post(
+    /*
+    #swagger.summary = "Charge late fees"
+    #swagger.description = "Tries to charge late fees (Scheduler auth required)"
+    #swagger.responses[204] = {
+      description: "Operation complete - No content"
+    }
+    */
+    chargeController.chargeLateFees
+  );
 
 export default router;

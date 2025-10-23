@@ -757,7 +757,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Biker authentication required"
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden - Insufficient credentials"
@@ -864,12 +864,21 @@
     },
     "/api/charges/late-fees": {
       "post": {
-        "description": "",
+        "tags": [
+          "Charges"
+        ],
+        "summary": "Charge late fees",
+        "description": "Tries to charge late fees (Scheduler auth required)",
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Operation complete - No content"
           }
-        }
+        },
+        "security": [
+          {
+            "SchedulerAuth": []
+          }
+        ]
       }
     },
     "/api/docks/": {
@@ -1122,6 +1131,11 @@
         "bearerFormat": "JWT"
       },
       "BikerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "SchedulerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
