@@ -112,12 +112,17 @@ describe('/api/rentals', () => {
               bikeSerial: bike.bikeSerial,
               dockSerial: dock.dockSerial,
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               startedAt: expect.any(String),
+              finishedAt: null,
               bikerId: biker.id,
               bikeId: bike.id,
-              dockId: dock.id,
-            }),
+              rentedFromDockId: dock.id,
+              returnedToDockId: null,
+              initialChargeId: expect.any(String),
+              extraChargeId: null,
+            },
             expectedBikeRecord: {
               ...bike,
               status: bikeStatus.RENTED,
@@ -152,7 +157,6 @@ describe('/api/rentals', () => {
           async ({
             reqBody,
             expectedResBody,
-            expectedChargeRecord,
             expectedBikeRecord,
             expectedDockRecord,
             expectedRentalRecord,
@@ -162,19 +166,20 @@ describe('/api/rentals', () => {
               .set(headers)
               .send(reqBody);
 
-            const bikeRecord = await Bike.findByPk(
-              expectedResBody.sample.bikeId,
-              { raw: true }
-            );
+            const bikeRecord = await Bike.findByPk(expectedResBody.bikeId, {
+              raw: true,
+            });
             const dockRecord = await Dock.findByPk(
-              expectedResBody.sample.dockId,
-              { raw: true }
+              expectedResBody.rentedFromDockId,
+              {
+                raw: true,
+              }
             );
             const rentalRecord = await Rental.findOne({
               where: {
-                bikerId: expectedResBody.sample.bikerId,
-                bikeId: expectedResBody.sample.bikeId,
-                rentedFromDockId: expectedResBody.sample.dockId,
+                bikerId: expectedResBody.bikerId,
+                bikeId: expectedResBody.bikeId,
+                rentedFromDockId: expectedResBody.rentedFromDockId,
               },
               include: { model: Charge, as: 'initialCharge' },
               raw: true,
@@ -235,7 +240,7 @@ describe('/api/rentals', () => {
         );
       });
 
-      describe('201', () => {
+      describe('200', () => {
         const creditCard = createCreditCard();
         const biker = createBiker(creditCard.id, { cpf: '97375827052' });
         const charge = createCharge(biker.id);
@@ -293,12 +298,12 @@ describe('/api/rentals', () => {
               bikeSerial: bike1.bikeSerial,
               dockSerial: dock1.dockSerial,
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              ...insideTimeLimitRental,
+              startedAt: insideTimeLimitRental.startedAt.toString(),
               finishedAt: expect.any(String),
-              bikerId: biker.id,
-              bikeId: bike1.id,
-              dockId: dock1.id,
-            }),
+              returnedToDockId: dock1.id,
+            },
             expectedBikeRecord: {
               ...bike1,
               status: bikeStatus.AVAILABLE,
@@ -332,12 +337,13 @@ describe('/api/rentals', () => {
               bikeSerial: bike2.bikeSerial,
               dockSerial: dock2.dockSerial,
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              ...outsideTimeLimitRental,
+              startedAt: outsideTimeLimitRental.startedAt.toString(),
               finishedAt: expect.any(String),
-              bikerId: biker.id,
-              bikeId: bike2.id,
-              dockId: dock2.id,
-            }),
+              returnedToDockId: dock2.id,
+              extraChargeId: expect.any(String),
+            },
             expectedBikeRecord: {
               ...bike2,
               status: bikeStatus.AVAILABLE,
@@ -381,19 +387,20 @@ describe('/api/rentals', () => {
               .set(headers)
               .send(reqBody);
 
-            const bikeRecord = await Bike.findByPk(
-              expectedResBody.sample.bikeId,
-              { raw: true }
-            );
+            const bikeRecord = await Bike.findByPk(expectedResBody.bikeId, {
+              raw: true,
+            });
             const dockRecord = await Dock.findByPk(
-              expectedResBody.sample.dockId,
-              { raw: true }
+              expectedResBody.rentedFromDockId,
+              {
+                raw: true,
+              }
             );
             const rentalRecord = await Rental.findOne({
               where: {
-                bikerId: expectedResBody.sample.bikerId,
-                bikeId: expectedResBody.sample.bikeId,
-                rentedFromDockId: expectedResBody.sample.dockId,
+                bikerId: expectedResBody.bikerId,
+                bikeId: expectedResBody.bikeId,
+                rentedFromDockId: expectedResBody.rentedFromDockId,
               },
               include: { model: Charge, as: 'extraCharge' },
               raw: true,

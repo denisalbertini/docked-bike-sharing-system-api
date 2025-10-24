@@ -10,9 +10,75 @@ router.use( [ '/', '/return' ], bikerAuthMiddleware );
 
 // Protected routes
 router.route( '/' )
-  .post( rentalController.createRecord );
+  .post(
+    /*
+    #swagger.summary = 'Create a rental'
+    #swagger.description = 'Create a new rental (Biker access required)'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/NewRental' }
+        }
+      }
+    }
+    #swagger.responses[201] = {
+      description: 'Rental created successfully',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/Rental' }
+        }
+      }
+    }
+    #swagger.responses[412] = {
+      description: 'Precondition Failed - Rental cannot be created (e.g., biker is already renting)',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/Error' },
+          examples: {
+            error: { $ref: '#/components/examples/PreconditionFailedError' }
+          }
+        }
+      }
+    }
+    */
+    rentalController.createRecord
+  );
 
 router.route( '/return' )
-  .post( rentalController.registerReturn );
+  .post(
+    /*
+    #swagger.summary = 'Return a bike'
+    #swagger.description = 'Return a rented bike (Biker access required)'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/BikeReturn' }
+        }
+      }
+    }
+    #swagger.responses[201] = {
+      description: 'Return made successfully',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/FinishedRental' }
+        }
+      }
+    }
+    #swagger.responses[412] = {
+      description: 'Precondition Failed - Bike cannot be returned (e.g., bike is not rented)',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/Error' },
+          examples: {
+            error: { $ref: '#/components/examples/PreconditionFailedError' }
+          }
+        }
+      }
+    }
+    */
+    rentalController.registerReturn
+  );
 
 export default router;

@@ -59,7 +59,18 @@ router.use( '/employees', employeeRouter
   }
   */
 );
-router.use( '/rentals', rentalRouter );
+router.use( '/rentals', rentalRouter
+  /*
+  #swagger.tags = ['Rentals']
+  #swagger.security = [ { 'BikerAuth': [] } ]
+  #swagger.responses[401] = {
+    description: 'Unauthorized - Biker authentication required'
+  }
+  #swagger.responses[403] = {
+    description: 'Forbidden - Insufficient credentials'
+  }
+  */
+);
 router.use( '/stations', stationRouter );
 router.use( '/specs', specRouter );
 

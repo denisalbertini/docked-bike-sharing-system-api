@@ -122,10 +122,8 @@ export default class RentalFacade extends BaseFacade {
       }
 
       var successData = {
-        startedAt: rental.startedAt.toString(), 
-        bikerId: rental.bikerId, 
-        bikeId: rental.bikeId, 
-        dockId: rental.rentedFromDockId
+        ...rental.dataValues, 
+        startedAt: rental.startedAt.toString()
       };
 
       await this.#transaction.commit();
@@ -256,10 +254,9 @@ export default class RentalFacade extends BaseFacade {
       var updatedRental = updateRentalResult.value;
 
       var successData = {
-        finishedAt: updatedRental.finishedAt.toString(), 
-        bikerId: updatedRental.bikerId, 
-        bikeId: updatedRental.bikeId, 
-        dockId: updatedRental.returnedToDockId
+        ...updatedRental.dataValues, 
+        startedAt: updatedRental.startedAt.toString(), 
+        finishedAt: updatedRental.finishedAt.toString()
       };
 
       await this.#transaction.commit();

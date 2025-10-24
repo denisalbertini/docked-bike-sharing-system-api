@@ -1648,20 +1648,114 @@
     },
     "/api/rentals/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Create a rental",
+        "description": "Create a new rental (Biker access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Rental created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Biker authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "412": {
+            "description": "Precondition Failed - Rental cannot be created (e.g., biker is already renting)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BikerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewRental"
+              }
+            }
           }
         }
       }
     },
     "/api/rentals/return": {
       "post": {
-        "description": "",
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Return a bike",
+        "description": "Return a rented bike (Biker access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Return made successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinishedRental"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Biker authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "412": {
+            "description": "Precondition Failed - Bike cannot be returned (e.g., bike is not rented)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BikerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BikeReturn"
+              }
+            }
           }
         }
       }
@@ -2802,6 +2896,45 @@
           }
         }
       },
+      "NewRental": {
+        "type": "object",
+        "properties": {
+          "bikerId": {
+            "type": "string",
+            "example": "5c452a1f-c920-48c4-b0e1-09bae4738248"
+          },
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "dockSerial": {
+            "type": "string",
+            "example": "DO-001"
+          }
+        },
+        "required": [
+          "bikerId",
+          "bikeSerial",
+          "dockSerial"
+        ]
+      },
+      "BikeReturn": {
+        "type": "object",
+        "properties": {
+          "bikeSerial": {
+            "type": "string",
+            "example": "BI-001"
+          },
+          "dockSerial": {
+            "type": "string",
+            "example": "DO-001"
+          }
+        },
+        "required": [
+          "bikeSerial",
+          "dockSerial"
+        ]
+      },
       "JWT": {
         "type": "object",
         "properties": {
@@ -2887,6 +3020,114 @@
             "nullable": true
           },
           "bikeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "Rental": {
+        "type": "object",
+        "required": [
+          "id",
+          "startedAt",
+          "finishedAt",
+          "bikerId",
+          "bikeId",
+          "rentedFromDockId",
+          "returnedToDockId",
+          "initialChargeId",
+          "extraChargeId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+          },
+          "finishedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)",
+            "nullable": true
+          },
+          "bikerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bikeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rentedFromDockId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "returnedToDockId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "initialChargeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "extraChargeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "FinishedRental": {
+        "type": "object",
+        "required": [
+          "id",
+          "startedAt",
+          "finishedAt",
+          "bikerId",
+          "bikeId",
+          "rentedFromDockId",
+          "returnedToDockId",
+          "initialChargeId",
+          "extraChargeId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+          },
+          "finishedAt": {
+            "type": "string",
+            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+          },
+          "bikerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bikeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rentedFromDockId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "returnedToDockId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "initialChargeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "extraChargeId": {
             "type": "string",
             "format": "uuid",
             "nullable": true
