@@ -56,8 +56,8 @@ describe('/api/employees', () => {
           {
             description: 'Record found',
             expectedResBody: [
-              expect.objectContaining({ ...admin, deletedAt: null }),
-              expect.objectContaining({ ...operator, deletedAt: null }),
+              { ...admin, deletedAt: null },
+              { ...operator, deletedAt: null },
             ],
           },
         ];

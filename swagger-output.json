@@ -1345,25 +1345,129 @@
     },
     "/api/employees/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Get all employees",
+        "description": "Retrieve a list of all employees (Admin access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successfully retrieved employee list",
+            "content": {
+              "application/json": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Admin authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Employees not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ]
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Create a employee",
+        "description": "Create a new employee (Admin access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Employee created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Admin authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "409": {
+            "description": "Conflict - Employee cannot be created (e.g., conflicting registration)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/UniqueConstraintError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewEmployee"
+              }
+            }
           }
         }
       }
     },
     "/api/employees/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Get employee by ID",
+        "description": "Retrieve a specific employee by its ID (Admin access required)",
         "parameters": [
           {
             "name": "id",
@@ -1375,13 +1479,50 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successfully retrieved employee",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Admin authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ]
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Update employee",
+        "description": "Update a employee (Admin access required)",
         "parameters": [
           {
             "name": "id",
@@ -1393,13 +1534,75 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Employee updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Admin authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployee"
+              }
+            }
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Delete employee",
+        "description": "Delete a employee (Admin access required)",
         "parameters": [
           {
             "name": "id",
@@ -1411,10 +1614,36 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Employee deleted successfully - No content"
+          },
+          "401": {
+            "description": "Unauthorized - Admin authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "AdminAuth": []
+          }
+        ]
       }
     },
     "/api/rentals/": {
@@ -1504,6 +1733,11 @@
         "bearerFormat": "JWT"
       },
       "SchedulerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "AdminAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
@@ -2469,6 +2703,104 @@
           "dockSerial",
           "action"
         ]
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "755db5fd-8f43-4aec-af2e-d85ffebb5e94"
+          },
+          "registration": {
+            "type": "string",
+            "example": "EM-001"
+          },
+          "cpf": {
+            "type": "string",
+            "example": "29914469000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Carlos Sainz"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "2000-06-15"
+          },
+          "role": {
+            "example": "OPERATOR",
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "OPERATOR"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "registration",
+          "cpf",
+          "name",
+          "birthDate",
+          "role"
+        ]
+      },
+      "NewEmployee": {
+        "type": "object",
+        "properties": {
+          "registration": {
+            "type": "string",
+            "example": "EM-001"
+          },
+          "cpf": {
+            "type": "string",
+            "example": "29914469000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Carlos Sainz"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "2000-06-15"
+          },
+          "role": {
+            "example": "OPERATOR",
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "OPERATOR"
+            ]
+          }
+        },
+        "required": [
+          "registration",
+          "cpf",
+          "name",
+          "birthDate",
+          "role"
+        ]
+      },
+      "UpdateEmployee": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Carlos Sainz"
+          },
+          "birthDate": {
+            "type": "string",
+            "example": "2000-06-15"
+          },
+          "role": {
+            "example": "OPERATOR",
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "OPERATOR"
+            ]
+          }
+        }
       },
       "JWT": {
         "type": "object",

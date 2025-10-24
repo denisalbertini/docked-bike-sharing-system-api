@@ -47,7 +47,18 @@ router.use( '/docks', dockRouter
   }
   */
 );
-router.use( '/employees', employeeRouter );
+router.use( '/employees', employeeRouter
+  /*
+  #swagger.tags = ['Employees']
+  #swagger.security = [ { 'AdminAuth': [] } ]
+  #swagger.responses[401] = {
+    description: 'Unauthorized - Admin authentication required'
+  }
+  #swagger.responses[403] = {
+    description: 'Forbidden - Insufficient credentials'
+  }
+  */
+);
 router.use( '/rentals', rentalRouter );
 router.use( '/stations', stationRouter );
 router.use( '/specs', specRouter );

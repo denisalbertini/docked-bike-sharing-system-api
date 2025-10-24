@@ -2,6 +2,7 @@ import swaggerAutogen from 'swagger-autogen';
 import bikeStatus from './src/model/shared/enum/bike-status.js';
 import bikerStatus from './src/model/shared/enum/biker-status.js';
 import dockStatus from './src/model/shared/enum/dock-status.js';
+import employeeRole from './src/model/shared/enum/employee-role.js';
 import * as errorTypes from './src/model/shared/enum/error-types.js';
 
 const doc = {
@@ -26,6 +27,7 @@ const doc = {
       OperatorAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       BikerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       SchedulerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      AdminAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
     },
     schemas: {
       Bike: {
@@ -251,6 +253,35 @@ const doc = {
         $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
         $dockSerial: 'DO-001',
         $action: { '@enum': ['REPAIR', 'RETIRE'], example: 'REPAIR' },
+      },
+      Employee: {
+        $id: '755db5fd-8f43-4aec-af2e-d85ffebb5e94',
+        $registration: 'EM-001',
+        $cpf: '29914469000',
+        $name: 'Carlos Sainz',
+        $birthDate: '2000-06-15',
+        $role: {
+          '@enum': Object.values(employeeRole),
+          example: employeeRole.OPERATOR,
+        },
+      },
+      NewEmployee: {
+        $registration: 'EM-001',
+        $cpf: '29914469000',
+        $name: 'Carlos Sainz',
+        $birthDate: '2000-06-15',
+        $role: {
+          '@enum': Object.values(employeeRole),
+          example: employeeRole.OPERATOR,
+        },
+      },
+      UpdateEmployee: {
+        name: 'Carlos Sainz',
+        birthDate: '2000-06-15',
+        role: {
+          '@enum': Object.values(employeeRole),
+          example: employeeRole.OPERATOR,
+        },
       },
       JWT: {
         $token:
