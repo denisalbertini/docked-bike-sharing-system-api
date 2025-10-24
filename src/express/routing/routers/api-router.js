@@ -35,7 +35,18 @@ router.use( '/charges', chargeRouter
   #swagger.security = [ { 'SchedulerAuth': [] } ]
   */
 );
-router.use( '/docks', dockRouter );
+router.use( '/docks', dockRouter
+  /*
+  #swagger.tags = ['Docks']
+  #swagger.security = [ { 'EmployeeAuth': [] } ]
+  #swagger.responses[401] = {
+    description: 'Unauthorized - Employee authentication required'
+  }
+  #swagger.responses[403] = {
+    description: 'Forbidden - Insufficient credentials'
+  }
+  */
+);
 router.use( '/employees', employeeRouter );
 router.use( '/rentals', rentalRouter );
 router.use( '/stations', stationRouter );

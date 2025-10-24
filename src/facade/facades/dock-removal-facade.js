@@ -62,10 +62,9 @@ export default class DockRemovalFacade extends BaseFacade {
       const dockRemoval = createDockRemoval.value;
 
       const successData = {
-        requestedAt: dockRemoval.requestedAt.toString(), 
-        dockId: dockRemoval.dockId, 
-        employeeId: dockRemoval.employeeId
-      }
+        ...dockRemoval.dataValues, 
+        requestedAt: dockRemoval.requestedAt.toString()
+      };
 
       await this.#transaction.commit();
 

@@ -1,6 +1,7 @@
 import swaggerAutogen from 'swagger-autogen';
 import bikeStatus from './src/model/shared/enum/bike-status.js';
 import bikerStatus from './src/model/shared/enum/biker-status.js';
+import dockStatus from './src/model/shared/enum/dock-status.js';
 import * as errorTypes from './src/model/shared/enum/error-types.js';
 
 const doc = {
@@ -220,6 +221,37 @@ const doc = {
         $email: 'email@address.com',
         $password: 'secret',
       },
+      NewDock: {
+        $dockSerial: 'D0-001',
+        $model: 'Bike Dock',
+        $manufactureDate: '2020-06-15',
+      },
+      UpdateDock: {
+        $model: 'Bike Dock',
+        $manufactureDate: '2020-06-15',
+      },
+      DockAdmission: {
+        $id: '4cce0e13-1759-42a9-8c48-4c42b3020752',
+        $requestedAt: new Date('2025-06-15').toString(),
+        $dockId: '1120180c-fda6-4ffa-a0c9-9956c935dd8f',
+        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
+      },
+      NewDockAdmission: {
+        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
+        $dockSerial: 'DO-001',
+        $stationSerial: 'ST-001',
+      },
+      DockRemoval: {
+        $id: '4cce0e13-1759-42a9-8c48-4c42b3020752',
+        $requestedAt: new Date('2025-06-15').toString(),
+        $dockId: '1120180c-fda6-4ffa-a0c9-9956c935dd8f',
+        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
+      },
+      NewDockRemoval: {
+        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
+        $dockSerial: 'DO-001',
+        $action: { '@enum': ['REPAIR', 'RETIRE'], example: 'REPAIR' },
+      },
       JWT: {
         $token:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
@@ -227,6 +259,31 @@ const doc = {
       Error: {
         $errorType: { '@enum': Object.values(errorTypes) },
         $errors: ['Error message 1', 'Error message 2'],
+      },
+    },
+    '@schemas': {
+      Dock: {
+        type: 'object',
+        required: [
+          'id',
+          'dockSerial',
+          'model',
+          'status',
+          'stationId',
+          'bikeId',
+        ],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+          model: { type: 'string', example: 'Bike Dock' },
+          status: {
+            type: 'string',
+            enum: Object.values(dockStatus),
+            example: dockStatus.OPERATIONAL,
+          },
+          stationId: { type: 'string', format: 'uuid', nullable: true },
+          bikeId: { type: 'string', format: 'uuid', nullable: true },
+        },
       },
     },
     examples: {

@@ -69,10 +69,9 @@ export default class DockAdmissionFacade extends BaseFacade {
       const dockAdmission = createAdmissionResult.value;
 
       const successData = {
-        requestedAt: dockAdmission.requestedAt.toString(), 
-        dockId: dockAdmission.dockId, 
-        employeeId: dockAdmission.employeeId
-      }
+        ...dockAdmission.dataValues, 
+        requestedAt: dockAdmission.requestedAt.toString()
+      };
 
       await this.#transaction.commit();
 

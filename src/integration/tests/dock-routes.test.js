@@ -228,15 +228,19 @@ describe('/api/docks', () => {
 
       describe('412', () => {
         const availableDock = createDock({
+          dockSerial: 'DO-001',
           status: dockStatus.AVAILABLE,
         });
         const decommissionedDock = createDock({
+          dockSerial: 'DO-002',
           status: dockStatus.DECOMMISSIONED,
         });
         const maintenanceRequestedDock = createDock({
+          dockSerial: 'DO-003',
           status: dockStatus.MAINTENANCE_REQUESTED,
         });
         const occupiedDock = createDock({
+          dockSerial: 'DO-004',
           status: dockStatus.OCCUPIED,
         });
 
@@ -288,9 +292,11 @@ describe('/api/docks', () => {
       describe('201', () => {
         const station = createStation();
         const operationalDock = createDock({
+          dockSerial: 'DO-001',
           status: dockStatus.OPERATIONAL,
         });
         const underMaintenanceDock = createDock({
+          dockSerial: 'DO-002',
           status: dockStatus.UNDER_MAINTENANCE,
         });
         const employee = createEmployee('47537987041');
@@ -310,16 +316,18 @@ describe('/api/docks', () => {
               dockSerial: operationalDock.dockSerial,
               stationSerial: station.stationSerial,
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: operationalDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: operationalDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
           },
           {
             description: 'Under maintenance dock',
@@ -328,16 +336,18 @@ describe('/api/docks', () => {
               dockSerial: underMaintenanceDock.dockSerial,
               stationSerial: station.stationSerial,
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: underMaintenanceDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: underMaintenanceDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
           },
         ];
 
@@ -349,18 +359,21 @@ describe('/api/docks', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.body).toStrictEqual(expectedResBody);
-            expect(res.status).toBe(201);
-
             const admissionRecord = await DockAdmission.findOne({
               where: {
-                dockId: expectedRecord.sample.dockId,
-                employeeId: expectedRecord.sample.employeeId,
+                dockId: expectedRecord.dockId,
+                employeeId: expectedRecord.employeeId,
               },
               raw: true,
             });
+            const dockRecord = await Dock.findByPk(expectedRecord.dockId, {
+              raw: true,
+            });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(201);
             expect(admissionRecord).toStrictEqual(expectedRecord);
+            expect(dockRecord.status).toBe(dockStatus.AVAILABLE);
           }
         );
       });
@@ -409,18 +422,23 @@ describe('/api/docks', () => {
       describe('201', () => {
         const station = createStation();
         const availableDock = createDock({
+          dockSerial: 'DO-001',
           status: dockStatus.AVAILABLE,
         });
         const decommissionedDock = createDock({
+          dockSerial: 'DO-002',
           status: dockStatus.DECOMMISSIONED,
         });
         const maintenanceRequestedDock = createDock({
+          dockSerial: 'DO-003',
           status: dockStatus.MAINTENANCE_REQUESTED,
         });
         const operationalDock = createDock({
+          dockSerial: 'DO-004',
           status: dockStatus.OPERATIONAL,
         });
         const underMaintenanceDock = createDock({
+          dockSerial: 'DO-005',
           status: dockStatus.UNDER_MAINTENANCE,
         });
         const employee = createEmployee('47537987041');
@@ -447,16 +465,19 @@ describe('/api/docks', () => {
               stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: availableDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: availableDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
+            expectedDockStatus: dockStatus.UNDER_MAINTENANCE,
           },
           {
             description: 'Decommissioned dock',
@@ -466,16 +487,19 @@ describe('/api/docks', () => {
               stationSerial: station.stationSerial,
               action: 'RETIRE',
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: decommissionedDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: decommissionedDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
+            expectedDockStatus: dockStatus.DECOMMISSIONED,
           },
           {
             description: 'Maintenance requested dock',
@@ -485,16 +509,19 @@ describe('/api/docks', () => {
               stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: maintenanceRequestedDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: maintenanceRequestedDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
+            expectedDockStatus: dockStatus.UNDER_MAINTENANCE,
           },
           {
             description: 'Operational dock',
@@ -504,16 +531,19 @@ describe('/api/docks', () => {
               stationSerial: station.stationSerial,
               action: 'RETIRE',
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: operationalDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: operationalDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
+            expectedDockStatus: dockStatus.DECOMMISSIONED,
           },
           {
             description: 'Under maintenance dock',
@@ -523,39 +553,50 @@ describe('/api/docks', () => {
               stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
-            expectedResBody: expect.objectContaining({
+            expectedResBody: {
+              id: expect.any(String),
               dockId: underMaintenanceDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(String),
-            }),
-            expectedRecord: expect.objectContaining({
+            },
+            expectedRecord: {
+              id: expect.any(String),
               dockId: underMaintenanceDock.id,
               employeeId: employee.id,
               requestedAt: expect.any(Date),
-            }),
+            },
+            expectedDockStatus: dockStatus.UNDER_MAINTENANCE,
           },
         ];
 
         test.each(testCases)(
           '$description',
-          async ({ reqBody, expectedResBody, expectedRecord }) => {
+          async ({
+            reqBody,
+            expectedResBody,
+            expectedRecord,
+            expectedDockStatus,
+          }) => {
             const res = await request(app)
               [method](path)
               .set(headers)
               .send(reqBody);
 
-            expect(res.body).toStrictEqual(expectedResBody);
-            expect(res.status).toBe(201);
-
             const removalRecord = await DockRemoval.findOne({
               where: {
-                dockId: expectedRecord.sample.dockId,
-                employeeId: expectedRecord.sample.employeeId,
+                dockId: expectedRecord.dockId,
+                employeeId: expectedRecord.employeeId,
               },
               raw: true,
             });
+            const dockRecord = await Dock.findByPk(expectedRecord.dockId, {
+              raw: true,
+            });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(201);
             expect(removalRecord).toStrictEqual(expectedRecord);
+            expect(dockRecord.status).toBe(expectedDockStatus);
           }
         );
       });
