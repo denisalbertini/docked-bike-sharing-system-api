@@ -71,7 +71,18 @@ router.use( '/rentals', rentalRouter
   }
   */
 );
-router.use( '/stations', stationRouter );
+router.use( '/stations', stationRouter
+  /*
+  #swagger.tags = ['Stations']
+  #swagger.security = [ { 'EmployeeAuth': [] } ]
+  #swagger.responses[401] = {
+    description: 'Unauthorized - Employee authentication required'
+  }
+  #swagger.responses[403] = {
+    description: 'Forbidden - Insufficient credentials'
+  }
+  */
+);
 router.use( '/specs', specRouter );
 
 export default router;

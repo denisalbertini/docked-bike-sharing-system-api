@@ -1762,25 +1762,129 @@
     },
     "/api/stations/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Stations"
+        ],
+        "summary": "Get all stations",
+        "description": "Retrieve a list of all stations (Employee access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Successfully retrieved station list",
+            "content": {
+              "application/json": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Stations not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ]
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Stations"
+        ],
+        "summary": "Create a station",
+        "description": "Create a new station (Employee access required)",
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Station created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "409": {
+            "description": "Conflict - Station cannot be created (e.g., conflicting serial)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/UniqueConstraintError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewStation"
+              }
+            }
           }
         }
       }
     },
     "/api/stations/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Stations"
+        ],
+        "summary": "Delete station",
+        "description": "Delete a station (Employee access required)",
         "parameters": [
           {
             "name": "id",
@@ -1792,10 +1896,51 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Station deleted successfully - No content"
+          },
+          "401": {
+            "description": "Unauthorized - Employee authentication required"
+          },
+          "403": {
+            "description": "Forbidden - Insufficient credentials"
+          },
+          "404": {
+            "description": "Station not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/NotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed - Station cannot be deleted (e.g., station is operational)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/PreconditionFailedError"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "EmployeeAuth": []
+          }
+        ]
       }
     },
     "/api/specs/": {
@@ -2933,6 +3078,55 @@
         "required": [
           "bikeSerial",
           "dockSerial"
+        ]
+      },
+      "Station": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a44d65ca-b2c4-4e9b-9a3d-22594bc82c7a"
+          },
+          "stationSerial": {
+            "type": "string",
+            "example": "ST-001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Bike Sampa"
+          },
+          "location": {
+            "type": "string",
+            "example": "Av. Paulista"
+          }
+        },
+        "required": [
+          "id",
+          "stationSerial",
+          "name",
+          "location"
+        ]
+      },
+      "NewStation": {
+        "type": "object",
+        "properties": {
+          "stationSerial": {
+            "type": "string",
+            "example": "ST-001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Bike Sampa"
+          },
+          "location": {
+            "type": "string",
+            "example": "Av. Paulista"
+          }
+        },
+        "required": [
+          "stationSerial",
+          "name",
+          "location"
         ]
       },
       "JWT": {

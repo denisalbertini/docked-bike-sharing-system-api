@@ -292,6 +292,17 @@ const doc = {
         $bikeSerial: 'BI-001',
         $dockSerial: 'DO-001',
       },
+      Station: {
+        $id: 'a44d65ca-b2c4-4e9b-9a3d-22594bc82c7a',
+        $stationSerial: 'ST-001',
+        $name: 'Bike Sampa',
+        $location: 'Av. Paulista',
+      },
+      NewStation: {
+        $stationSerial: 'ST-001',
+        $name: 'Bike Sampa',
+        $location: 'Av. Paulista',
+      },
       JWT: {
         $token:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
