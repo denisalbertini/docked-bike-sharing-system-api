@@ -83,6 +83,8 @@ router.use( '/stations', stationRouter
   }
   */
 );
-router.use( '/specs', specRouter );
+router.use( '/specs', specRouter
+  // #swagger.ignore = true
+);
 
 export default router;

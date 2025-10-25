@@ -1942,16 +1942,6 @@
           }
         ]
       }
-    },
-    "/api/specs/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
     }
   },
   "components": {
