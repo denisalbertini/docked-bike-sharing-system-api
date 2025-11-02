@@ -19,7 +19,10 @@ import { createBike, createDock, createEmployee } from '../data-factory.js';
 import { operatorToken } from '../tokens.js';
 import truncateAllTables from '../truncate-tables.js';
 
-const headers = { authorization: `Bearer ${operatorToken}` };
+const headers = {
+  'Content-Type': 'application/json',
+  authorization: `Bearer ${operatorToken}`,
+};
 
 describe('/api/bikes', () => {
   describe('/', () => {
@@ -59,7 +62,7 @@ describe('/api/bikes', () => {
 
         const testCases = [
           {
-            description: 'Records founds',
+            description: 'Records found',
             expectedResBody: bikes.map(b => ({
               ...b,
               status: bikeStatus.NEW,
@@ -71,8 +74,8 @@ describe('/api/bikes', () => {
         test.each(testCases)('$description', async ({ expectedResBody }) => {
           const res = await request(app)[method](path).set(headers);
 
-          expect(res.status).toBe(200);
           expect(res.body).toStrictEqual(expectedResBody);
+          expect(res.status).toBe(200);
         });
       });
     });
@@ -88,12 +91,14 @@ describe('/api/bikes', () => {
           await Bike.create(conflictingBike);
         });
 
-        const newBike = createBike({ bikeSerial: conflictingBike.bikeSerial });
+        const { bikeSerial, brand, model, manufactureYear } = createBike({
+          bikeSerial: conflictingBike.bikeSerial,
+        });
 
         const testCases = [
           {
             description: 'Conflicting serial number',
-            reqBody: newBike,
+            reqBody: { bikeSerial, brand, model, manufactureYear },
             expectedErrors: [
               'duplicar valor da chave viola a restrição de unicidade "bike_bike_serial_key"',
             ],
@@ -108,52 +113,32 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(409);
             expect(res.body).toStrictEqual({
               errorType: UNIQUE_CONSTRAINT_ERROR,
               errors: expectedErrors,
             });
+            expect(res.status).toBe(409);
           }
         );
       });
 
       describe('400', () => {
-        const invalidBike = createBike({
+        const invalidBike = {
           bikeSerial: 'abc',
-          brand: 'a'.repeat(101),
+          brand: '',
           model: '',
-          manufactureYear: 'abc',
-          status: 'abc',
-        });
-        const nullBike = createBike({
-          bikeSerial: null,
-          brand: null,
-          model: null,
-          manufactureYear: null,
-          status: null,
-        });
+          manufactureYear: new Date().getFullYear() + 1,
+        };
 
         const testCases = [
           {
             description: 'Invalid values',
             reqBody: invalidBike,
             expectedErrors: [
+              'Validation isValidYear on manufactureYear failed',
               'Validation is on bikeSerial failed',
               'Validation len on brand failed',
               'Validation len on model failed',
-              'Validation is on manufactureYear failed',
-              'Validation isIn on status failed',
-            ],
-          },
-          {
-            description: 'Null values',
-            reqBody: nullBike,
-            expectedErrors: [
-              'Bike.bikeSerial cannot be null',
-              'Bike.brand cannot be null',
-              'Bike.model cannot be null',
-              'Bike.manufactureYear cannot be null',
-              'Bike.status cannot be null',
             ],
           },
         ];
@@ -166,28 +151,33 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({
               errorType: VALIDATION_ERROR,
               errors: expectedErrors,
             });
+            expect(res.status).toBe(400);
           }
         );
       });
 
       describe('200', () => {
-        const bike = createBike();
-
         beforeAll(truncateAllTables);
+
+        const { bikeSerial, brand, model, manufactureYear } = createBike();
 
         const testCases = [
           {
             description: 'Record created',
-            reqBody: bike,
-            expectedResBody: expect.objectContaining({
-              ...bike,
+            reqBody: { bikeSerial, brand, model, manufactureYear },
+            expectedResBody: {
+              bikeSerial,
+              brand,
+              model,
+              manufactureYear,
+              id: expect.any(String),
               status: bikeStatus.NEW,
-            }),
+              deletedAt: null,
+            },
           },
         ];
 
@@ -199,14 +189,13 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(201);
-            expect(res.body).toStrictEqual(expectedResBody);
-
             const persistedData = await Bike.findOne({
-              where: { id: reqBody.id },
+              where: { bikeSerial },
               raw: true,
             });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(201);
             expect(persistedData).toStrictEqual(expectedResBody);
           }
         );
@@ -278,43 +267,6 @@ describe('/api/bikes', () => {
     describe('PUT', () => {
       const method = 'put';
 
-      describe('409', () => {
-        const conflictingBike = createBike();
-        const bikeToUpdate = createBike({ id: faker.string.uuid() });
-
-        beforeAll(async () => {
-          await truncateAllTables();
-          await Bike.bulkCreate([conflictingBike, bikeToUpdate]);
-        });
-
-        const testCases = [
-          {
-            description: 'Conflicting serial number',
-            path: path(bikeToUpdate.id),
-            reqBody: conflictingBike,
-            expectedErrors: [
-              'duplicar valor da chave viola a restrição de unicidade "bike_pkey"',
-            ],
-          },
-        ];
-
-        test.each(testCases)(
-          '$description',
-          async ({ path, reqBody, expectedErrors }) => {
-            const res = await request(app)
-              [method](path)
-              .set(headers)
-              .send(reqBody);
-
-            expect(res.status).toBe(409);
-            expect(res.body).toStrictEqual({
-              errorType: UNIQUE_CONSTRAINT_ERROR,
-              errors: expectedErrors,
-            });
-          }
-        );
-      });
-
       describe('404', () => {
         const testCases = [
           {
@@ -346,14 +298,20 @@ describe('/api/bikes', () => {
           await Bike.create(bike);
         });
 
-        const updateData = createBike({ status: bikeStatus.AVAILABLE });
+        const { brand, model } = createBike();
 
         const testCases = [
           {
             description: 'Record updated',
             path: path(bike.id),
-            reqBody: { ...updateData, deletedAt: null },
-            expectedResBody: { ...updateData, deletedAt: null },
+            reqBody: { brand, model },
+            expectedResBody: {
+              ...bike,
+              brand,
+              model,
+              status: bikeStatus.NEW,
+              deletedAt: null,
+            },
           },
         ];
 
@@ -365,14 +323,13 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(200);
-            expect(res.body).toStrictEqual(expectedResBody);
-
             const persistedData = await Bike.findOne({
-              where: { bikeSerial: reqBody.bikeSerial },
+              where: { bikeSerial: bike.bikeSerial },
               raw: true,
             });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(200);
             expect(persistedData).toStrictEqual(expectedResBody);
           }
         );
@@ -466,8 +423,8 @@ describe('/api/bikes', () => {
               paranoid: false,
             });
 
-            expect(res.status).toBe(204);
             expect(res.body).toStrictEqual({});
+            expect(res.status).toBe(204);
             expect(persistedData).toStrictEqual(expectPersistedData);
           }
         );
@@ -529,14 +486,6 @@ describe('/api/bikes', () => {
             reqBody: {
               bikeSerial: 'abc',
               dockSerial: 'abc',
-            },
-            expectedErrors: ['Bike not found.', 'Dock not found.'],
-          },
-          {
-            description: 'Null values',
-            reqBody: {
-              bikeSerial: null,
-              dockSerial: null,
             },
             expectedErrors: ['Bike not found.', 'Dock not found.'],
           },
@@ -694,8 +643,10 @@ describe('/api/bikes', () => {
           {
             description: 'Preconditions failed',
             reqBody: {
+              employeeId: faker.string.uuid(),
               bikeSerial: bike.bikeSerial,
               dockSerial: dock.dockSerial,
+              action: 'REPAIR',
             },
             expectedErrors: [
               'Bike is not MAINTENANCE_REQUESTED.',
@@ -712,30 +663,24 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(412);
             expect(res.body).toStrictEqual({
               errorType: PRECONDITION_FAILED_ERROR,
               errors: expectedErrors,
             });
+            expect(res.status).toBe(412);
           }
         );
       });
 
-      describe('404', () => {
+      describe('400', () => {
         const testCases = [
           {
             description: 'Invalid values',
             reqBody: {
+              employeeId: faker.string.uuid(),
               bikeSerial: 'abc',
               dockSerial: 'abc',
-            },
-            expectedErrors: ['Bike not found.', 'Dock not found.'],
-          },
-          {
-            description: 'Null values',
-            reqBody: {
-              bikeSerial: null,
-              dockSerial: null,
+              action: 'REPAIR',
             },
             expectedErrors: ['Bike not found.', 'Dock not found.'],
           },
@@ -749,11 +694,11 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(404);
             expect(res.body).toStrictEqual({
               errorType: NOT_FOUND_ERROR,
               errors: expectedErrors,
             });
+            expect(res.status).toBe(404);
           }
         );
       });

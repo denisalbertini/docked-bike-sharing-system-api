@@ -8,7 +8,6 @@ export const createBike = (overrides = {}) => ({
   brand: faker.vehicle.manufacturer(),
   model: faker.vehicle.model(),
   manufactureYear: 2000,
-  status: undefined,
   ...overrides,
 });
 

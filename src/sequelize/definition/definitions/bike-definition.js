@@ -37,7 +37,11 @@ export function defineModel( sequelize ) {
         type: DataTypes.INTEGER, 
         allowNull: false, 
         validate: {
-          is: /\b(19|20)\d{2}\b/
+          isValidYear( year ) {
+            const currentYear = new Date().getFullYear();
+            if ( year < 2000 || year > currentYear )
+              throw new Error( 'Validation isValidYear on manufactureYear failed' );
+          }
         }
       }, 
       status: {

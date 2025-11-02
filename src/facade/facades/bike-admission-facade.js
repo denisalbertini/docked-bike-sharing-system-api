@@ -77,7 +77,7 @@ export default class BikeAdmissionFacade extends BaseFacade {
 
       const successData = {
         ...bikeAdmission.dataValues, 
-        requestedAt: bikeAdmission.requestedAt.toString()
+        requestedAt: bikeAdmission.requestedAt.toISOString()
       }
 
       await this.#transaction.commit();

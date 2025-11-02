@@ -84,7 +84,7 @@ export default class BikeRemovalFacade extends BaseFacade {
 
       const successData = {
         ...bikeRemoval.dataValues, 
-        requestedAt: bikeRemoval.requestedAt.toString()
+        requestedAt: bikeRemoval.requestedAt.toISOString()
       }
 
       await this.#transaction.commit();
