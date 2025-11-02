@@ -1,6 +1,6 @@
 import express from 'express';
-import { adminAuthMiddleware } from '../auth-middleware.js';
 import { employeeController } from '../controller-instances.js';
+import { adminAuthMiddleware } from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();
@@ -18,8 +18,10 @@ router.route( '/' )
       description: 'Successfully retrieved employee list',
       content: {
         'application/json': {
-          type: 'array',
-          items: { $ref: '#/components/schemas/Employee' }
+          schema: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Employee' }
+          }
         }
       }
     }

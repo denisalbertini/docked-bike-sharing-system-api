@@ -1,13 +1,13 @@
 import express from 'express';
 import {
-  employeeAuthMiddleware,
-  operatorAuthMiddleware
-} from '../auth-middleware.js';
-import {
   bikeAdmissionController,
   bikeController,
   bikeRemovalController
 } from '../controller-instances.js';
+import {
+  employeeAuthMiddleware,
+  operatorAuthMiddleware
+} from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();
@@ -26,8 +26,10 @@ router.route( '/' )
       description: 'Successfully retrieved bike list',
       content: {
         "application/json": {
-          type: 'array',
-          items: { $ref: "#/components/schemas/Bike" }
+          schema: {
+            type: 'array',
+            items: { $ref: "#/components/schemas/Bike" }
+          }
         }
       }
     }
@@ -130,7 +132,7 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
       description: 'Bike updated successfully',
       content: {
         "application/json": {
@@ -156,6 +158,17 @@ router.route( '/:id' )
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
             notFoundError: { $ref: "#/components/examples/NotFoundError" }
+          }
+        }
+      }
+    }
+    #swagger.responses[409] = {
+      description: 'Conflict - Bike cannot be updated (e.g., conflicting serial)',
+      content: {
+        "application/json": {
+          schema: { $ref: "#/components/schemas/Error" },
+          examples: {
+            uniqueConstraintError: { $ref: "#/components/examples/UniqueConstraintError" }
           }
         }
       }

@@ -1,6 +1,6 @@
 import express from 'express';
-import { schedulerAuthMiddleware } from '../auth-middleware.js';
 import { chargeController } from '../controller-instances.js';
+import { schedulerAuthMiddleware } from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();

@@ -1,6 +1,6 @@
 import express from 'express';
-import { bikerAuthMiddleware } from '../auth-middleware.js';
 import { rentalController } from '../controller-instances.js';
+import { bikerAuthMiddleware } from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();

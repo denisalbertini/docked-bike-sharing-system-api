@@ -1,6 +1,6 @@
 import express from 'express';
-import { employeeAuthMiddleware } from '../auth-middleware.js';
 import { stationController } from '../controller-instances.js';
+import { employeeAuthMiddleware } from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();
@@ -18,8 +18,10 @@ router.route( '/' )
       description: 'Successfully retrieved station list',
       content: {
         'application/json': {
-          type: 'array',
-          items: { $ref: '#/components/schemas/Station' }
+          schema: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Station' }
+          }
         }
       }
     }

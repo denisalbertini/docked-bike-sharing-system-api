@@ -1,13 +1,13 @@
 import express from 'express';
 import {
-  employeeAuthMiddleware,
-  operatorAuthMiddleware
-} from '../auth-middleware.js';
-import {
   dockAdmissionController,
   dockController,
   dockRemovalController
 } from '../controller-instances.js';
+import {
+  employeeAuthMiddleware,
+  operatorAuthMiddleware
+} from '../middlewares/auth-middleware.js';
 
 // Router
 const router = express.Router();
@@ -26,8 +26,10 @@ router.route( '/' )
       description: 'Successfully retrieved dock list',
       content: {
         'application/json': {
-          type: 'array',
-          items: { $ref: '#/components/schemas/Dock' }
+          schema: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/Dock' }
+          }
         }
       }
     }
