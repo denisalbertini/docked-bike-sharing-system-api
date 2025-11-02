@@ -1,3 +1,4 @@
+import fs from 'fs';
 import swaggerAutogen from 'swagger-autogen';
 import bikeStatus from './src/model/shared/enum/bike-status.js';
 import bikerStatus from './src/model/shared/enum/biker-status.js';
@@ -29,290 +30,464 @@ const doc = {
       SchedulerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       AdminAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
     },
-    schemas: {
+    '@schemas': {
       Bike: {
-        $id: '51235fe8-76fe-47d0-bcb7-49760f09eff5',
-        $bikeSerial: 'BI-001',
-        $brand: 'Caloi',
-        $model: 'Velox',
-        $manufactureYear: 2020,
-        $status: {
-          '@enum': Object.values(bikeStatus),
-          example: bikeStatus.NEW,
+        type: 'object',
+        required: [
+          'id',
+          'bikeSerial',
+          'brand',
+          'model',
+          'manufactureYear',
+          'status',
+        ],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          brand: { type: 'string', example: 'Caloi' },
+          model: { type: 'string', example: 'Velox' },
+          manufactureYear: { type: 'integer', example: 2020 },
+          status: {
+            type: 'string',
+            enum: Object.values(bikeStatus),
+            example: bikeStatus.NEW,
+          },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true },
         },
+        additionalProperties: false,
       },
       NewBike: {
-        $bikeSerial: 'BI-001',
-        $brand: 'Caloi',
-        $model: 'Velox',
-        $manufactureYear: 2020,
+        type: 'object',
+        required: ['bikeSerial', 'brand', 'model', 'manufactureYear'],
+        properties: {
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          brand: { type: 'string', example: 'Caloi' },
+          model: { type: 'string', example: 'Velox' },
+          manufactureYear: { type: 'integer', example: 2020 },
+        },
+        additionalProperties: false,
       },
       UpdateBike: {
-        brand: 'Caloi',
-        model: 'Velox',
+        type: 'object',
+        properties: {
+          brand: { type: 'string', example: 'Caloi' },
+          model: { type: 'string', example: 'Velox' },
+        },
+        additionalProperties: false,
       },
       BikeAdmission: {
-        $id: 'c9ebf37a-d07c-468d-a643-214eee5ff51e',
-        $requestedAt: new Date('2025-06-15').toString(),
-        $bikeId: '8b665731-39a9-4817-9f15-ec4d5e9ce3dc',
-        $dockId: '227c0110-4b12-45ad-ba6a-785a494fb6e0',
+        type: 'object',
+        required: ['id', 'requestedAt', 'bikeId', 'dockId'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          requestedAt: { type: 'string', format: 'date-time' },
+          bikeId: { type: 'string', format: 'uuid' },
+          dockId: { type: 'string', format: 'uuid' },
+        },
+        additionalProperties: false,
       },
       NewBikeAdmission: {
-        $bikeSerial: 'BI-001',
-        $dockSerial: 'DO-001',
+        type: 'object',
+        required: ['bikeSerial', 'dockSerial'],
+        properties: {
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+        },
+        additionalProperties: false,
       },
       BikeRemoval: {
-        $id: 'c9ebf37a-d07c-468d-a643-214eee5ff51e',
-        $requestedAt: new Date('2025-06-15').toString(),
-        $bikeId: '8b665731-39a9-4817-9f15-ec4d5e9ce3dc',
-        $employeeId: '227c0110-4b12-45ad-ba6a-785a494fb6e0',
+        type: 'object',
+        required: ['id', 'requestedAt', 'bikeId', 'employeeId'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          requestedAt: { type: 'string', format: 'date-time' },
+          bikeId: { type: 'string', format: 'uuid' },
+          employeeId: { type: 'string', format: 'uuid' },
+        },
+        additionalProperties: false,
       },
       NewBikeRemoval: {
-        $employeeId: '227c0110-4b12-45ad-ba6a-785a494fb6e0',
-        $bikeSerial: 'BI-001',
-        $dockSerial: 'DO-001',
-        $action: {
-          '@enum': ['REPAIR', 'RETIRE'],
-          example: 'REPAIR',
+        type: 'object',
+        required: ['employeeId', 'bikeSerial', 'dockSerial', 'action'],
+        properties: {
+          employeeId: { type: 'string', format: 'uuid' },
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+          action: {
+            type: 'string',
+            enum: ['REPAIR', 'RETIRE'],
+            example: 'REPAIR',
+          },
         },
+        additionalProperties: false,
       },
       LocalBiker: {
-        $creditCard: {
-          $id: '99ad9eda-1067-4649-a9f7-ff320bc243e2',
-          $creditCardNumber: '2720369125488639',
-          $holderName: 'Max Titanium',
-          $expirationDate: '06/30',
+        type: 'object',
+        required: ['creditCard', 'biker'],
+        properties: {
+          creditCard: {
+            type: 'object',
+            required: [
+              'id',
+              'creditCardNumber',
+              'holderName',
+              'expirationDate',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              creditCardNumber: { type: 'string', example: '2720369125488639' },
+              holderName: { type: 'string', example: 'Max Titanium' },
+              expirationDate: { type: 'string', example: '06/30' },
+            },
+            additionalProperties: false,
+          },
+          biker: {
+            type: 'object',
+            required: [
+              'id',
+              'cpf',
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'status',
+              'creditCardId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              cpf: { type: 'string', example: '20528178083' },
+              name: { type: 'string', example: 'Ramon Dino' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string' },
+              status: {
+                type: 'string',
+                enum: Object.values(bikerStatus),
+                example: bikerStatus.PENDING,
+              },
+              creditCardId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
         },
-        $biker: {
-          $id: 'ca944d61-3b44-4676-8064-f4a0311d4e41',
-          $cpf: '20528178083',
-          $name: 'Ramon Dino',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password:
-            '$2b$12$9sT7Qa8vFc2x.Ym3hDpZeu5rV1wKk8qLbN4jS6zM5tC8vB3nA7pP',
-          $status: bikerStatus.PENDING,
-          $creditCardId: '99ad9eda-1067-4649-a9f7-ff320bc243e2',
-        },
+        additionalProperties: false,
       },
       NewLocalBiker: {
-        $creditCard: {
-          $creditCardNumber: '2720369125488639',
-          $holderName: 'Max Titanium',
-          $expirationDate: '06/30',
-          $cvv: '523',
+        type: 'object',
+        required: ['creditCard', 'biker'],
+        properties: {
+          creditCard: {
+            type: 'object',
+            required: [
+              'creditCardNumber',
+              'holderName',
+              'expirationDate',
+              'cvv',
+            ],
+            properties: {
+              creditCardNumber: { type: 'string', example: '2720369125488639' },
+              holderName: { type: 'string', example: 'Max Titanium' },
+              expirationDate: { type: 'string', example: '06/30' },
+              cvv: { type: 'string', example: '523' },
+            },
+            additionalProperties: false,
+          },
+          biker: {
+            type: 'object',
+            required: [
+              'cpf',
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'confirmationPassword',
+            ],
+            properties: {
+              cpf: { type: 'string', example: '20528178083' },
+              name: { type: 'string', example: 'Ramon Dino' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string', example: 'secret' },
+              confirmationPassword: { type: 'string', example: 'secret' },
+            },
+            additionalProperties: false,
+          },
         },
-        $biker: {
-          $cpf: '20528178083',
-          $name: 'Ramon Dino',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password: 'secret',
-          $confirmationPassword: 'secret',
-        },
+        additionalProperties: false,
       },
       UpdateLocalBiker: {
-        $biker: {
-          name: 'Ramon Dino',
-          birthDate: '2000-06-15',
-          email: 'email@address.com',
-          password: 'secret',
-          confirmationPassword: 'secret',
+        type: 'object',
+        required: ['biker'],
+        properties: {
+          biker: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', example: 'Ramon Dino' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string', example: 'secret' },
+              confirmationPassword: { type: 'string', example: 'secret' },
+            },
+            additionalProperties: false,
+          },
         },
+        additionalProperties: false,
       },
       UpdatedLocalBiker: {
-        $biker: {
-          $id: 'ca944d61-3b44-4676-8064-f4a0311d4e41',
-          $cpf: '20528178083',
-          $name: 'Ramon Dino',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password:
-            '$2b$12$9sT7Qa8vFc2x.Ym3hDpZeu5rV1wKk8qLbN4jS6zM5tC8vB3nA7pP',
-          $status: bikerStatus.ACTIVE,
-          $creditCardId: '99ad9eda-1067-4649-a9f7-ff320bc243e2',
+        type: 'object',
+        required: ['biker'],
+        properties: {
+          biker: {
+            type: 'object',
+            required: [
+              'id',
+              'cpf',
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'status',
+              'creditCardId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              cpf: { type: 'string', example: '20528178083' },
+              name: { type: 'string', example: 'Ramon Dino' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string' },
+              status: {
+                type: 'string',
+                enum: Object.values(bikerStatus),
+                example: bikerStatus.ACTIVE,
+              },
+              creditCardId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
         },
+        additionalProperties: false,
       },
       ForeignerBiker: {
-        $creditCard: {
-          $id: 'f1cce713-7ee5-429d-97e2-ff64681dd11e',
-          $creditCardNumber: '340103324294850',
-          $holderName: 'Raw Supplements',
-          $expirationDate: '06/30',
+        type: 'object',
+        required: ['creditCard', 'biker', 'passport'],
+        properties: {
+          creditCard: {
+            type: 'object',
+            required: [
+              'id',
+              'creditCardNumber',
+              'holderName',
+              'expirationDate',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              creditCardNumber: { type: 'string', example: '340103324294850' },
+              holderName: { type: 'string', example: 'Raw Supplements' },
+              expirationDate: { type: 'string', example: '06/30' },
+            },
+            additionalProperties: false,
+          },
+          biker: {
+            type: 'object',
+            required: [
+              'id',
+              'cpf',
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'status',
+              'creditCardId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              cpf: { type: 'string', nullable: true },
+              name: { type: 'string', example: 'Chris Bumstead' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string' },
+              status: {
+                type: 'string',
+                enum: Object.values(bikerStatus),
+                example: bikerStatus.PENDING,
+              },
+              creditCardId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
+          passport: {
+            type: 'object',
+            required: [
+              'id',
+              'passportNumber',
+              'expirationDate',
+              'countryCode',
+              'bikerId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              passportNumber: { type: 'string', example: 'P123456AA' },
+              expirationDate: { type: 'string', format: 'date' },
+              countryCode: { type: 'string', example: 'CAN' },
+              bikerId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
         },
-        $biker: {
-          $id: 'e2417de5-78a3-43fc-9d01-f1d453fbaf67',
-          $cpf: null,
-          $name: 'Chris Bumstead',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password:
-            '$2b$12$9sT7Qa8vFc2x.Ym3hDpZeu5rV1wKk8qLbN4jS6zM5tC8vB3nA7pP',
-          $status: bikerStatus.PENDING,
-          $creditCardId: 'f1cce713-7ee5-429d-97e2-ff64681dd11e',
-        },
-        $passport: {
-          $id: '604b613f-265d-42bc-a31a-d8888435d692',
-          $passportNumber: 'P123456AA',
-          $expirationDate: '2030-06-15',
-          $countryCode: 'CAN',
-          $bikerId: 'e2417de5-78a3-43fc-9d01-f1d453fbaf67',
-        },
+        additionalProperties: false,
       },
       NewForeignerBiker: {
-        $creditCard: {
-          $creditCardNumber: '340103324294850',
-          $holderName: 'Raw Supplements',
-          $expirationDate: '06/30',
-          $cvv: '609',
+        type: 'object',
+        required: ['creditCard', 'biker', 'passport'],
+        properties: {
+          creditCard: {
+            type: 'object',
+            required: [
+              'creditCardNumber',
+              'holderName',
+              'expirationDate',
+              'cvv',
+            ],
+            properties: {
+              creditCardNumber: { type: 'string', example: '340103324294850' },
+              holderName: { type: 'string', example: 'Raw Supplements' },
+              expirationDate: { type: 'string', example: '06/30' },
+              cvv: { type: 'string', example: '609' },
+            },
+            additionalProperties: false,
+          },
+          biker: {
+            type: 'object',
+            required: [
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'confirmationPassword',
+            ],
+            properties: {
+              name: { type: 'string', example: 'Chris Bumstead' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string', example: 'secret' },
+              confirmationPassword: { type: 'string', example: 'secret' },
+            },
+            additionalProperties: false,
+          },
+          passport: {
+            type: 'object',
+            required: ['passportNumber', 'expirationDate', 'countryCode'],
+            properties: {
+              passportNumber: { type: 'string', example: 'P123456AA' },
+              expirationDate: { type: 'string', format: 'date' },
+              countryCode: { type: 'string', example: 'CAN' },
+            },
+            additionalProperties: false,
+          },
         },
-        $biker: {
-          $name: 'Chris Bumstead',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password: 'secret',
-          $confirmationPassword: 'secret',
-        },
-        $passport: {
-          $passportNumber: 'P123456AA',
-          $expirationDate: '2030-06-15',
-          $countryCode: 'CAN',
-        },
+        additionalProperties: false,
       },
       UpdateForeignerBiker: {
-        $biker: {
-          name: 'Chris Bumstead',
-          birthDate: '2000-06-15',
-          email: 'email@address.com',
-          password: 'secret',
-          confirmationPassword: 'secret',
+        type: 'object',
+        required: ['biker'],
+        properties: {
+          biker: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', example: 'Chris Bumstead' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string', example: 'secret' },
+              confirmationPassword: { type: 'string', example: 'secret' },
+            },
+            additionalProperties: false,
+          },
+          passport: {
+            type: 'object',
+            properties: {
+              passportNumber: { type: 'string', example: 'P123456AA' },
+              expirationDate: { type: 'string', format: 'date' },
+              countryCode: { type: 'string', example: 'CAN' },
+            },
+            additionalProperties: false,
+          },
         },
-        passport: {
-          $passportNumber: 'P123456AA',
-          $expirationDate: '2030-06-15',
-          $countryCode: 'CAN',
-        },
+        additionalProperties: false,
       },
       UpdatedForeignerBiker: {
-        $biker: {
-          $id: 'e2417de5-78a3-43fc-9d01-f1d453fbaf67',
-          $cpf: null,
-          $name: 'Chris Bumstead',
-          $birthDate: '2000-06-15',
-          $email: 'email@address.com',
-          $password:
-            '$2b$12$9sT7Qa8vFc2x.Ym3hDpZeu5rV1wKk8qLbN4jS6zM5tC8vB3nA7pP',
-          $status: bikerStatus.ACTIVE,
-          $creditCardId: 'f1cce713-7ee5-429d-97e2-ff64681dd11e',
+        type: 'object',
+        required: ['biker', 'passport'],
+        properties: {
+          biker: {
+            type: 'object',
+            required: [
+              'id',
+              'cpf',
+              'name',
+              'birthDate',
+              'email',
+              'password',
+              'status',
+              'creditCardId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              cpf: { type: 'string', nullable: true },
+              name: { type: 'string', example: 'Chris Bumstead' },
+              birthDate: { type: 'string', format: 'date' },
+              email: { type: 'string', format: 'email' },
+              password: { type: 'string' },
+              status: {
+                type: 'string',
+                enum: Object.values(bikerStatus),
+                example: bikerStatus.ACTIVE,
+              },
+              creditCardId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
+          passport: {
+            type: 'object',
+            required: [
+              'id',
+              'passportNumber',
+              'expirationDate',
+              'countryCode',
+              'bikerId',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              passportNumber: { type: 'string', example: 'P123456AA' },
+              expirationDate: { type: 'string', format: 'date' },
+              countryCode: { type: 'string', example: 'CAN' },
+              bikerId: { type: 'string', format: 'uuid' },
+            },
+            additionalProperties: false,
+          },
         },
-        $passport: {
-          $id: '604b613f-265d-42bc-a31a-d8888435d692',
-          $passportNumber: 'P123456AA',
-          $expirationDate: '2030-06-15',
-          $countryCode: 'CAN',
-          $bikerId: 'e2417de5-78a3-43fc-9d01-f1d453fbaf67',
-        },
+        additionalProperties: false,
       },
       NewCreditCard: {
-        $creditCardNumber: '4716269544487406',
-        $holderName: 'Scrooge McDuck',
-        $expirationDate: '06/30',
-        $cvv: '286',
+        type: 'object',
+        required: ['creditCardNumber', 'holderName', 'expirationDate', 'cvv'],
+        properties: {
+          creditCardNumber: { type: 'string', example: '4716269544487406' },
+          holderName: { type: 'string', example: 'Scrooge McDuck' },
+          expirationDate: { type: 'string', example: '06/30' },
+          cvv: { type: 'string', example: '286' },
+        },
+        additionalProperties: false,
       },
       BikerLogin: {
-        $email: 'email@address.com',
-        $password: 'secret',
-      },
-      NewDock: {
-        $dockSerial: 'D0-001',
-        $model: 'Bike Dock',
-        $manufactureDate: '2020-06-15',
-      },
-      UpdateDock: {
-        $model: 'Bike Dock',
-        $manufactureDate: '2020-06-15',
-      },
-      DockAdmission: {
-        $id: '4cce0e13-1759-42a9-8c48-4c42b3020752',
-        $requestedAt: new Date('2025-06-15').toString(),
-        $dockId: '1120180c-fda6-4ffa-a0c9-9956c935dd8f',
-        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
-      },
-      NewDockAdmission: {
-        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
-        $dockSerial: 'DO-001',
-        $stationSerial: 'ST-001',
-      },
-      DockRemoval: {
-        $id: '4cce0e13-1759-42a9-8c48-4c42b3020752',
-        $requestedAt: new Date('2025-06-15').toString(),
-        $dockId: '1120180c-fda6-4ffa-a0c9-9956c935dd8f',
-        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
-      },
-      NewDockRemoval: {
-        $employeeId: 'e291f672-3827-412c-8fc8-2bd21db7b609',
-        $dockSerial: 'DO-001',
-        $action: { '@enum': ['REPAIR', 'RETIRE'], example: 'REPAIR' },
-      },
-      Employee: {
-        $id: '755db5fd-8f43-4aec-af2e-d85ffebb5e94',
-        $registration: 'EM-001',
-        $cpf: '29914469000',
-        $name: 'Carlos Sainz',
-        $birthDate: '2000-06-15',
-        $role: {
-          '@enum': Object.values(employeeRole),
-          example: employeeRole.OPERATOR,
+        type: 'object',
+        required: ['email', 'password'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', example: 'secret' },
         },
+        additionalProperties: false,
       },
-      NewEmployee: {
-        $registration: 'EM-001',
-        $cpf: '29914469000',
-        $name: 'Carlos Sainz',
-        $birthDate: '2000-06-15',
-        $role: {
-          '@enum': Object.values(employeeRole),
-          example: employeeRole.OPERATOR,
-        },
-      },
-      UpdateEmployee: {
-        name: 'Carlos Sainz',
-        birthDate: '2000-06-15',
-        role: {
-          '@enum': Object.values(employeeRole),
-          example: employeeRole.OPERATOR,
-        },
-      },
-      NewRental: {
-        $bikerId: '5c452a1f-c920-48c4-b0e1-09bae4738248',
-        $bikeSerial: 'BI-001',
-        $dockSerial: 'DO-001',
-      },
-      BikeReturn: {
-        $bikeSerial: 'BI-001',
-        $dockSerial: 'DO-001',
-      },
-      Station: {
-        $id: 'a44d65ca-b2c4-4e9b-9a3d-22594bc82c7a',
-        $stationSerial: 'ST-001',
-        $name: 'Bike Sampa',
-        $location: 'Av. Paulista',
-      },
-      NewStation: {
-        $stationSerial: 'ST-001',
-        $name: 'Bike Sampa',
-        $location: 'Av. Paulista',
-      },
-      JWT: {
-        $token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ',
-      },
-      Error: {
-        $errorType: { '@enum': Object.values(errorTypes) },
-        $errors: ['Error message 1', 'Error message 2'],
-      },
-    },
-    '@schemas': {
       Dock: {
         type: 'object',
         required: [
@@ -335,6 +510,117 @@ const doc = {
           stationId: { type: 'string', format: 'uuid', nullable: true },
           bikeId: { type: 'string', format: 'uuid', nullable: true },
         },
+        additionalProperties: false,
+      },
+      NewDock: {
+        type: 'object',
+        required: ['dockSerial', 'model', 'manufactureDate'],
+        properties: {
+          dockSerial: { type: 'string', example: 'D0-001' },
+          model: { type: 'string', example: 'Bike Dock' },
+          manufactureDate: { type: 'string', format: 'date' },
+        },
+        additionalProperties: false,
+      },
+      UpdateDock: {
+        type: 'object',
+        properties: {
+          model: { type: 'string', example: 'Bike Dock' },
+          manufactureDate: { type: 'string', format: 'date' },
+        },
+        additionalProperties: false,
+      },
+      DockAdmission: {
+        type: 'object',
+        required: ['id', 'requestedAt', 'dockId', 'employeeId'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          requestedAt: { type: 'string', format: 'date-time' },
+          dockId: { type: 'string', format: 'uuid' },
+          employeeId: { type: 'string', format: 'uuid' },
+        },
+        additionalProperties: false,
+      },
+      NewDockAdmission: {
+        type: 'object',
+        required: ['employeeId', 'dockSerial', 'stationSerial'],
+        properties: {
+          employeeId: { type: 'string', format: 'uuid' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+          stationSerial: { type: 'string', example: 'ST-001' },
+        },
+        additionalProperties: false,
+      },
+      DockRemoval: {
+        type: 'object',
+        required: ['id', 'requestedAt', 'dockId', 'employeeId'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          requestedAt: { type: 'string', format: 'date-time' },
+          dockId: { type: 'string', format: 'uuid' },
+          employeeId: { type: 'string', format: 'uuid' },
+        },
+        additionalProperties: false,
+      },
+      NewDockRemoval: {
+        type: 'object',
+        required: ['employeeId', 'dockSerial', 'action'],
+        properties: {
+          employeeId: { type: 'string', format: 'uuid' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+          action: {
+            type: 'string',
+            enum: ['REPAIR', 'RETIRE'],
+            example: 'REPAIR',
+          },
+        },
+        additionalProperties: false,
+      },
+      Employee: {
+        type: 'object',
+        required: ['id', 'registration', 'cpf', 'name', 'birthDate', 'role'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          registration: { type: 'string', example: 'EM-001' },
+          cpf: { type: 'string', example: '29914469000' },
+          name: { type: 'string', example: 'Carlos Sainz' },
+          birthDate: { type: 'string', format: 'date' },
+          role: {
+            type: 'string',
+            enum: Object.values(employeeRole),
+            example: employeeRole.OPERATOR,
+          },
+        },
+        additionalProperties: false,
+      },
+      NewEmployee: {
+        type: 'object',
+        required: ['registration', 'cpf', 'name', 'birthDate', 'role'],
+        properties: {
+          registration: { type: 'string', example: 'EM-001' },
+          cpf: { type: 'string', example: '29914469000' },
+          name: { type: 'string', example: 'Carlos Sainz' },
+          birthDate: { type: 'string', format: 'date' },
+          role: {
+            type: 'string',
+            enum: Object.values(employeeRole),
+            example: employeeRole.OPERATOR,
+          },
+        },
+        additionalProperties: false,
+      },
+      UpdateEmployee: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', example: 'Carlos Sainz' },
+          birthDate: { type: 'string', format: 'date' },
+          role: {
+            type: 'string',
+            enum: Object.values(employeeRole),
+            example: employeeRole.OPERATOR,
+          },
+        },
+        additionalProperties: false,
       },
       Rental: {
         type: 'object',
@@ -367,6 +653,26 @@ const doc = {
           initialChargeId: { type: 'string', format: 'uuid' },
           extraChargeId: { type: 'string', format: 'uuid', nullable: true },
         },
+        additionalProperties: false,
+      },
+      NewRental: {
+        type: 'object',
+        required: ['bikerId', 'bikeSerial', 'dockSerial'],
+        properties: {
+          bikerId: { type: 'string', format: 'uuid' },
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+        },
+        additionalProperties: false,
+      },
+      BikeReturn: {
+        type: 'object',
+        required: ['bikeSerial', 'dockSerial'],
+        properties: {
+          bikeSerial: { type: 'string', example: 'BI-001' },
+          dockSerial: { type: 'string', example: 'DO-001' },
+        },
+        additionalProperties: false,
       },
       FinishedRental: {
         type: 'object',
@@ -398,6 +704,49 @@ const doc = {
           initialChargeId: { type: 'string', format: 'uuid' },
           extraChargeId: { type: 'string', format: 'uuid', nullable: true },
         },
+        additionalProperties: false,
+      },
+      Station: {
+        type: 'object',
+        required: ['id', 'stationSerial', 'name', 'location'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          stationSerial: { type: 'string', example: 'ST-001' },
+          name: { type: 'string', example: 'Bike Sampa' },
+          location: { type: 'string', example: 'Av. Paulista' },
+        },
+        additionalProperties: false,
+      },
+      NewStation: {
+        type: 'object',
+        required: ['stationSerial', 'name', 'location'],
+        properties: {
+          stationSerial: { type: 'string', example: 'ST-001' },
+          name: { type: 'string', example: 'Bike Sampa' },
+          location: { type: 'string', example: 'Av. Paulista' },
+        },
+        additionalProperties: false,
+      },
+      JWT: {
+        type: 'object',
+        required: ['token'],
+        properties: {
+          token: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+      Error: {
+        type: 'object',
+        required: ['errorType', 'errors'],
+        properties: {
+          errorType: { type: 'string', enum: Object.values(errorTypes) },
+          errors: {
+            type: 'array',
+            items: { type: 'string' },
+            example: ['Error message 1', 'Error message 2'],
+          },
+        },
+        additionalProperties: false,
       },
     },
     examples: {
@@ -449,4 +798,21 @@ const doc = {
 const outputFile = './swagger-output.json';
 const routes = ['./src/express/app.js'];
 
-swaggerAutogen({ openapi: '3.0.4' })(outputFile, routes, doc);
+await swaggerAutogen({ openapi: '3.0.4' })(outputFile, routes, doc);
+
+/*
+  A solution to byspass trailing slashes in paths because of
+  strict swagger-autogen path generation and
+  strict express-openapi-validator paths validation
+*/
+const swaggerDoc = JSON.parse(fs.readFileSync('./swagger-output.json'));
+
+const normalizedPaths = {};
+Object.keys(swaggerDoc.paths).forEach(path => {
+  const normalizedPath =
+    path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
+  normalizedPaths[normalizedPath] = swaggerDoc.paths[path];
+});
+
+swaggerDoc.paths = normalizedPaths;
+fs.writeFileSync('./swagger-output.json', JSON.stringify(swaggerDoc, null, 2));
