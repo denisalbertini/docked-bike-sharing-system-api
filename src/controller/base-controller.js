@@ -1,5 +1,7 @@
+import { Model } from 'sequelize';
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
 import { errorStatusMap } from '../model/shared/error-status-map.js';
+import Result from '../model/shared/result.js';
 
 export default class BaseController {
   _modelFacade;
@@ -12,7 +14,7 @@ export default class BaseController {
   }
 
   async _handleOperation( operation, res, successStatus ) {
-    const result = await operation();
+    let result = await operation();
 
     if ( result.isFailure ) {
       const errorType = result.errorType;
@@ -23,6 +25,14 @@ export default class BaseController {
         .send( { errorType, errors } );
     }
 
+    if ( result.value instanceof Model )
+      result = Result.success( result.value.toJSON() );
+
+    if ( result.value instanceof Array && result.value[0] instanceof Model )
+      result = Result.success( result.value.map( v => v.toJSON() ) );
+
+    if ( successStatus === 204 ) res.sendStatus( 204 );
+    
     res.status( successStatus ).send( result.value );
   }
 
