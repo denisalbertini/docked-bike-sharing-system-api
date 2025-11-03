@@ -62,7 +62,7 @@ export default class DockRemovalFacade extends BaseFacade {
       const dockRemoval = createDockRemoval.value;
 
       const successData = {
-        ...dockRemoval.dataValues, 
+        ...dockRemoval.toJSON(), 
         requestedAt: dockRemoval.requestedAt.toString()
       };
 

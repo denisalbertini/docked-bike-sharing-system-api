@@ -69,7 +69,7 @@ export default class DockAdmissionFacade extends BaseFacade {
       const dockAdmission = createAdmissionResult.value;
 
       const successData = {
-        ...dockAdmission.dataValues, 
+        ...dockAdmission.toJSON(), 
         requestedAt: dockAdmission.requestedAt.toString()
       };
 

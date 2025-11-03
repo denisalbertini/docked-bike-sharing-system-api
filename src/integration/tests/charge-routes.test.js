@@ -98,10 +98,10 @@ describe('/late-fees', () => {
 
           expect(res.status).toBe(204);
           expect(res.body).toStrictEqual({});
-          expect(unchangedChargeRecord.dataValues).toStrictEqual(
+          expect(unchangedChargeRecord.toJSON()).toStrictEqual(
             expectedUnchangedRecord
           );
-          expect(completedCharges.map(c => c.dataValues)).toStrictEqual(
+          expect(completedCharges.map(c => c.toJSON())).toStrictEqual(
             expectedCompleted
           );
         }
