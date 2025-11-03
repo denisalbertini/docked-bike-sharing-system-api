@@ -47,25 +47,41 @@ describe('/api/bikers', () => {
 
       describe('409', () => {
         const creditCard = createCreditCard();
-        const biker = createBiker(creditCard.id, { cpf: '85389004043' });
+        const bikerWithCpf = createBiker(creditCard.id, { cpf: '85389004043' });
+        const bikerWithPassport = createBiker(creditCard.id);
+        const passport = createPassport(bikerWithPassport.id);
 
         beforeAll(async () => {
           await truncateAllTables();
           await CreditCard.create(creditCard);
-          await Biker.create(biker);
+          await Biker.bulkCreate([bikerWithCpf, bikerWithPassport]);
+          await Passport.create(passport);
         });
+
+        const { cpf, name, birthDate, email } = createBiker(null, {
+          cpf: '18500059079',
+        });
+        const { passportNumber, passportExpirationDate, countryCode } =
+          createPassport(null);
 
         const testCases = [
           {
             description: 'Existing CPF',
             reqBody: {
               biker: {
-                ...biker,
-                id: undefined,
+                cpf: bikerWithCpf.cpf,
+                name,
+                birthDate,
+                email,
                 password: 'secret',
                 confirmationPassword: 'secret',
               },
-              creditCard,
+              creditCard: {
+                creditCardNumber: creditCard.creditCardNumber,
+                holderName: creditCard.holderName,
+                creditCardExpirationDate: creditCard.creditCardExpirationDate,
+                cvv: creditCard.cvv,
+              },
             },
             expectedErrors: [
               'duplicar valor da chave viola a restrição de unicidade "biker_cpf_key"',
@@ -75,16 +91,48 @@ describe('/api/bikers', () => {
             description: 'Existing email',
             reqBody: {
               biker: {
-                ...biker,
-                id: undefined,
-                cpf: '30071416056',
+                cpf,
+                name,
+                birthDate,
+                email: bikerWithCpf.email,
                 password: 'secret',
                 confirmationPassword: 'secret',
               },
-              creditCard,
+              creditCard: {
+                creditCardNumber: creditCard.creditCardNumber,
+                holderName: creditCard.holderName,
+                creditCardExpirationDate: creditCard.creditCardExpirationDate,
+                cvv: creditCard.cvv,
+              },
             },
             expectedErrors: [
               'duplicar valor da chave viola a restrição de unicidade "biker_email_key"',
+            ],
+          },
+          {
+            description: 'Existing passport',
+            reqBody: {
+              biker: {
+                name,
+                birthDate,
+                email,
+                password: 'secret',
+                confirmationPassword: 'secret',
+              },
+              creditCard: {
+                creditCardNumber: creditCard.creditCardNumber,
+                holderName: creditCard.holderName,
+                creditCardExpirationDate: creditCard.creditCardExpirationDate,
+                cvv: creditCard.cvv,
+              },
+              passport: {
+                passportNumber: passport.passportNumber,
+                passportExpirationDate,
+                countryCode,
+              },
+            },
+            expectedErrors: [
+              'duplicar valor da chave viola a restrição de unicidade "passport_passport_number_key"',
             ],
           },
         ];
@@ -104,69 +152,31 @@ describe('/api/bikers', () => {
       });
 
       describe('400', () => {
-        const validCreditCard = createCreditCard();
-        const invalidCreditCard = createCreditCard({
-          creditCardNumber: 'abc',
-          holderName: 'abc',
-          expirationDate: 'abc',
-          cvv: 'abc',
+        const { cpf, name, birthDate, email } = createBiker(null, {
+          cpf: '18500059079',
         });
-
-        const bikerWithoutCpf = createBiker(null);
-        const bikerWithCpf = createBiker(null, {
-          cpf: '30071416056',
-        });
-
-        const passport = createPassport();
 
         const testCases = [
           {
-            description: 'No documents',
+            description: 'Invalid data',
             reqBody: {
               biker: {
-                ...bikerWithoutCpf,
+                cpf,
+                name,
+                birthDate,
+                email,
                 password: 'abc',
-                confirmationPassword: 'abc',
+                confirmationPassword: 'def',
               },
-              creditCard: validCreditCard,
-            },
-            expectedErrors: ['Biker must have a document.'],
-          },
-          {
-            description: 'Both documents',
-            reqBody: {
-              biker: {
-                ...bikerWithCpf,
-                password: 'abc',
-                confirmationPassword: 'abc',
+              creditCard: {
+                creditCardNumber: '123',
+                holderName: '123',
+                creditCardExpirationDate: 'abc',
+                cvv: 'abc',
               },
-              creditCard: validCreditCard,
-              passport,
-            },
-            expectedErrors: ['Biker can only have one document.'],
-          },
-          {
-            description: 'Passwords not matching',
-            reqBody: {
-              biker: {
-                ...bikerWithCpf,
-                confirmationPassword: 'abc',
-              },
-              creditCard: validCreditCard,
-            },
-            expectedErrors: ['Passwords do not match.'],
-          },
-          {
-            description: 'Invalid credit card data',
-            reqBody: {
-              biker: {
-                ...bikerWithCpf,
-                password: 'abc',
-                confirmationPassword: 'abc',
-              },
-              creditCard: invalidCreditCard,
             },
             expectedErrors: [
+              'Passwords do not match.',
               'Invalid credit card number.',
               'Invalid credit card expiration date.',
               'Invalid credit card cvv.',
@@ -189,94 +199,137 @@ describe('/api/bikers', () => {
       });
 
       describe('200', () => {
-        beforeAll(truncateAllTables);
+        beforeEach(truncateAllTables);
 
-        const creditCard = createCreditCard();
-        const bikerWithCpf = createBiker(creditCard.id, { cpf: '18500059079' });
-        const bikerWithoutCpf = createBiker(creditCard.id);
-        const passport = createPassport();
+        const { creditCardNumber, holderName, creditCardExpirationDate, cvv } =
+          createCreditCard();
+        const { cpf, name, birthDate, email } = createBiker(null, {
+          cpf: '18500059079',
+        });
+        const { passportNumber, passportExpirationDate, countryCode } =
+          createPassport();
 
         const testCases = [
           {
             description: 'With CPF',
             reqBody: {
+              creditCard: {
+                creditCardNumber,
+                holderName,
+                creditCardExpirationDate,
+                cvv,
+              },
               biker: {
-                ...bikerWithCpf,
+                cpf,
+                name,
+                birthDate,
+                email,
                 password: 'abc',
                 confirmationPassword: 'abc',
               },
-              creditCard,
             },
             expectedResBody: {
               creditCard: {
                 id: expect.any(String),
-                creditCardNumber: creditCard.creditCardNumber,
-                holderName: creditCard.holderName,
-                expirationDate: creditCard.expirationDate,
+                creditCardNumber,
+                holderName,
+                creditCardExpirationDate,
               },
               biker: {
-                ...bikerWithCpf,
+                id: expect.any(String),
+                cpf,
+                name,
+                birthDate,
+                email,
                 password: expect.any(String),
                 status: bikerStatus.PENDING,
                 creditCardId: expect.any(String),
               },
             },
-            expectedCreditCardRecord: expect.objectContaining({
+            expectedCreditCardRecord: {
               id: expect.any(String),
-              creditCardNumber: creditCard.creditCardNumber,
-              holderName: creditCard.holderName,
-              expirationDate: creditCard.expirationDate,
-            }),
+              creditCardNumber,
+              holderName,
+              creditCardExpirationDate,
+            },
             expectedBikerRecord: {
-              ...bikerWithCpf,
+              id: expect.any(String),
+              cpf,
+              name,
+              birthDate,
+              email,
               password: expect.any(String),
-              creditCardId: expect.any(String),
               status: bikerStatus.PENDING,
+              creditCardId: expect.any(String),
             },
             expectedPassportRecord: null,
           },
           {
             description: 'With passport',
             reqBody: {
+              creditCard: {
+                creditCardNumber,
+                holderName,
+                creditCardExpirationDate,
+                cvv,
+              },
               biker: {
-                ...bikerWithoutCpf,
+                name,
+                birthDate,
+                email,
                 password: 'abc',
                 confirmationPassword: 'abc',
               },
-              creditCard,
-              passport,
+              passport: { passportNumber, passportExpirationDate, countryCode },
             },
             expectedResBody: {
               creditCard: {
                 id: expect.any(String),
-                creditCardNumber: creditCard.creditCardNumber,
-                holderName: creditCard.holderName,
-                expirationDate: creditCard.expirationDate,
+                creditCardNumber,
+                holderName,
+                creditCardExpirationDate,
               },
               biker: {
-                ...bikerWithoutCpf,
+                id: expect.any(String),
+                cpf: null,
+                name,
+                birthDate,
+                email,
                 password: expect.any(String),
                 status: bikerStatus.PENDING,
                 creditCardId: expect.any(String),
               },
-              passport: { ...passport, bikerId: bikerWithoutCpf.id },
+              passport: {
+                id: expect.any(String),
+                passportNumber,
+                passportExpirationDate,
+                countryCode,
+                bikerId: expect.any(String),
+              },
             },
-            expectedCreditCardRecord: expect.objectContaining({
+            expectedCreditCardRecord: {
               id: expect.any(String),
-              creditCardNumber: creditCard.creditCardNumber,
-              holderName: creditCard.holderName,
-              expirationDate: creditCard.expirationDate,
-            }),
-            expectedBikerRecord: {
-              ...bikerWithoutCpf,
-              password: expect.any(String),
-              creditCardId: expect.any(String),
-              status: bikerStatus.PENDING,
+              creditCardNumber,
+              holderName,
+              creditCardExpirationDate,
             },
-            expectedPassportRecord: expect.objectContaining({
-              ...passport,
-              bikerId: bikerWithoutCpf.id,
-            }),
+            expectedBikerRecord: {
+              id: expect.any(String),
+              cpf: null,
+              name,
+              birthDate,
+              email,
+              password: expect.any(String),
+              status: bikerStatus.PENDING,
+              creditCardId: expect.any(String),
+            },
+            expectedPassportRecord: {
+              id: expect.any(String),
+              passportNumber,
+              passportExpirationDate,
+              countryCode,
+              bikerId: expect.any(String),
+            },
           },
         ];
 
@@ -292,17 +345,15 @@ describe('/api/bikers', () => {
             const res = await request(app)[method](path).send(reqBody);
 
             const creditCardRecord = await CreditCard.findOne({
-              include: { model: Biker, where: { email: reqBody.biker.email } },
+              where: { creditCardNumber },
               raw: true,
             });
-
             const bikerRecord = await Biker.findOne({
-              where: { email: reqBody.biker.email },
+              where: { email },
               raw: true,
             });
-
             const passportRecord = await Passport.findOne({
-              include: { model: Biker, where: { email: reqBody.biker.email } },
+              where: { passportNumber },
               raw: true,
             });
 
@@ -366,24 +417,59 @@ describe('/api/bikers', () => {
 
       describe('400', () => {
         const creditCard = createCreditCard();
-        const biker = createBiker(creditCard.id, { cpf: '75386545000' });
+        const bikerWithCpf = createBiker(creditCard.id, { cpf: '75386545000' });
+        const bikerWithoutCpf = createBiker(creditCard.id);
+        const passport = createPassport(bikerWithoutCpf.id);
 
         beforeAll(async () => {
           await truncateAllTables();
           await CreditCard.create(creditCard);
-          await Biker.create(biker);
+          await Biker.bulkCreate([bikerWithCpf, bikerWithoutCpf]);
+          await Passport.create(passport);
         });
 
         const testCases = [
           {
-            description: 'Invalid data',
-            path: path(biker.id),
-            reqBody: { biker: { cpf: 'abc', password: 'abc' }, passport: {} },
+            description: 'Passwords do not match',
+            path: path(bikerWithCpf.id),
+            reqBody: {
+              biker: {
+                password: 'abc',
+                confirmationPassword: 'def',
+              },
+            },
+            expectedErrors: ['Passwords do not match'],
+          },
+          {
+            description: 'Invalid biker data',
+            path: path(bikerWithCpf.id),
+            reqBody: {
+              biker: {
+                name: '123',
+                birthDate: '1900-06-15',
+              },
+            },
             expectedErrors: [
-              'CPF cannot be modified.',
-              'Biker already has a document.',
-              'Passwords do not match',
+              'Validation hasValidYear on birthDate failed',
+              'Validation is on name failed',
             ],
+          },
+          {
+            description: 'Invalid passport data',
+            path: path(bikerWithoutCpf.id),
+            reqBody: {
+              biker: {},
+              passport: {
+                passportNumber: 'abc',
+                passportExpirationDate: '1900-06-15',
+                countryCode: 'abc',
+              },
+            },
+            expectedErrors: expect.arrayContaining([
+              'Validation hasValidYear on expirationDate failed',
+              'Validation is on passportNumber failed',
+              'Validation is on countryCode failed',
+            ]),
           },
         ];
 
@@ -395,11 +481,11 @@ describe('/api/bikers', () => {
               .send(reqBody)
               .set(headers);
 
-            expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({
               errorType: VALIDATION_ERROR,
               errors: expectedErrors,
             });
+            expect(res.status).toBe(400);
           }
         );
       });
@@ -422,11 +508,9 @@ describe('/api/bikers', () => {
           await Passport.create(passport);
         });
 
-        const bikerUpdateData = createBiker(undefined);
-        const passportUpdateData = createPassport(undefined, {
-          id: undefined,
-          bikerId: undefined,
-        });
+        const { name, birthDate, email } = createBiker();
+        const { passportNumber, passportExpirationDate, countryCode } =
+          createPassport();
 
         const testCases = [
           {
@@ -434,16 +518,18 @@ describe('/api/bikers', () => {
             path: path(bikerWithCpf.id),
             reqBody: {
               biker: {
-                ...bikerUpdateData,
-                id: undefined,
-                cpf: undefined,
+                name,
+                birthDate,
+                email,
                 password: 'abc',
                 confirmationPassword: 'abc',
               },
             },
             expectedResBody: {
               biker: {
-                ...bikerUpdateData,
+                name,
+                birthDate,
+                email,
                 id: bikerWithCpf.id,
                 cpf: bikerWithCpf.cpf,
                 password: expect.any(String),
@@ -452,7 +538,9 @@ describe('/api/bikers', () => {
               },
             },
             expectedBikerRecord: {
-              ...bikerUpdateData,
+              name,
+              birthDate,
+              email,
               id: bikerWithCpf.id,
               cpf: bikerWithCpf.cpf,
               password: expect.any(String),
@@ -461,10 +549,11 @@ describe('/api/bikers', () => {
               'CreditCard.id': creditCard.id,
               'CreditCard.creditCardNumber': creditCard.creditCardNumber,
               'CreditCard.holderName': creditCard.holderName,
-              'CreditCard.expirationDate': creditCard.expirationDate,
+              'CreditCard.creditCardExpirationDate':
+                creditCard.creditCardExpirationDate,
               'Passport.id': null,
               'Passport.passportNumber': null,
-              'Passport.expirationDate': null,
+              'Passport.passportExpirationDate': null,
               'Passport.countryCode': null,
               'Passport.bikerId': null,
             },
@@ -474,30 +563,40 @@ describe('/api/bikers', () => {
             path: path(bikerWithoutCpf.id),
             reqBody: {
               biker: {
-                ...bikerUpdateData,
+                name,
+                birthDate,
+                email,
                 id: undefined,
                 cpf: undefined,
                 password: 'abc',
                 confirmationPassword: 'abc',
               },
-              passport: passportUpdateData,
+              passport: { passportNumber, passportExpirationDate, countryCode },
             },
             expectedResBody: {
               biker: {
-                ...bikerUpdateData,
+                name,
+                birthDate,
+                email,
+                cpf: null,
                 id: bikerWithoutCpf.id,
                 password: expect.any(String),
                 status: bikerStatus.ACTIVE,
                 creditCardId: expect.any(String),
               },
               passport: {
-                ...passportUpdateData,
+                passportNumber,
+                passportExpirationDate,
+                countryCode,
                 id: passport.id,
                 bikerId: bikerWithoutCpf.id,
               },
             },
             expectedBikerRecord: {
-              ...bikerUpdateData,
+              name,
+              birthDate,
+              email,
+              cpf: null,
               id: bikerWithoutCpf.id,
               password: expect.any(String),
               status: bikerStatus.ACTIVE,
@@ -505,11 +604,12 @@ describe('/api/bikers', () => {
               'CreditCard.id': creditCard.id,
               'CreditCard.creditCardNumber': creditCard.creditCardNumber,
               'CreditCard.holderName': creditCard.holderName,
-              'CreditCard.expirationDate': creditCard.expirationDate,
+              'CreditCard.creditCardExpirationDate':
+                creditCard.creditCardExpirationDate,
               'Passport.id': passport.id,
-              'Passport.passportNumber': passportUpdateData.passportNumber,
-              'Passport.expirationDate': passportUpdateData.expirationDate,
-              'Passport.countryCode': passportUpdateData.countryCode,
+              'Passport.passportNumber': passportNumber,
+              'Passport.passportExpirationDate': passportExpirationDate,
+              'Passport.countryCode': countryCode,
               'Passport.bikerId': bikerWithoutCpf.id,
             },
           },
@@ -680,13 +780,20 @@ describe('/api/bikers', () => {
           await Biker.bulkCreate([biker]);
         });
 
-        const newCreditCard = createCreditCard();
+        const { creditCardNumber, holderName, creditCardExpirationDate, cvv } =
+          createCreditCard();
 
         const testCases = [
           {
             description: 'Existing credit card',
             path: path(biker.id),
-            reqBody: existingCreditCard,
+            reqBody: {
+              creditCardNumber: existingCreditCard.creditCardNumber,
+              holderName: existingCreditCard.holderName,
+              creditCardExpirationDate:
+                existingCreditCard.creditCardExpirationDate,
+              cvv: existingCreditCard.cvv,
+            },
             expectedBikerRecord: {
               ...biker,
               creditCardId: existingCreditCard.id,
@@ -694,20 +801,26 @@ describe('/api/bikers', () => {
               'CreditCard.creditCardNumber':
                 existingCreditCard.creditCardNumber,
               'CreditCard.holderName': existingCreditCard.holderName,
-              'CreditCard.expirationDate': existingCreditCard.expirationDate,
+              'CreditCard.creditCardExpirationDate':
+                existingCreditCard.creditCardExpirationDate,
             },
           },
           {
             description: 'New credit card',
             path: path(biker.id),
-            reqBody: newCreditCard,
+            reqBody: {
+              creditCardNumber,
+              holderName,
+              creditCardExpirationDate,
+              cvv,
+            },
             expectedBikerRecord: {
               ...biker,
               creditCardId: expect.any(String),
               'CreditCard.id': expect.any(String),
-              'CreditCard.creditCardNumber': newCreditCard.creditCardNumber,
-              'CreditCard.holderName': newCreditCard.holderName,
-              'CreditCard.expirationDate': newCreditCard.expirationDate,
+              'CreditCard.creditCardNumber': creditCardNumber,
+              'CreditCard.holderName': holderName,
+              'CreditCard.creditCardExpirationDate': creditCardExpirationDate,
             },
           },
         ];
@@ -830,10 +943,10 @@ describe('/api/bikers', () => {
         test.each(testCases)('$description', async ({ reqBody }) => {
           const res = await request(app)[method](path).send(reqBody);
 
-          const payload = jwt.verify(res.body.token, process.env.JWT_SECRET);
-
-          expect(res.status).toBe(200);
           expect(res.body).toStrictEqual({ token: expect.any(String) });
+          expect(res.status).toBe(200);
+
+          const payload = jwt.verify(res.body.token, process.env.JWT_SECRET);
           expect(payload.id).toBe(biker.id);
           expect(payload.purpose).toBe(ACCESS);
         });
