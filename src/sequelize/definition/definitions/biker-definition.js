@@ -33,7 +33,15 @@ export function defineModel( sequelize ) {
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate: {
-          isDate: true
+          isDate: true, 
+          hasValidYear( birthDate ) {
+            const year = parseInt( birthDate.slice( 0, 4 ) );
+            const currentYear = new Date().getFullYear();
+            const yearDifference = currentYear - year;
+
+            if ( yearDifference < 12 || yearDifference > 100 )
+              throw new Error( 'Validation hasValidYear on birthDate failed' );
+          }
         }
       }, 
       email: {
