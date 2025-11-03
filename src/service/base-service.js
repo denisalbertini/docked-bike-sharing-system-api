@@ -51,7 +51,7 @@ export default class BaseService {
     if ( affectedRows === 0 )
       return Result.failure(
         NOT_FOUND_ERROR, 
-        'Entry does not exist.'
+        'No updates were made.'
       );
 
     return Result.success( updatedEntry );
