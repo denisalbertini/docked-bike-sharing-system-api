@@ -16,7 +16,6 @@ export const createDock = (overrides = {}) => ({
   dockSerial: RandExp.randexp(/DO-\d{3}/),
   model: faker.vehicle.model(),
   manufactureDate: '2000-06-15',
-  status: undefined,
   stationId: null,
   bikeId: null,
   ...overrides,
@@ -26,7 +25,9 @@ export const createCreditCard = (overrides = {}) => ({
   id: faker.string.uuid(),
   creditCardNumber: faker.finance.creditCardNumber(),
   holderName: faker.person.fullName(),
-  expirationDate: RandExp.randexp(/(0[1-9]|1[0-2])\/(2[6-9]|[3-9][0-9])/),
+  creditCardExpirationDate: RandExp.randexp(
+    /(0[1-9]|1[0-2])\/(2[6-9]|[3-9][0-9])/
+  ),
   cvv: RandExp.randexp(/\d{3}/),
   ...overrides,
 });
@@ -38,7 +39,6 @@ export const createBiker = (creditCardId, overrides = {}) => ({
   birthDate: '2000-06-15',
   email: faker.internet.email(),
   password: RandExp.randexp(/\$2[aby]\$10\$[./A-Za-z0-9]{53}/),
-  status: undefined,
   creditCardId,
   ...overrides,
 });
@@ -46,7 +46,7 @@ export const createBiker = (creditCardId, overrides = {}) => ({
 export const createPassport = (bikerId, overrides = {}) => ({
   id: faker.string.uuid(),
   passportNumber: RandExp.randexp(/[A-Za-z0-9]{6,9}/),
-  expirationDate: '2030-06-15',
+  passportExpirationDate: '2030-06-15',
   countryCode: RandExp.randexp(/\b[A-Z]{3}\b/),
   bikerId,
   ...overrides,

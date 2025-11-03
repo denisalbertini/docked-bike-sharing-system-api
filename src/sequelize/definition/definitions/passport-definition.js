@@ -15,11 +15,18 @@ export function defineModel( sequelize ) {
           is: /^[A-Za-z0-9]{6,9}$/
         }
       }, 
-      expirationDate: {
+      passportExpirationDate: {
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate: {
-          isDate: true
+          isDate: true, 
+          hasValidYear( expirationDate ) {
+            const year = parseInt( expirationDate.slice( 0, 4 ) );
+            const currentYear = new Date().getFullYear();
+
+            if ( year < currentYear )
+              throw new Error( 'Validation hasValidYear on expirationDate failed' );
+          }
         }
       }, 
       countryCode: {

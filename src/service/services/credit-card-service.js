@@ -5,12 +5,12 @@ import BaseService from '../base-service.js';
 export default class CreditCardService extends BaseService {
   constructor( creditCardRepository ) { super( creditCardRepository ); }
   
-  validate( { creditCardNumber, expirationDate, cvv } ) {
+  validate( { creditCardNumber, creditCardExpirationDate, cvv } ) {
     const errors = [];
 
     if ( !this.#validateNumber( creditCardNumber ) )
       errors.push( 'Invalid credit card number.' );
-    if ( !this.#validateExpirationDate( expirationDate ) )
+    if ( !this.#validateExpirationDate( creditCardExpirationDate ) )
       errors.push( 'Invalid credit card expiration date.' );
     if ( !this.#validateCvv( cvv ) )
       errors.push( 'Invalid credit card cvv.' );

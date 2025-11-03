@@ -51,7 +51,7 @@ export default class BikerFacade extends BaseFacade {
         {
           creditCardNumber: creditCardData.creditCardNumber, 
           holderName: creditCardData.holderName, 
-          expirationDate: creditCardData.expirationDate
+          creditCardExpirationDate: creditCardData.creditCardExpirationDate
         }
       );
       if ( creditCardResult.isFailure ) failures.push( creditCardResult );
@@ -98,9 +98,9 @@ export default class BikerFacade extends BaseFacade {
       }
 
       const successData = {
-        creditCard: creditCard.dataValues, 
-        biker: biker.dataValues, 
-        ...( passport && { passport: passport.dataValues } )
+        creditCard: creditCard.toJSON(), 
+        biker: biker.toJSON(), 
+        ...( passport && { passport: passport.toJSON() } )
       };
 
       await this.#transaction.commit();
@@ -159,8 +159,8 @@ export default class BikerFacade extends BaseFacade {
       const biker = bikerUpdateResult.value;
 
       const successData = {
-        biker: biker.dataValues, 
-        ...( passport && { passport: passport.dataValues } )
+        biker: biker.toJSON(), 
+        ...( passport && { passport: passport.toJSON() } )
       };
 
       await this.#transaction.commit();
@@ -192,7 +192,7 @@ export default class BikerFacade extends BaseFacade {
         {
           creditCardNumber: creditCardData.creditCardNumber, 
           holderName: creditCardData.holderName, 
-          expirationDate: creditCardData.expirationDate
+          creditCardExpirationDate: creditCardData.creditCardExpirationDate
         }
       );
       if ( creditCardResult.isFailure ) failures.push( creditCardResult );

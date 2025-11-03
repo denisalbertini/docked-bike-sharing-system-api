@@ -131,13 +131,13 @@ const doc = {
               'id',
               'creditCardNumber',
               'holderName',
-              'expirationDate',
+              'creditCardExpirationDate',
             ],
             properties: {
               id: { type: 'string', format: 'uuid' },
               creditCardNumber: { type: 'string', example: '2720369125488639' },
               holderName: { type: 'string', example: 'Max Titanium' },
-              expirationDate: { type: 'string', example: '06/30' },
+              creditCardExpirationDate: { type: 'string', example: '06/30' },
             },
             additionalProperties: false,
           },
@@ -181,13 +181,13 @@ const doc = {
             required: [
               'creditCardNumber',
               'holderName',
-              'expirationDate',
+              'creditCardExpirationDate',
               'cvv',
             ],
             properties: {
               creditCardNumber: { type: 'string', example: '2720369125488639' },
               holderName: { type: 'string', example: 'Max Titanium' },
-              expirationDate: { type: 'string', example: '06/30' },
+              creditCardExpirationDate: { type: 'string', example: '06/30' },
               cvv: { type: 'string', example: '523' },
             },
             additionalProperties: false,
@@ -278,13 +278,13 @@ const doc = {
               'id',
               'creditCardNumber',
               'holderName',
-              'expirationDate',
+              'creditCardExpirationDate',
             ],
             properties: {
               id: { type: 'string', format: 'uuid' },
               creditCardNumber: { type: 'string', example: '340103324294850' },
               holderName: { type: 'string', example: 'Raw Supplements' },
-              expirationDate: { type: 'string', example: '06/30' },
+              creditCardExpirationDate: { type: 'string', example: '06/30' },
             },
             additionalProperties: false,
           },
@@ -321,14 +321,14 @@ const doc = {
             required: [
               'id',
               'passportNumber',
-              'expirationDate',
+              'passportExpirationDate',
               'countryCode',
               'bikerId',
             ],
             properties: {
               id: { type: 'string', format: 'uuid' },
               passportNumber: { type: 'string', example: 'P123456AA' },
-              expirationDate: { type: 'string', format: 'date' },
+              passportExpirationDate: { type: 'string', format: 'date' },
               countryCode: { type: 'string', example: 'CAN' },
               bikerId: { type: 'string', format: 'uuid' },
             },
@@ -346,13 +346,13 @@ const doc = {
             required: [
               'creditCardNumber',
               'holderName',
-              'expirationDate',
+              'creditCardExpirationDate',
               'cvv',
             ],
             properties: {
               creditCardNumber: { type: 'string', example: '340103324294850' },
               holderName: { type: 'string', example: 'Raw Supplements' },
-              expirationDate: { type: 'string', example: '06/30' },
+              creditCardExpirationDate: { type: 'string', example: '06/30' },
               cvv: { type: 'string', example: '609' },
             },
             additionalProperties: false,
@@ -377,10 +377,10 @@ const doc = {
           },
           passport: {
             type: 'object',
-            required: ['passportNumber', 'expirationDate', 'countryCode'],
+            required: ['passportNumber', 'passportExpirationDate', 'countryCode'],
             properties: {
               passportNumber: { type: 'string', example: 'P123456AA' },
-              expirationDate: { type: 'string', format: 'date' },
+              passportExpirationDate: { type: 'string', format: 'date' },
               countryCode: { type: 'string', example: 'CAN' },
             },
             additionalProperties: false,
@@ -390,7 +390,7 @@ const doc = {
       },
       UpdateForeignerBiker: {
         type: 'object',
-        required: ['biker'],
+        required: ['biker','passport'],
         properties: {
           biker: {
             type: 'object',
@@ -407,7 +407,7 @@ const doc = {
             type: 'object',
             properties: {
               passportNumber: { type: 'string', example: 'P123456AA' },
-              expirationDate: { type: 'string', format: 'date' },
+              passportExpirationDate: { type: 'string', format: 'date' },
               countryCode: { type: 'string', example: 'CAN' },
             },
             additionalProperties: false,
@@ -452,14 +452,14 @@ const doc = {
             required: [
               'id',
               'passportNumber',
-              'expirationDate',
+              'passportExpirationDate',
               'countryCode',
               'bikerId',
             ],
             properties: {
               id: { type: 'string', format: 'uuid' },
               passportNumber: { type: 'string', example: 'P123456AA' },
-              expirationDate: { type: 'string', format: 'date' },
+              passportExpirationDate: { type: 'string', format: 'date' },
               countryCode: { type: 'string', example: 'CAN' },
               bikerId: { type: 'string', format: 'uuid' },
             },
@@ -470,11 +470,11 @@ const doc = {
       },
       NewCreditCard: {
         type: 'object',
-        required: ['creditCardNumber', 'holderName', 'expirationDate', 'cvv'],
+        required: ['creditCardNumber', 'holderName', 'creditCardExpirationDate', 'cvv'],
         properties: {
           creditCardNumber: { type: 'string', example: '4716269544487406' },
           holderName: { type: 'string', example: 'Scrooge McDuck' },
-          expirationDate: { type: 'string', example: '06/30' },
+          creditCardExpirationDate: { type: 'string', example: '06/30' },
           cvv: { type: 'string', example: '286' },
         },
         additionalProperties: false,

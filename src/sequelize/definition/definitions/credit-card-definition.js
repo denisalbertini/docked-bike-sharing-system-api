@@ -22,7 +22,7 @@ export function defineModel( sequelize ) {
           is: /^[\p{L}\s'.-]+$/u
         }
       }, 
-      expirationDate: {
+      creditCardExpirationDate: {
         type: DataTypes.STRING( 7 ),
         validate: {
           is: /^(0[1-9]|1[0-2])\/\d{2}$/
