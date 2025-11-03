@@ -31,7 +31,7 @@ export default class BaseController {
     if ( result.value instanceof Array && result.value[0] instanceof Model )
       result = Result.success( result.value.map( v => v.toJSON() ) );
 
-    if ( successStatus === 204 ) res.sendStatus( 204 );
+    if ( successStatus === 204 ) return res.sendStatus( 204 );
     
     res.status( successStatus ).send( result.value );
   }
