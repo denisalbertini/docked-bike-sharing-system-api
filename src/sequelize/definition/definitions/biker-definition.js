@@ -4,7 +4,8 @@ import Charge from "../../../model/models/charge.js";
 import CreditCard from "../../../model/models/credit-card.js";
 import Passport from "../../../model/models/passport.js";
 import Rental from "../../../model/models/rental.js";
-import Cpf from "../../../model/shared/cpf.js";
+import BirthDateValidator from "../../../model/shared/birth-date-validator.js";
+import CpfValidator from "../../../model/shared/cpf-validator.js";
 import status from "../../../model/shared/enum/biker-status.js";
 import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
@@ -16,9 +17,9 @@ export function defineModel( sequelize ) {
         type: DataTypes.CHAR( 11 ), 
         unique: true, 
         validate: {
-          isCpf( cpf ) {
-            if ( !Cpf.validate( cpf ) )
-              throw new Error( 'Invalid CPF.' );
+          isValidCpf( cpf ) {
+            if ( !new CpfValidator.validate( cpf ) )
+              throw new Error( 'Validation isValidCpf on cpf failed' );
           }
         }
       }, 
@@ -33,14 +34,9 @@ export function defineModel( sequelize ) {
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate: {
-          isDate: true, 
-          hasValidYear( birthDate ) {
-            const year = parseInt( birthDate.slice( 0, 4 ) );
-            const currentYear = new Date().getFullYear();
-            const yearDifference = currentYear - year;
-
-            if ( yearDifference < 12 || yearDifference > 100 )
-              throw new Error( 'Validation hasValidYear on birthDate failed' );
+          isValidBirthDate( birthDate ) {
+            if ( !new BirthDateValidator.validate( birthDate, 12, 100 ) )
+              throw new Error( 'Validation isValidBirthDate on birthDate failed' );
           }
         }
       }, 
