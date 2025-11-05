@@ -1,5 +1,5 @@
-export default class Cpf {
-  static validate( cpf ) {
+export default class CpfValidator {
+  validate( cpf ) {
     if ( cpf.length !== 11 || /^(\d)\1{10}$/.test( cpf ) ) return false;
 
     let sum;
