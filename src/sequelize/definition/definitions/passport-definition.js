@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import Biker from "../../../model/models/biker.js";
 import Passport from "../../../model/models/passport.js";
+import ExpirationDateValidator from "../../../model/shared/expiration-date-validator.js";
 import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
 export function defineModel( sequelize ) {
@@ -19,13 +20,9 @@ export function defineModel( sequelize ) {
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate: {
-          isDate: true, 
-          hasValidYear( expirationDate ) {
-            const year = parseInt( expirationDate.slice( 0, 4 ) );
-            const currentYear = new Date().getFullYear();
-
-            if ( year < currentYear )
-              throw new Error( 'Validation hasValidYear on expirationDate failed' );
+          isValidExpirationDate( expirationDate ) {
+            if ( !new ExpirationDateValidator.validate( expirationDate ) )
+              throw new Error( 'Validation isValidExpirationDate on expirationDate failed' );
           }
         }
       }, 
