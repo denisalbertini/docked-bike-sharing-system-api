@@ -3,7 +3,8 @@ import BikeRemoval from "../../../model/models/bike-removal.js";
 import DockAdmission from "../../../model/models/dock-admission.js";
 import DockRemoval from "../../../model/models/dock-removal.js";
 import Employee from "../../../model/models/employee.js";
-import Cpf from "../../../model/shared/cpf.js";
+import BirthDateValidator from "../../../model/shared/birth-date-validator.js";
+import CpfValidator from "../../../model/shared/cpf-validator.js";
 import roles from "../../../model/shared/enum/employee-role.js";
 import { defaultAttributes, defaultOptions } from "../default-definition.js";
 
@@ -25,8 +26,8 @@ export function defineModel( sequelize ) {
         unique: true, 
         validate: {
           isCpf( cpf ) {
-            if ( !Cpf.validate( cpf ) )
-              throw new Error( 'Invalid CPF.' );
+            if ( !new CpfValidator.validate( cpf ) )
+              throw new Error( 'Validation isValidCpf on cpf failed' );
           }
         }
       }, 
@@ -41,7 +42,10 @@ export function defineModel( sequelize ) {
         type: DataTypes.DATEONLY, 
         allowNull: false, 
         validate: {
-          isDate: true
+          isValidBirthDate( birthDate ) {
+            if ( !new BirthDateValidator.validate( birthDate, 18, 100 ) )
+              throw new Error( 'Validation isValidBirthDate on birthDate failed' );
+          }
         }
       }, 
       role: {
