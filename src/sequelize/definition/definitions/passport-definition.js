@@ -21,7 +21,7 @@ export function defineModel( sequelize ) {
         allowNull: false, 
         validate: {
           isValidExpirationDate( expirationDate ) {
-            if ( !new ExpirationDateValidator.validate( expirationDate ) )
+            if ( !new ExpirationDateValidator().validate( expirationDate ) )
               throw new Error( 'Validation isValidExpirationDate on expirationDate failed' );
           }
         }
