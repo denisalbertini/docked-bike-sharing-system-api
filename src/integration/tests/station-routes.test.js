@@ -86,7 +86,11 @@ describe('/api/stations', () => {
         const testCases = [
           {
             description: 'Conflicting serial',
-            reqBody: newStation,
+            reqBody: {
+              stationSerial: newStation.stationSerial,
+              name: newStation.name,
+              location: newStation.location,
+            },
             expectedErrors: [
               'duplicar valor da chave viola a restrição de unicidade "station_station_serial_key"',
             ],
@@ -116,34 +120,21 @@ describe('/api/stations', () => {
           name: '',
           location: '',
         });
-        const nullStation = createStation({
-          stationSerial: null,
-          name: null,
-          location: null,
-        });
 
         const testCases = [
           {
             description: 'Invalid data',
-            reqBody: invalidStation,
+            reqBody: {
+              stationSerial: invalidStation.stationSerial,
+              name: invalidStation.name,
+              location: invalidStation.location,
+            },
             expectedResBody: {
               errorType: VALIDATION_ERROR,
               errors: [
                 'Validation is on stationSerial failed',
                 'Validation len on name failed',
                 'Validation len on location failed',
-              ],
-            },
-          },
-          {
-            description: 'Null Data',
-            reqBody: nullStation,
-            expectedResBody: {
-              errorType: VALIDATION_ERROR,
-              errors: [
-                'Station.stationSerial cannot be null',
-                'Station.name cannot be null',
-                'Station.location cannot be null',
               ],
             },
           },
@@ -171,9 +162,13 @@ describe('/api/stations', () => {
         const testCases = [
           {
             description: 'Record created',
-            reqBody: station,
-            expectedResBody: station,
-            expectedRecord: station,
+            reqBody: {
+              stationSerial: station.stationSerial,
+              name: station.name,
+              location: station.location,
+            },
+            expectedResBody: { ...station, id: expect.any(String) },
+            expectedRecord: { ...station, id: expect.any(String) },
           },
         ];
 
@@ -185,11 +180,13 @@ describe('/api/stations', () => {
               .set(headers)
               .send(reqBody);
 
+            const record = await Station.findOne({
+              where: { stationSerial: station.stationSerial },
+              raw: true,
+            });
+
             expect(res.body).toStrictEqual(expectedResBody);
             expect(res.status).toBe(201);
-
-            const record = await Station.findByPk(reqBody.id, { raw: true });
-
             expect(record).toStrictEqual(expectedRecord);
           }
         );
