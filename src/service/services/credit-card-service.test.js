@@ -13,7 +13,7 @@ describe('CreditCardService', () => {
     test('should return success for valid credit card data', () => {
       const validData = {
         creditCardNumber: '4111111111111111',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '123',
       };
 
@@ -25,7 +25,7 @@ describe('CreditCardService', () => {
     test('should return validation error for invalid credit card number', () => {
       const invalidData = {
         creditCardNumber: '4111111111111112',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '123',
       };
 
@@ -39,7 +39,7 @@ describe('CreditCardService', () => {
     test('should return validation error for expired card', () => {
       const expiredData = {
         creditCardNumber: '4111111111111111',
-        expirationDate: '01/20',
+        creditCardExpirationDate: '01/20',
         cvv: '123',
       };
 
@@ -52,7 +52,7 @@ describe('CreditCardService', () => {
     test('should return validation error for invalid CVV', () => {
       const invalidCvvData = {
         creditCardNumber: '4111111111111111',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '12',
       };
 
@@ -65,7 +65,7 @@ describe('CreditCardService', () => {
     test('should return multiple errors for multiple invalid fields', () => {
       const invalidData = {
         creditCardNumber: '4111111111111112',
-        expirationDate: '13/28',
+        creditCardExpirationDate: '13/28',
         cvv: '1',
       };
 
@@ -88,7 +88,7 @@ describe('CreditCardService', () => {
       validCards.forEach(creditCardNumber => {
         const data = {
           creditCardNumber,
-          expirationDate: '12/28',
+          creditCardExpirationDate: '12/28',
           cvv: '123',
         };
 
@@ -100,7 +100,7 @@ describe('CreditCardService', () => {
     test('should handle credit card number with spaces and dashes', () => {
       const data = {
         creditCardNumber: '4111-1111-1111-1111',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '123',
       };
 
@@ -112,7 +112,7 @@ describe('CreditCardService', () => {
     test('should validate 4-digit CVV for American Express', () => {
       const data = {
         creditCardNumber: '378282246310005',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '1234',
       };
 
@@ -124,10 +124,10 @@ describe('CreditCardService', () => {
     test('should reject invalid expiration date format', () => {
       const invalidFormats = ['12-28', '1228', '12/2028', '12/'];
 
-      invalidFormats.forEach(expirationDate => {
+      invalidFormats.forEach(creditCardExpirationDate => {
         const data = {
           creditCardNumber: '4111111111111111',
-          expirationDate,
+          creditCardExpirationDate,
           cvv: '123',
         };
 
@@ -140,7 +140,7 @@ describe('CreditCardService', () => {
     test('should reject invalid month in expiration date', () => {
       const data = {
         creditCardNumber: '4111111111111111',
-        expirationDate: '13/28',
+        creditCardExpirationDate: '13/28',
         cvv: '123',
       };
 
@@ -153,7 +153,7 @@ describe('CreditCardService', () => {
     test('should reject non-numeric CVV', () => {
       const data = {
         creditCardNumber: '4111111111111111',
-        expirationDate: '12/28',
+        creditCardExpirationDate: '12/28',
         cvv: '12a',
       };
 
