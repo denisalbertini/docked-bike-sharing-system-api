@@ -70,7 +70,7 @@ export default class DockAdmissionFacade extends BaseFacade {
 
       const successData = {
         ...dockAdmission.toJSON(), 
-        requestedAt: dockAdmission.requestedAt.toString()
+        requestedAt: dockAdmission.requestedAt.toISOString()
       };
 
       await this.#transaction.commit();
