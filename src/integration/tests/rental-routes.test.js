@@ -300,7 +300,7 @@ describe('/api/rentals', () => {
             },
             expectedResBody: {
               ...insideTimeLimitRental,
-              startedAt: insideTimeLimitRental.startedAt.toString(),
+              startedAt: insideTimeLimitRental.startedAt.toISOString(),
               finishedAt: expect.any(String),
               returnedToDockId: dock1.id,
             },
@@ -339,7 +339,7 @@ describe('/api/rentals', () => {
             },
             expectedResBody: {
               ...outsideTimeLimitRental,
-              startedAt: outsideTimeLimitRental.startedAt.toString(),
+              startedAt: outsideTimeLimitRental.startedAt.toISOString(),
               finishedAt: expect.any(String),
               returnedToDockId: dock2.id,
               extraChargeId: expect.any(String),
