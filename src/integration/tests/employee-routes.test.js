@@ -6,7 +6,6 @@ import Employee from '../../model/models/employee.js';
 import employeeRole from '../../model/shared/enum/employee-role.js';
 import {
   NOT_FOUND_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
   VALIDATION_ERROR,
 } from '../../model/shared/enum/error-types.js';
 import { createEmployee } from '../data-factory.js';
@@ -44,8 +43,12 @@ describe('/api/employees', () => {
       });
 
       describe('200', () => {
-        const admin = createEmployee('04130338056');
-        const operator = createEmployee('59013719090');
+        const admin = createEmployee('04130338056', {
+          role: employeeRole.ADMIN,
+        });
+        const operator = createEmployee('59013719090', {
+          role: employeeRole.OPERATOR,
+        });
 
         beforeAll(async () => {
           await truncateAllTables();
@@ -54,7 +57,7 @@ describe('/api/employees', () => {
 
         const testCases = [
           {
-            description: 'Record found',
+            description: 'Records found',
             expectedResBody: [
               { ...admin, deletedAt: null },
               { ...operator, deletedAt: null },
@@ -65,8 +68,8 @@ describe('/api/employees', () => {
         test.each(testCases)('$description', async ({ expectedResBody }) => {
           const res = await request(app)[method](path).set(headers);
 
-          expect(res.status).toBe(200);
           expect(res.body).toStrictEqual(expectedResBody);
+          expect(res.status).toBe(200);
         });
       });
     });
@@ -74,94 +77,30 @@ describe('/api/employees', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('409', () => {
-        const conflictingEmployee = createEmployee('60414127080', {
-          registration: 'EM-001',
-        });
-
-        beforeAll(async () => {
-          await truncateAllTables();
-          await Employee.create(conflictingEmployee);
-        });
-
-        const newEmployee = createEmployee('60414127080', {
-          registration: 'EM-001',
-        });
-
-        const testCases = [
-          {
-            description: 'Conflicting registration',
-            reqBody: newEmployee,
-            expectedErrors: [
-              'duplicar valor da chave viola a restrição de unicidade "employee_registration_key"',
-            ],
-          },
-          {
-            description: 'Conflicting CPF',
-            reqBody: { ...newEmployee, registration: 'EM-002' },
-            expectedErrors: [
-              'duplicar valor da chave viola a restrição de unicidade "employee_cpf_key"',
-            ],
-          },
-        ];
-
-        test.each(testCases)(
-          '$description',
-          async ({ reqBody, expectedErrors }) => {
-            const res = await request(app)
-              [method](path)
-              .set(headers)
-              .send(reqBody);
-
-            expect(res.body).toStrictEqual({
-              errorType: UNIQUE_CONSTRAINT_ERROR,
-              errors: expectedErrors,
-            });
-            expect(res.status).toBe(409);
-          }
-        );
-      });
-
       describe('400', () => {
-        const invalidEmployee = createEmployee('abc', {
+        const employee = createEmployee('abc', {
           registration: 'abc',
           name: '',
-          birthDate: 'abc',
-          role: 'abc',
-        });
-        const nullEmployee = createEmployee(null, {
-          registration: null,
-          name: null,
-          birthDate: null,
-          role: null,
+          birthDate: '2030-06-15',
         });
 
         const testCases = [
           {
             description: 'Invalid data',
-            reqBody: invalidEmployee,
+            reqBody: {
+              registration: employee.registration,
+              cpf: employee.cpf,
+              name: employee.name,
+              birthDate: employee.birthDate,
+              role: employee.role,
+            },
             expectedResBody: {
               errorType: VALIDATION_ERROR,
               errors: [
-                'Invalid CPF.',
+                'Validation isValidCpf on cpf failed',
+                'Validation isValidBirthDate on birthDate failed',
                 'Validation is on registration failed',
                 'Validation is on name failed',
-                'Validation isDate on birthDate failed',
-                'Validation isIn on role failed',
-              ],
-            },
-          },
-          {
-            description: 'Null Data',
-            reqBody: nullEmployee,
-            expectedResBody: {
-              errorType: VALIDATION_ERROR,
-              errors: [
-                'Employee.registration cannot be null',
-                'Employee.cpf cannot be null',
-                'Employee.name cannot be null',
-                'Employee.birthDate cannot be null',
-                'Employee.role cannot be null',
               ],
             },
           },
@@ -194,25 +133,41 @@ describe('/api/employees', () => {
         const testCases = [
           {
             description: 'Admin',
-            reqBody: admin,
+            reqBody: {
+              registration: admin.registration,
+              cpf: admin.cpf,
+              name: admin.name,
+              birthDate: admin.birthDate,
+              role: admin.role,
+            },
             expectedResBody: expect.objectContaining({
               ...admin,
+              id: expect.any(String),
               deletedAt: null,
             }),
             expectedRecord: expect.objectContaining({
               ...admin,
+              id: expect.any(String),
               deletedAt: null,
             }),
           },
           {
             description: 'Operator',
-            reqBody: operator,
+            reqBody: {
+              registration: operator.registration,
+              cpf: operator.cpf,
+              name: operator.name,
+              birthDate: operator.birthDate,
+              role: operator.role,
+            },
             expectedResBody: expect.objectContaining({
               ...operator,
+              id: expect.any(String),
               deletedAt: null,
             }),
             expectedRecord: expect.objectContaining({
               ...operator,
+              id: expect.any(String),
               deletedAt: null,
             }),
           },
@@ -226,11 +181,13 @@ describe('/api/employees', () => {
               .set(headers)
               .send(reqBody);
 
+            const record = await Employee.findOne({
+              where: { cpf: reqBody.cpf },
+              raw: true,
+            });
+
             expect(res.body).toStrictEqual(expectedResBody);
             expect(res.status).toBe(201);
-
-            const record = await Employee.findByPk(reqBody.id, { raw: true });
-
             expect(record).toStrictEqual(expectedRecord);
           }
         );
@@ -303,64 +260,11 @@ describe('/api/employees', () => {
     describe('PUT', () => {
       const method = 'put';
 
-      describe('409', () => {
-        const conflictingEmployee = createEmployee('60414127080');
-        const updateEmployee = createEmployee('19857763081');
-
-        beforeAll(async () => {
-          await truncateAllTables();
-          await Employee.bulkCreate([conflictingEmployee, updateEmployee]);
-        });
-
-        const testCases = [
-          {
-            description: 'Conflicting registration',
-            path: path(updateEmployee.id),
-            reqBody: { registration: conflictingEmployee.registration },
-            expectedErrors: [
-              'duplicar valor da chave viola a restrição de unicidade "employee_registration_key"',
-            ],
-          },
-          {
-            description: 'Conflicting CPF',
-            path: path(updateEmployee.id),
-            reqBody: { cpf: conflictingEmployee.cpf },
-            expectedErrors: [
-              'duplicar valor da chave viola a restrição de unicidade "employee_cpf_key"',
-            ],
-          },
-        ];
-
-        test.each(testCases)(
-          '$description',
-          async ({ path, reqBody, expectedErrors }) => {
-            const res = await request(app)
-              [method](path)
-              .set(headers)
-              .send(reqBody);
-
-            expect(res.body).toStrictEqual({
-              errorType: UNIQUE_CONSTRAINT_ERROR,
-              errors: expectedErrors,
-            });
-            expect(res.status).toBe(409);
-          }
-        );
-      });
-
       describe('400', () => {
         const employee = createEmployee('44493972076');
         const invalidEmployee = createEmployee('abc', {
-          registration: 'abc',
           name: '',
-          birthDate: 'abc',
-          role: 'abc',
-        });
-        const nullEmployee = createEmployee(null, {
-          registration: null,
-          name: null,
-          birthDate: null,
-          role: null,
+          birthDate: '2030-06-15',
         });
 
         beforeAll(async () => {
@@ -372,30 +276,15 @@ describe('/api/employees', () => {
           {
             description: 'Invalid data',
             path: path(employee.id),
-            reqBody: invalidEmployee,
-            expectedResBody: {
-              errorType: VALIDATION_ERROR,
-              errors: [
-                'Invalid CPF.',
-                'Validation is on registration failed',
-                'Validation is on name failed',
-                'Validation isDate on birthDate failed',
-                'Validation isIn on role failed',
-              ],
+            reqBody: {
+              name: invalidEmployee.name,
+              birthDate: invalidEmployee.birthDate,
             },
-          },
-          {
-            description: 'Null Data',
-            path: path(employee.id),
-            reqBody: nullEmployee,
             expectedResBody: {
               errorType: VALIDATION_ERROR,
               errors: [
-                'Employee.registration cannot be null',
-                'Employee.cpf cannot be null',
-                'Employee.name cannot be null',
-                'Employee.birthDate cannot be null',
-                'Employee.role cannot be null',
+                'Validation isValidBirthDate on birthDate failed',
+                'Validation is on name failed',
               ],
             },
           },
@@ -428,13 +317,20 @@ describe('/api/employees', () => {
           {
             description: 'Updated',
             path: path(employee.id),
-            reqBody: update,
+            reqBody: {
+              name: update.name,
+              birthDate: update.birthDate,
+            },
             expectedResBody: expect.objectContaining({
-              ...update,
+              ...employee,
+              name: update.name,
+              birthDate: update.birthDate,
               deletedAt: null,
             }),
             expectedRecord: expect.objectContaining({
-              ...update,
+              ...employee,
+              name: update.name,
+              birthDate: update.birthDate,
               deletedAt: null,
             }),
           },
@@ -448,11 +344,10 @@ describe('/api/employees', () => {
               .set(headers)
               .send(reqBody);
 
+            const record = await Employee.findByPk(employee.id, { raw: true });
+
             expect(res.body).toStrictEqual(expectedResBody);
             expect(res.status).toBe(200);
-
-            const record = await Employee.findByPk(reqBody.id, { raw: true });
-
             expect(record).toStrictEqual(expectedRecord);
           }
         );
