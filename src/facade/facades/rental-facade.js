@@ -2,9 +2,9 @@ import { BaseError } from 'sequelize';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-    INTERNAL_SERVER_ERROR,
-    NOT_FOUND_ERROR,
-    PRECONDITION_FAILED_ERROR
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND_ERROR,
+  PRECONDITION_FAILED_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
@@ -123,7 +123,7 @@ export default class RentalFacade extends BaseFacade {
 
       var successData = {
         ...rental.toJSON(), 
-        startedAt: rental.startedAt.toString()
+        startedAt: rental.startedAt.toISOString()
       };
 
       await this.#transaction.commit();
@@ -255,8 +255,8 @@ export default class RentalFacade extends BaseFacade {
 
       var successData = {
         ...updatedRental.toJSON(), 
-        startedAt: updatedRental.startedAt.toString(), 
-        finishedAt: updatedRental.finishedAt.toString()
+        startedAt: updatedRental.startedAt.toISOString(), 
+        finishedAt: updatedRental.finishedAt.toISOString()
       };
 
       await this.#transaction.commit();
