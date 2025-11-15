@@ -124,7 +124,7 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
       description: 'Employee updated successfully',
       content: {
         'application/json': {
