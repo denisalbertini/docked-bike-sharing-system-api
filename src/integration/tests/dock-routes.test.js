@@ -46,8 +46,8 @@ describe('/api/docks', () => {
         test.each(testCases)('$description', async ({ expectedResBody }) => {
           const res = await request(app)[method](path).set(headers);
 
-          expect(res.status).toBe(200);
           expect(res.body).toStrictEqual(expectedResBody);
+          expect(res.status).toBe(200);
         });
       });
     });
@@ -63,11 +63,21 @@ describe('/api/docks', () => {
         const testCases = [
           {
             description: 'Record created',
-            reqBody: dock,
-            expectedResBody: expect.objectContaining({
-              ...dock,
+            reqBody: {
+              dockSerial: dock.dockSerial,
+              model: dock.model,
+              manufactureDate: dock.manufactureDate,
+            },
+            expectedResBody: {
+              id: expect.any(String),
+              dockSerial: dock.dockSerial,
+              model: dock.model,
+              manufactureDate: dock.manufactureDate,
               status: dockStatus.OPERATIONAL,
-            }),
+              stationId: null,
+              bikeId: null,
+              deletedAt: null,
+            },
           },
         ];
 
@@ -79,13 +89,13 @@ describe('/api/docks', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(201);
-            expect(res.body).toStrictEqual(expectedResBody);
-
             const persistedData = await Dock.findOne({
               where: { dockSerial: reqBody.dockSerial },
+              raw: true,
             });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(201);
             expect(persistedData).toStrictEqual(expectedResBody);
           }
         );
@@ -141,16 +151,26 @@ describe('/api/docks', () => {
           await Dock.create(dock);
         });
 
-        const updateData = createDock({
-          status: dockStatus.AVAILABLE,
-        });
+        const updateData = createDock();
 
         const testCases = [
           {
             description: 'Record updated',
             path: path(dock.id),
-            reqBody: updateData,
-            expectedResBody: expect.objectContaining(updateData),
+            reqBody: {
+              model: updateData.model,
+              manufactureDate: updateData.manufactureDate,
+            },
+            expectedResBody: {
+              id: expect.any(String),
+              dockSerial: dock.dockSerial,
+              model: updateData.model,
+              manufactureDate: updateData.manufactureDate,
+              status: dockStatus.OPERATIONAL,
+              stationId: null,
+              bikeId: null,
+              deletedAt: null,
+            },
           },
         ];
 
@@ -162,14 +182,13 @@ describe('/api/docks', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(200);
-            expect(res.body).toStrictEqual(expectedResBody);
-
             const persistedData = await Dock.findOne({
-              where: { dockSerial: reqBody.dockSerial },
+              where: { dockSerial: dock.dockSerial },
               raw: true,
             });
 
+            expect(res.body).toStrictEqual(expectedResBody);
+            expect(res.status).toBe(200);
             expect(persistedData).toStrictEqual(expectedResBody);
           }
         );
@@ -227,6 +246,9 @@ describe('/api/docks', () => {
       const method = 'post';
 
       describe('412', () => {
+        const employee = createEmployee('86322094009');
+        const station = createStation();
+
         const availableDock = createDock({
           dockSerial: 'DO-001',
           status: dockStatus.AVAILABLE,
@@ -246,6 +268,8 @@ describe('/api/docks', () => {
 
         beforeAll(async () => {
           await truncateAllTables();
+          await Employee.create(employee);
+          await Station.create(station);
           await Dock.bulkCreate([
             availableDock,
             decommissionedDock,
@@ -257,19 +281,35 @@ describe('/api/docks', () => {
         const testCases = [
           {
             description: 'Available dock',
-            reqBody: { dockSerial: availableDock.dockSerial },
+            reqBody: {
+              employeeId: employee.id,
+              dockSerial: availableDock.dockSerial,
+              stationSerial: station.stationSerial,
+            },
           },
           {
             description: 'Decommissioned dock',
-            reqBody: { dockSerial: decommissionedDock.dockSerial },
+            reqBody: {
+              employeeId: employee.id,
+              dockSerial: decommissionedDock.dockSerial,
+              stationSerial: station.stationSerial,
+            },
           },
           {
             description: 'Maintenace requested dock',
-            reqBody: { dockSerial: maintenanceRequestedDock.dockSerial },
+            reqBody: {
+              employeeId: employee.id,
+              dockSerial: maintenanceRequestedDock.dockSerial,
+              stationSerial: station.stationSerial,
+            },
           },
           {
             description: 'Occupied dock',
-            reqBody: { dockSerial: occupiedDock.dockSerial },
+            reqBody: {
+              employeeId: employee.id,
+              dockSerial: occupiedDock.dockSerial,
+              stationSerial: station.stationSerial,
+            },
           },
         ];
 
@@ -387,19 +427,26 @@ describe('/api/docks', () => {
       const method = 'post';
 
       describe('412', () => {
+        const employee = createEmployee('14214698045');
+
         const occupiedDock = createDock({
           status: dockStatus.OCCUPIED,
         });
 
         beforeAll(async () => {
           await truncateAllTables();
+          await Employee.create(employee);
           await Dock.bulkCreate([occupiedDock]);
         });
 
         const testCases = [
           {
             description: 'Occupied dock',
-            reqBody: { dockSerial: occupiedDock.dockSerial, action: 'REPAIR' },
+            reqBody: {
+              employeeId: employee.id,
+              dockSerial: occupiedDock.dockSerial,
+              action: 'REPAIR',
+            },
           },
         ];
 
@@ -462,7 +509,6 @@ describe('/api/docks', () => {
             reqBody: {
               employeeId: employee.id,
               dockSerial: availableDock.dockSerial,
-              stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
             expectedResBody: {
@@ -484,7 +530,6 @@ describe('/api/docks', () => {
             reqBody: {
               employeeId: employee.id,
               dockSerial: decommissionedDock.dockSerial,
-              stationSerial: station.stationSerial,
               action: 'RETIRE',
             },
             expectedResBody: {
@@ -506,7 +551,6 @@ describe('/api/docks', () => {
             reqBody: {
               employeeId: employee.id,
               dockSerial: maintenanceRequestedDock.dockSerial,
-              stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
             expectedResBody: {
@@ -528,7 +572,6 @@ describe('/api/docks', () => {
             reqBody: {
               employeeId: employee.id,
               dockSerial: operationalDock.dockSerial,
-              stationSerial: station.stationSerial,
               action: 'RETIRE',
             },
             expectedResBody: {
@@ -550,7 +593,6 @@ describe('/api/docks', () => {
             reqBody: {
               employeeId: employee.id,
               dockSerial: underMaintenanceDock.dockSerial,
-              stationSerial: station.stationSerial,
               action: 'REPAIR',
             },
             expectedResBody: {
