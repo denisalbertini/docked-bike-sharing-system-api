@@ -450,7 +450,7 @@ describe('/api/bikers', () => {
               },
             },
             expectedErrors: [
-              'Validation hasValidYear on birthDate failed',
+              'Validation isValidBirthDate on birthDate failed',
               'Validation is on name failed',
             ],
           },
@@ -466,7 +466,8 @@ describe('/api/bikers', () => {
               },
             },
             expectedErrors: expect.arrayContaining([
-              'Validation hasValidYear on expirationDate failed',
+              'No updates were made.',
+              'Validation isValidExpirationDate on expirationDate failed',
               'Validation is on passportNumber failed',
               'Validation is on countryCode failed',
             ]),
