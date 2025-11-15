@@ -7,7 +7,8 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "localhost:3000",
+      "description": "Local development server"
     }
   ],
   "tags": [
@@ -1090,7 +1091,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Dock updated successfully",
             "content": {
               "application/json": {
@@ -2923,9 +2924,11 @@
           "id",
           "dockSerial",
           "model",
+          "manufactureDate",
           "status",
           "stationId",
-          "bikeId"
+          "bikeId",
+          "deletedAt"
         ],
         "properties": {
           "id": {
@@ -2939,6 +2942,10 @@
           "model": {
             "type": "string",
             "example": "Bike Dock"
+          },
+          "manufactureDate": {
+            "type": "string",
+            "format": "date"
           },
           "status": {
             "type": "string",
@@ -2960,6 +2967,11 @@
           "bikeId": {
             "type": "string",
             "format": "uuid",
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },

@@ -12,7 +12,7 @@ const doc = {
     title: 'Docked Bike Sharing System API',
     description: '',
   },
-  servers: [{ url: 'http://localhost:3000' }],
+  servers: [{ url: 'localhost:3000', description: 'Local development server' }],
   tags: [
     { name: 'Bikes', description: 'Bike management endpoints' },
     { name: 'Bikers', description: 'Biker management endpoints' },
@@ -377,7 +377,11 @@ const doc = {
           },
           passport: {
             type: 'object',
-            required: ['passportNumber', 'passportExpirationDate', 'countryCode'],
+            required: [
+              'passportNumber',
+              'passportExpirationDate',
+              'countryCode',
+            ],
             properties: {
               passportNumber: { type: 'string', example: 'P123456AA' },
               passportExpirationDate: { type: 'string', format: 'date' },
@@ -390,7 +394,7 @@ const doc = {
       },
       UpdateForeignerBiker: {
         type: 'object',
-        required: ['biker','passport'],
+        required: ['biker', 'passport'],
         properties: {
           biker: {
             type: 'object',
@@ -470,7 +474,12 @@ const doc = {
       },
       NewCreditCard: {
         type: 'object',
-        required: ['creditCardNumber', 'holderName', 'creditCardExpirationDate', 'cvv'],
+        required: [
+          'creditCardNumber',
+          'holderName',
+          'creditCardExpirationDate',
+          'cvv',
+        ],
         properties: {
           creditCardNumber: { type: 'string', example: '4716269544487406' },
           holderName: { type: 'string', example: 'Scrooge McDuck' },
@@ -494,14 +503,17 @@ const doc = {
           'id',
           'dockSerial',
           'model',
+          'manufactureDate',
           'status',
           'stationId',
           'bikeId',
+          'deletedAt',
         ],
         properties: {
           id: { type: 'string', format: 'uuid' },
           dockSerial: { type: 'string', example: 'DO-001' },
           model: { type: 'string', example: 'Bike Dock' },
+          manufactureDate: { type: 'string', format: 'date' },
           status: {
             type: 'string',
             enum: Object.values(dockStatus),
@@ -509,6 +521,7 @@ const doc = {
           },
           stationId: { type: 'string', format: 'uuid', nullable: true },
           bikeId: { type: 'string', format: 'uuid', nullable: true },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true },
         },
         additionalProperties: false,
       },
