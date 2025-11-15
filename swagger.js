@@ -591,7 +591,15 @@ const doc = {
       },
       Employee: {
         type: 'object',
-        required: ['id', 'registration', 'cpf', 'name', 'birthDate', 'role'],
+        required: [
+          'id',
+          'registration',
+          'cpf',
+          'name',
+          'birthDate',
+          'role',
+          'deletedAt',
+        ],
         properties: {
           id: { type: 'string', format: 'uuid' },
           registration: { type: 'string', example: 'EM-001' },
@@ -603,6 +611,7 @@ const doc = {
             enum: Object.values(employeeRole),
             example: employeeRole.OPERATOR,
           },
+          deletedAt: { type: 'string', format: 'date-time', nullable: true },
         },
         additionalProperties: false,
       },

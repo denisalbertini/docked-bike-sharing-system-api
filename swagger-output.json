@@ -1555,7 +1555,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Employee updated successfully",
             "content": {
               "application/json": {
@@ -3128,7 +3128,8 @@
           "cpf",
           "name",
           "birthDate",
-          "role"
+          "role",
+          "deletedAt"
         ],
         "properties": {
           "id": {
@@ -3158,6 +3159,11 @@
               "OPERATOR"
             ],
             "example": "OPERATOR"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
