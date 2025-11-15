@@ -43,7 +43,7 @@ export function defineModel( sequelize ) {
         allowNull: false, 
         validate: {
           isValidBirthDate( birthDate ) {
-            if ( !new BirthDateValidator.validate( birthDate, 18, 100 ) )
+            if ( !new BirthDateValidator().validate( birthDate, 18, 100 ) )
               throw new Error( 'Validation isValidBirthDate on birthDate failed' );
           }
         }
