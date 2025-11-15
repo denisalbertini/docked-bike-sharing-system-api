@@ -26,7 +26,7 @@ export function defineModel( sequelize ) {
         unique: true, 
         validate: {
           isCpf( cpf ) {
-            if ( !new CpfValidator.validate( cpf ) )
+            if ( !new CpfValidator().validate( cpf ) )
               throw new Error( 'Validation isValidCpf on cpf failed' );
           }
         }
