@@ -132,7 +132,7 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
       description: 'Dock updated successfully',
       content: {
         'application/json': {
