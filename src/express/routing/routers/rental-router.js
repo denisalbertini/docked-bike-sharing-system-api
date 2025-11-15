@@ -58,7 +58,7 @@ router.route( '/return' )
         }
       }
     }
-    #swagger.responses[201] = {
+    #swagger.responses[200] = {
       description: 'Return made successfully',
       content: {
         'application/json': {
