@@ -272,7 +272,7 @@ describe('/api/bikes', () => {
           {
             description: 'No record found',
             path: path(faker.string.uuid()),
-            expectedErrors: ['Entry does not exist.'],
+            expectedErrors: ['No updates were made.'],
           },
         ];
 
