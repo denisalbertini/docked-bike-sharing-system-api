@@ -18,7 +18,7 @@ export function defineModel( sequelize ) {
         unique: true, 
         validate: {
           isValidCpf( cpf ) {
-            if ( !new CpfValidator.validate( cpf ) )
+            if ( !new CpfValidator().validate( cpf ) )
               throw new Error( 'Validation isValidCpf on cpf failed' );
           }
         }
@@ -35,7 +35,7 @@ export function defineModel( sequelize ) {
         allowNull: false, 
         validate: {
           isValidBirthDate( birthDate ) {
-            if ( !new BirthDateValidator.validate( birthDate, 12, 100 ) )
+            if ( !new BirthDateValidator().validate( birthDate, 12, 100 ) )
               throw new Error( 'Validation isValidBirthDate on birthDate failed' );
           }
         }
