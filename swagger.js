@@ -659,15 +659,8 @@ const doc = {
         ],
         properties: {
           id: { type: 'string', format: 'uuid' },
-          startedAt: {
-            type: 'string',
-            example: new Date('2025-06-15').toString(),
-          },
-          finishedAt: {
-            type: 'string',
-            example: new Date('2025-06-15').toString(),
-            nullable: true,
-          },
+          startedAt: { type: 'string', format: 'date-time' },
+          finishedAt: { type: 'string', format: 'date-time', nullable: true },
           bikerId: { type: 'string', format: 'uuid' },
           bikeId: { type: 'string', format: 'uuid' },
           rentedFromDockId: { type: 'string', format: 'uuid' },

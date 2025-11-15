@@ -1732,7 +1732,7 @@
         "summary": "Return a bike",
         "description": "Return a rented bike (Biker access required)",
         "responses": {
-          "201": {
+          "200": {
             "description": "Return made successfully",
             "content": {
               "application/json": {
@@ -3247,11 +3247,11 @@
           },
           "startedAt": {
             "type": "string",
-            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)"
+            "format": "date-time"
           },
           "finishedAt": {
             "type": "string",
-            "example": "Sat Jun 14 2025 21:00:00 GMT-0300 (Horário Padrão de Brasília)",
+            "format": "date-time",
             "nullable": true
           },
           "bikerId": {
