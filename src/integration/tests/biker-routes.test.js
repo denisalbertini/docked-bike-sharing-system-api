@@ -3,8 +3,7 @@ import {
   beforeEach,
   describe,
   expect,
-  jest,
-  test,
+  test
 } from '@jest/globals';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -33,8 +32,6 @@ import {
 } from '../data-factory.js';
 import { bikerToken, emailConfirmationToken } from '../tokens.js';
 import truncateAllTables from '../truncate-tables.js';
-
-jest.setTimeout(10000);
 
 const headers = { authorization: `Bearer ${bikerToken}` };
 
