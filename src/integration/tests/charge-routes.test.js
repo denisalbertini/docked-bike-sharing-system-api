@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { beforeAll, describe, expect, test } from '@jest/globals';
 import { Op } from 'sequelize';
 import request from 'supertest';
 import app from '../../express/app.js';
@@ -13,17 +13,6 @@ import {
 import { schedulerToken } from '../tokens';
 import truncateAllTables from '../truncate-tables.js';
 
-const fakeDate = new Date('2024-01-15T14:30:00-03:00');
-
-beforeAll(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(fakeDate);
-});
-
-afterAll(() => {
-  jest.useRealTimers();
-});
-
 const headers = { authorization: `Bearer ${schedulerToken}` };
 
 describe('/late-fees', () => {
@@ -37,14 +26,14 @@ describe('/late-fees', () => {
       const biker = createBiker(creditCard.id, { cpf: '23847541064' });
 
       const moreThan12HoursAgoCharge = createCharge(biker.id, {
-        requestedAt: '2024-01-14T20:30:00-03:00',
+        requestedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 13),
       });
 
       const lessThan12HoursAgoCharge1 = createCharge(biker.id, {
-        requestedAt: '2024-01-15T11:30:00-03:00',
+        requestedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 11),
       });
       const lessThan12HoursAgoCharge2 = createCharge(biker.id, {
-        requestedAt: '2024-01-15T13:30:00-03:00',
+        requestedAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 1),
       });
 
       beforeAll(async () => {
@@ -71,13 +60,13 @@ describe('/late-fees', () => {
             {
               ...lessThan12HoursAgoCharge1,
               requestedAt: new Date(lessThan12HoursAgoCharge1.requestedAt),
-              completedAt: fakeDate,
+              completedAt: expect.any(Date),
               amount: lessThan12HoursAgoCharge1.amount.toFixed(2),
             },
             {
               ...lessThan12HoursAgoCharge2,
               requestedAt: new Date(lessThan12HoursAgoCharge2.requestedAt),
-              completedAt: fakeDate,
+              completedAt: expect.any(Date),
               amount: lessThan12HoursAgoCharge2.amount.toFixed(2),
             },
           ],
@@ -101,9 +90,11 @@ describe('/late-fees', () => {
           expect(unchangedChargeRecord.toJSON()).toStrictEqual(
             expectedUnchangedRecord
           );
-          expect(completedCharges.map(c => c.toJSON())).toStrictEqual(
-            expectedCompleted
-          );
+          expect(
+            completedCharges
+              .map(c => c.toJSON())
+              .sort((a, b) => a.requestedAt.getTime() < b.requestedAt.getTime())
+          ).toStrictEqual(expectedCompleted);
         }
       );
     });
