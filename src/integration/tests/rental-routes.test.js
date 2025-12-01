@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { beforeAll, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 import app from '../../express/app.js';
 import Bike from '../../model/models/bike';
@@ -22,8 +22,6 @@ import {
 } from '../data-factory';
 import { bikerToken } from '../tokens';
 import truncateAllTables from '../truncate-tables.js';
-
-jest.setTimeout(10000);
 
 const headers = { authorization: `Bearer ${bikerToken}` };
 
