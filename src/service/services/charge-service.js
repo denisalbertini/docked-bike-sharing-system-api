@@ -11,8 +11,12 @@ export default class ChargeService extends BaseService {
       );
   }
   
-  complete( charge ) {
-    return this.updateById( charge.id, { completedAt: Date.now() } );
+  complete( charge, transaction = null ) {
+    return this.updateById(
+      charge.id, 
+      { completedAt: Date.now() }, 
+      ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
   calculateAdditionalAmount( startTime, now ) {

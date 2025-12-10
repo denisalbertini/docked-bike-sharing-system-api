@@ -38,12 +38,16 @@ export default class BaseService {
     return result;
   }
 
-  create( data ) {
-    return this._modelRepository.create( data );
+  create( data, transaction = null ) {
+    return this._modelRepository.create(
+      data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
-  async updateById( id, data ) {
-    const updateResult = await this._modelRepository.updateById( id, data );
+  async updateById( id, data, transaction = null ) {
+    const updateResult = await this._modelRepository.updateById(
+      id, data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
     if ( updateResult.isFailure ) return updateResult;
 
     const [ affectedRows, [ updatedEntry ] = [] ] = updateResult.value;
@@ -57,8 +61,10 @@ export default class BaseService {
     return Result.success( updatedEntry );
   }
 
-  async deleteById( id ) {
-    const result = await this._modelRepository.deleteById( id );
+  async deleteById( id, transaction = null ) {
+    const result = await this._modelRepository.deleteById(
+      id, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
 
     if ( result.isSuccess && result.value === 0 )
       return Result.failure(

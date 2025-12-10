@@ -1,8 +1,8 @@
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-  NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  VALIDATION_ERROR
+    NOT_FOUND_ERROR,
+    PRECONDITION_FAILED_ERROR,
+    VALIDATION_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -44,8 +44,10 @@ export default class DockService extends BaseService {
     }
   }
 
-  updateStatusById( id, status ) {
-    return this.updateById( id, { status } );
+  updateStatusById( id, status, transaction = null ) {
+    return this.updateById(
+      id, { status }, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
   async findByBikeId( bikeId ) {

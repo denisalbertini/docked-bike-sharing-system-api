@@ -1,7 +1,7 @@
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import {
-  NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR
+    NOT_FOUND_ERROR,
+    PRECONDITION_FAILED_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -44,8 +44,10 @@ export default class BikeService extends BaseService {
     return findResult;
   }
 
-  updateStatusById( id, status ) {
-    return this.updateById( id, { status } );
+  updateStatusById( id, status, transaction = null ) {
+    return this.updateById(
+      id, { status }, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
   getStatusByAction( action ) {

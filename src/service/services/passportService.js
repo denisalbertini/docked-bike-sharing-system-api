@@ -1,5 +1,5 @@
-import BaseService from '../base-service.js';
 import Result from '../../model/shared/result.js';
+import BaseService from '../base-service.js';
 
 export default class PassportService extends BaseService {
   constructor( passportRepository ) { super( passportRepository ); }
@@ -16,8 +16,10 @@ export default class PassportService extends BaseService {
     return result;
   }
 
-  async updateByBikerId( bikerId, data ) {
-    const updateResult = await this._modelRepository.updateByBikerId( bikerId, data );
+  async updateByBikerId( bikerId, data, transaction = null ) {
+    const updateResult = await this._modelRepository.updateByBikerId(
+      bikerId, data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
     if ( updateResult.isFailure ) return updateResult;
 
     const [ affectedRows, [ updatedEntry ] = [] ] = updateResult.value;

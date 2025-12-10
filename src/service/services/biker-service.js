@@ -4,12 +4,12 @@ import { promisify } from 'util';
 import { ACCESS, EMAIL_VERIFICATION } from '../../model/shared/enum/auth-purpose.js';
 import status from '../../model/shared/enum/biker-status.js';
 import {
-  AUTHENTICATION_ERROR,
-  FORBIDDEN_ERROR,
-  INTERNAL_SERVER_ERROR,
-  NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  VALIDATION_ERROR
+    AUTHENTICATION_ERROR,
+    FORBIDDEN_ERROR,
+    INTERNAL_SERVER_ERROR,
+    NOT_FOUND_ERROR,
+    PRECONDITION_FAILED_ERROR,
+    VALIDATION_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -48,12 +48,15 @@ export default class BikerService extends BaseService {
     }
   }
 
-  async create( data ) {
+  async create( data, transaction = null ) {
     const hashPasswordResult = await this.#hashPassword( data.password );
     if ( hashPasswordResult.isFailure ) return hashPasswordResult;
     const hashedPassword = hashPasswordResult.value;
 
-    return super.create( { ...data, password: hashedPassword } );
+    return super.create(
+      { ...data, password: hashedPassword }, 
+      ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
   async generateAccountConfirmationToken( biker ) {
@@ -141,7 +144,7 @@ export default class BikerService extends BaseService {
     return Result.success();
   }
 
-  async updateById( id, data ) {
+  async updateById( id, data, transaction = null ) {
     if ( data.password ) {
       const hashPasswordResult = await this.#hashPassword( data.password );
       if ( hashPasswordResult.isFailure ) return hashPasswordResult;
@@ -149,7 +152,9 @@ export default class BikerService extends BaseService {
     }
 
     return super.updateById(
-      id, { ...data, password: hashedPassword ?? data.password }
+      id, 
+      { ...data, password: hashedPassword ?? data.password }, 
+      ...( ( transaction && [ transaction ] ) ?? [] )
     );
   }
 }

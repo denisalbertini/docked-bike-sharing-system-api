@@ -76,8 +76,10 @@ export default class CreditCardService extends BaseService {
     return /^\d{3,4}$/.test( cvv );
   }
   
-  async findOrCreate( data ) {
-    const result = await this._modelRepository.findOrCreate( data );
+  async findOrCreate( data, transaction = null ) {
+    const result = await this._modelRepository.findOrCreate(
+      data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
 
     if ( result.isFailure ) return result;
 
