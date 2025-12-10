@@ -12,6 +12,8 @@ export default class SequelizeTransaction {
       throw new Error( 'Transaction already started.' );
 
     this.#transaction = await this.#sequelize.transaction();
+
+    return this.#transaction;
   }
 
   async commit() {
