@@ -1,12 +1,11 @@
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
-import Result from '../model/shared/result.js';
 import {
-  VALIDATION_ERROR, 
-  UNIQUE_CONSTRAINT_ERROR, 
-  FOREIGN_KEY_CONSTRAINT_ERROR, 
-  INTERNAL_SERVER_ERROR
+  FOREIGN_KEY_CONSTRAINT_ERROR,
+  INTERNAL_SERVER_ERROR,
+  UNIQUE_CONSTRAINT_ERROR,
+  VALIDATION_ERROR
 } from '../model/shared/enum/error-types.js';
-import { UniqueConstraintError } from 'sequelize';
+import Result from '../model/shared/result.js';
 
 export default class BaseRepository {
   _model;
@@ -62,23 +61,33 @@ export default class BaseRepository {
     );
   }
 
-  create( data ) {
+  create( data, transaction = null ) {
     return this._handleOperation(
-      () => this._model.create( data )
-    );
-  }
-
-  updateById( id, data ) {
-    return this._handleOperation(
-      () => this._model.update(
-        data, { where: { id }, returning: true }
+      () => this._model.create(
+        data, 
+        { ...( transaction && { transaction } ) }
       )
     );
   }
 
-  deleteById( id ) {
+  updateById( id, data, transaction = null ) {
     return this._handleOperation(
-      () => this._model.destroy( { where: { id } } )
+      () => this._model.update(
+        data, 
+        { 
+          where: { id }, 
+          returning: true, 
+          ...( transaction && { transaction } )
+        }
+      )
+    );
+  }
+
+  deleteById( id, transaction = null ) {
+    return this._handleOperation(
+      () => this._model.destroy(
+        { where: { id }, ...( transaction && { transaction } ) }
+      )
     );
   }
 }

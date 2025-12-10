@@ -16,10 +16,14 @@ export default class DockRepository extends BaseRepository {
     );
   }
 
-  deleteById( id ) {
+  deleteById( id, transaction = null ) {
     return this._handleOperation(
       () => this._model.destroy(
-        { where: { id }, individualHooks: true }
+        {
+          where: { id }, 
+          individualHooks: true, 
+          ...( transaction && { transaction } )
+        }
       )
     );
   }
