@@ -39,17 +39,17 @@ export default class DockRemovalFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Creates the dock removal record
       const createDockRemoval = await this.createRecord(
-        { employeeId, dockId: dock.id }
+        { employeeId, dockId: dock.id }, transaction
       );
       if ( createDockRemoval.isFailure ) failures.push( createDockRemoval );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
-        dock.id, newDockStatus
+        dock.id, newDockStatus, transaction
       );
       if ( updateDockResult.isFailure ) failures.push( updateDockResult );
 

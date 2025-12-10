@@ -2,7 +2,7 @@ import { BaseError } from 'sequelize';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-    INTERNAL_SERVER_ERROR
+  INTERNAL_SERVER_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
@@ -47,23 +47,23 @@ export default class BikeAdmissionFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Creates the admission record
       const createAdmissionResult = await this.createRecord(
-        { bikeId: bike.id, dockId: dock.id }
+        { bikeId: bike.id, dockId: dock.id }, transaction
       );
       if ( createAdmissionResult.isFailure ) failures.push( createAdmissionResult );
 
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
-        bike.id, bikeStatus.AVAILABLE
+        bike.id, bikeStatus.AVAILABLE, transaction
       );
       if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
-        dock.id, dockStatus.OCCUPIED
+        dock.id, dockStatus.OCCUPIED, transaction
       );
       if ( updateDockResult.isFailure ) failures.push( updateDockResult );
 

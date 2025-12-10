@@ -44,18 +44,20 @@ export default class DockAdmissionFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Creates the admission record
       const createAdmissionResult = await this.createRecord(
-        { employeeId, dockId: dock.id }
+        { employeeId, dockId: dock.id }, transaction
       );
       if ( createAdmissionResult.isFailure )
         failures.push( createAdmissionResult );
 
       // Updates the dock
       const dockUpdateResult = await this.#dockService.updateById(
-        dock.id, { status: dockStatus.AVAILABLE, stationId: station.id }
+        dock.id, 
+        { status: dockStatus.AVAILABLE, stationId: station.id }, 
+        transaction
       );
       if ( dockUpdateResult.isFailure )
         failures.push( dockUpdateResult );

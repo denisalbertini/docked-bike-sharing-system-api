@@ -1,7 +1,7 @@
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-    INTERNAL_SERVER_ERROR
+  INTERNAL_SERVER_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
@@ -48,11 +48,11 @@ export default class BikeRemovalFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Creates the removal record
       const createRemovalResult = await this.createRecord(
-        { employeeId, bikeId: bike.id }
+        { employeeId, bikeId: bike.id }, transaction
       );
       if ( createRemovalResult.isFailure ) failures.push( createRemovalResult );
 
@@ -64,13 +64,13 @@ export default class BikeRemovalFacade extends BaseFacade {
       
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
-        bike.id, newBikeStatus
+        bike.id, newBikeStatus, transaction
       );
       if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
-        dock.id, dockStatus.AVAILABLE
+        dock.id, dockStatus.AVAILABLE, transaction
       );
       if ( updateDockResult.isFailure ) failures.push( updateDockResult );
 

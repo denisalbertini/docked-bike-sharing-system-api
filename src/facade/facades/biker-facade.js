@@ -44,7 +44,7 @@ export default class BikerFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Finds or creates the credit card
       const creditCardResult = await this.#creditCardService.findOrCreate(
@@ -52,14 +52,15 @@ export default class BikerFacade extends BaseFacade {
           creditCardNumber: creditCardData.creditCardNumber, 
           holderName: creditCardData.holderName, 
           creditCardExpirationDate: creditCardData.creditCardExpirationDate
-        }
+        }, 
+        transaction
       );
       if ( creditCardResult.isFailure ) failures.push( creditCardResult );
       const creditCard = creditCardResult.value ?? {};
 
       // Creates the biker
       const bikerResult = await this.createRecord(
-        { ...bikerData, creditCardId: creditCard.id }
+        { ...bikerData, creditCardId: creditCard.id }, transaction
       );
       if ( bikerResult.isFailure ) failures.push( bikerResult );
       const biker = bikerResult.value ?? {};
@@ -67,7 +68,7 @@ export default class BikerFacade extends BaseFacade {
       // Creates the passport
       if ( passportData ) {
         const passportResult = await this.#passportService.create(
-          { ...passportData, bikerId: biker.id }
+          { ...passportData, bikerId: biker.id }, transaction
         );
         if ( passportResult.isFailure ) failures.push( passportResult );
         var passport = passportResult.value;
@@ -135,16 +136,18 @@ export default class BikerFacade extends BaseFacade {
     try {
       const failures = [];
       
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Updates the biker
-      const bikerUpdateResult = await this.updateRecordById( bikerId, bikerData );
+      const bikerUpdateResult = await this.updateRecordById(
+        bikerId, bikerData, transaction
+      );
       if ( bikerUpdateResult.isFailure ) failures.push( bikerUpdateResult );
 
       // Updates the passport
       if ( passportData ) {
         const passportUpdateResult = await this.#passportService.updateByBikerId(
-          bikerId, passportData
+          bikerId, passportData, transaction
         );
         if ( passportUpdateResult.isFailure ) failures.push( passportUpdateResult );
         var passport = passportUpdateResult.value;
@@ -185,7 +188,7 @@ export default class BikerFacade extends BaseFacade {
     try {
       const failures = [];
       
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Finds or creates the credit card
       const creditCardResult = await this.#creditCardService.findOrCreate(
@@ -193,7 +196,8 @@ export default class BikerFacade extends BaseFacade {
           creditCardNumber: creditCardData.creditCardNumber, 
           holderName: creditCardData.holderName, 
           creditCardExpirationDate: creditCardData.creditCardExpirationDate
-        }
+        }, 
+        transaction
       );
       if ( creditCardResult.isFailure ) failures.push( creditCardResult );
 
@@ -201,7 +205,7 @@ export default class BikerFacade extends BaseFacade {
 
       // Updates the biker
       const bikerResult = await this.updateRecordById(
-        bikerId, { creditCardId: creditCard.id }
+        bikerId, { creditCardId: creditCard.id }, transaction
       );
       if ( bikerResult.isFailure ) failures.push( bikerResult );
 

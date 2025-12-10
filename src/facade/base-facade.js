@@ -18,15 +18,21 @@ export default class BaseFacade {
     return this._modelService.findById( id );
   }
 
-  createRecord( data ) {
-    return this._modelService.create( data );
+  createRecord( data, transaction = null ) {
+    return this._modelService.create(
+      data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
-  updateRecordById( id, data ) {
-    return this._modelService.updateById( id, data );
+  updateRecordById( id, data, transaction = null ) {
+    return this._modelService.updateById(
+      id, data, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 
-  deleteRecordById( id ) {
-    return this._modelService.deleteById( id );
+  deleteRecordById( id, transaction = null ) {
+    return this._modelService.deleteById(
+      id, ...( ( transaction && [ transaction ] ) ?? [] )
+    );
   }
 }

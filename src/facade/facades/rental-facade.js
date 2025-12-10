@@ -73,12 +73,12 @@ export default class RentalFacade extends BaseFacade {
 
     // Tries to finalize the process in a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Creates the charge
       var initialChargeAmount = 10;
       const createChargeResult = await this.#chargeService.create(
-        { amount: initialChargeAmount, bikerId }
+        { amount: initialChargeAmount, bikerId }, transaction
       );
       if ( createChargeResult.isFailure ) failures.push( createChargeResult );
 
@@ -89,7 +89,9 @@ export default class RentalFacade extends BaseFacade {
       if ( chargeAttemptResult.isFailure ) failures.push( chargeAttemptResult );
 
       // Updates the charge
-      const completeChargeResult = await this.#chargeService.complete( charge );
+      const completeChargeResult = await this.#chargeService.complete(
+        charge, transaction
+      );
       if ( completeChargeResult.isFailure ) failures.push( completeChargeResult );
 
       // Creates the rental
@@ -99,7 +101,8 @@ export default class RentalFacade extends BaseFacade {
           bikeId: bike.id, 
           rentedFromDockId: dock.id, 
           initialChargeId: charge.id
-        }
+        }, 
+        transaction
       );
       if ( createRentalResult.isFailure ) failures.push( createRentalResult );
 
@@ -107,12 +110,16 @@ export default class RentalFacade extends BaseFacade {
 
       // Updates the bike's status
       const updateBikeResult =
-        await this.#bikeService.updateStatusById( bike.id, bikeStatus.RENTED );
+        await this.#bikeService.updateStatusById(
+          bike.id, bikeStatus.RENTED, transaction
+        );
       if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult =
-        await this.#dockService.updateStatusById( dock.id, dockStatus.AVAILABLE );
+        await this.#dockService.updateStatusById(
+          dock.id, dockStatus.AVAILABLE, transaction
+        );
       if ( updateDockResult.isFailure ) failures.push( updateDockResult );
 
       // Checks for failures
@@ -201,12 +208,13 @@ export default class RentalFacade extends BaseFacade {
 
     // Tries to finalize the process with a transaction
     try {
-      await this.#transaction.start();
+      const transaction = await this.#transaction.start();
 
       // Process the additional charge
       if ( additionalChargeAmount > 0 ) {
         const createChargeResult = await this.#chargeService.create(
-          { amount: additionalChargeAmount, bikerId: rental.bikerId }
+          { amount: additionalChargeAmount, bikerId: rental.bikerId }, 
+          transaction
         );
         if ( createChargeResult.isFailure ) failures.push( createChargeResult );
 
@@ -217,7 +225,9 @@ export default class RentalFacade extends BaseFacade {
 
         // Updates the charge
         if ( paymentResult.isSuccess ) {
-          const completeChargeResult = await this.#chargeService.complete( charge );
+          const completeChargeResult = await this.#chargeService.complete(
+            charge, transaction
+          );
           if ( completeChargeResult.isFailure ) failures.push( completeChargeResult );
         }
       }
@@ -229,19 +239,20 @@ export default class RentalFacade extends BaseFacade {
           finishedAt: Date.now(), 
           returnedToDockId: dock.id, 
           extraChargeId: charge ? charge.id : null
-        }
+        }, 
+        transaction
       );
       if ( updateRentalResult.isFailure ) failures.push( updateRentalResult );
 
       // Updates the bike's status
       const updateBikeResult = await this.#bikeService.updateStatusById(
-        bike.id, bikeStatus.AVAILABLE
+        bike.id, bikeStatus.AVAILABLE, transaction
       );
       if ( updateBikeResult.isFailure ) failures.push( updateBikeResult );
 
       // Updates the dock's status
       const updateDockResult = await this.#dockService.updateStatusById(
-        dock.id, dockStatus.OCCUPIED
+        dock.id, dockStatus.OCCUPIED, transaction
       );
       if ( updateDockResult.isFailure ) failures.push( updateDockResult );
 
