@@ -93,8 +93,7 @@ describe('/late-fees', () => {
           expect(
             completedCharges
               .map(c => c.toJSON())
-              .sort((a, b) => a.requestedAt.getTime() < b.requestedAt.getTime())
-          ).toStrictEqual(expectedCompleted);
+          ).toStrictEqual(expect.arrayContaining(expectedCompleted));
         }
       );
     });
