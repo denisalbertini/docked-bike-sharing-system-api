@@ -116,8 +116,8 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "validationError": {
-                    "$ref": "#/components/examples/ValidationError"
+                  "BadRequestError": {
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -253,8 +253,8 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "validationError": {
-                    "$ref": "#/components/examples/ValidationError"
+                  "BadRequestError": {
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -333,6 +333,16 @@
           "204": {
             "description": "Bike deleted successfully - No content"
           },
+          "400": {
+            "description": "Bad Request - Bike cannot be deleted (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Employee authentication required"
           },
@@ -349,21 +359,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Bike cannot be deleted (e.g., bike has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -395,6 +390,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Bike cannot be admitted (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Operator authentication required"
           },
@@ -411,21 +416,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Bike cannot be admitted (e.g., bike has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -467,6 +457,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Bike cannot be removed (e.g., bike has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Operator authentication required"
           },
@@ -483,21 +483,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Bike cannot be removed (e.g., bike has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -555,7 +540,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -627,6 +612,16 @@
           "204": {
             "description": "Account activated successfully - No content"
           },
+          "400": {
+            "description": "Bad Request - Account is not pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "403": {
             "description": "Forbidden - Invalid request",
             "content": {
@@ -637,21 +632,6 @@
                 "examples": {
                   "error": {
                     "$ref": "#/components/examples/ForbiddenError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Account is not pending",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "error": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -767,7 +747,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -849,7 +829,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -972,8 +952,8 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "validationError": {
-                    "$ref": "#/components/examples/ValidationError"
+                  "BadRequestError": {
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -1109,8 +1089,8 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "validationError": {
-                    "$ref": "#/components/examples/ValidationError"
+                  "BadRequestError": {
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -1174,6 +1154,16 @@
           "204": {
             "description": "Dock deleted successfully - No content"
           },
+          "400": {
+            "description": "Bad Request - Dock cannot be deleted (e.g., dock has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Employee authentication required"
           },
@@ -1190,21 +1180,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Dock cannot be deleted (e.g., dock has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -1236,6 +1211,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Dock cannot be admitted (e.g., dock has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Operator authentication required"
           },
@@ -1252,21 +1237,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Dock cannot be admitted (e.g., dock has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -1308,6 +1278,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Dock cannot be removed (e.g., dock has an invalid status)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Operator authentication required"
           },
@@ -1324,21 +1304,6 @@
                 "examples": {
                   "notFoundError": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Dock cannot be removed (e.g., dock has an invalid status)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "preconditionFailedError": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -1437,7 +1402,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -1574,7 +1539,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -1685,26 +1650,21 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Rental cannot be created (e.g., biker is already renting)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Biker authentication required"
           },
           "403": {
             "description": "Forbidden - Insufficient credentials"
-          },
-          "412": {
-            "description": "Precondition Failed - Rental cannot be created (e.g., biker is already renting)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "error": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
-                  }
-                }
-              }
-            }
           }
         },
         "security": [
@@ -1742,26 +1702,21 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request - Bike cannot be returned (e.g., bike is not rented)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Biker authentication required"
           },
           "403": {
             "description": "Forbidden - Insufficient credentials"
-          },
-          "412": {
-            "description": "Precondition Failed - Bike cannot be returned (e.g., bike is not rented)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "error": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
-                  }
-                }
-              }
-            }
           }
         },
         "security": [
@@ -1856,7 +1811,7 @@
                 },
                 "examples": {
                   "error": {
-                    "$ref": "#/components/examples/ValidationError"
+                    "$ref": "#/components/examples/BadRequestError"
                   }
                 }
               }
@@ -1922,6 +1877,16 @@
           "204": {
             "description": "Station deleted successfully - No content"
           },
+          "400": {
+            "description": "Bad Request - Station cannot be deleted (e.g., station is operational)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized - Employee authentication required"
           },
@@ -1938,21 +1903,6 @@
                 "examples": {
                   "error": {
                     "$ref": "#/components/examples/NotFoundError"
-                  }
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "Precondition Failed - Station cannot be deleted (e.g., station is operational)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "error": {
-                    "$ref": "#/components/examples/PreconditionFailedError"
                   }
                 }
               }
@@ -2020,9 +1970,9 @@
           ]
         }
       },
-      "ValidationError": {
+      "BadRequestError": {
         "value": {
-          "errorType": "VALIDATION_ERROR",
+          "errorType": "BAD_REQUEST_ERROR",
           "errors": [
             "Validation is on entity.field failed.",
             "Validation len on entity.anotherField failed."
@@ -2034,14 +1984,6 @@
           "errorType": "UNIQUE_CONSTRAINT_ERROR",
           "errors": [
             "duplicating key value violates unique constraint \"entity_field_key\""
-          ]
-        }
-      },
-      "PreconditionFailedError": {
-        "value": {
-          "errorType": "PRECONDITION_FAILED_ERROR",
-          "errors": [
-            "Instance is not STATUS"
           ]
         }
       }
@@ -3452,13 +3394,12 @@
             "type": "string",
             "enum": [
               "AUTHENTICATION_ERROR",
+              "BAD_REQUEST_ERROR",
               "FORBIDDEN_ERROR",
               "FOREIGN_KEY_CONSTRAINT_ERROR",
               "INTERNAL_SERVER_ERROR",
               "NOT_FOUND_ERROR",
-              "PRECONDITION_FAILED_ERROR",
-              "UNIQUE_CONSTRAINT_ERROR",
-              "VALIDATION_ERROR"
+              "UNIQUE_CONSTRAINT_ERROR"
             ]
           },
           "errors": {

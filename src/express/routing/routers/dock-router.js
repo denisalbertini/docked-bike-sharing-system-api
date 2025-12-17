@@ -73,7 +73,7 @@ router.route( '/' )
         'application/json': {
           schema: { $ref: '#/components/schemas/Error' },
           examples: {
-            validationError: { $ref: '#/components/examples/ValidationError' }
+            BadRequestError: { $ref: '#/components/examples/BadRequestError' }
           }
         }
       }
@@ -146,7 +146,7 @@ router.route( '/:id' )
         'application/json': {
           schema: { $ref: '#/components/schemas/Error' },
           examples: {
-            validationError: { $ref: '#/components/examples/ValidationError' }
+            BadRequestError: { $ref: '#/components/examples/BadRequestError' }
           }
         }
       }
@@ -183,14 +183,11 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Dock cannot be deleted (e.g., dock has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Dock cannot be deleted (e.g., dock has an invalid status)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            preconditionFailedError: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }
@@ -234,14 +231,11 @@ router.route( '/admission' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Dock cannot be admitted (e.g., dock has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Dock cannot be admitted (e.g., dock has an invalid status)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            preconditionFailedError: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }
@@ -285,14 +279,11 @@ router.route( '/removal' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Dock cannot be removed (e.g., dock has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Dock cannot be removed (e.g., dock has an invalid status)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            preconditionFailedError: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }

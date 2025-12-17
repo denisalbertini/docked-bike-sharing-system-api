@@ -65,7 +65,7 @@ router.route( '/' )
         'application/json': {
           schema: { $ref: '#/components/schemas/Error' },
           examples: {
-            error: { $ref: '#/components/examples/ValidationError' }
+            error: { $ref: '#/components/examples/BadRequestError' }
           }
         }
       }
@@ -138,7 +138,7 @@ router.route( '/:id' )
         'application/json': {
           schema: { $ref: '#/components/schemas/Error' },
           examples: {
-            error: { $ref: '#/components/examples/ValidationError' }
+            error: { $ref: '#/components/examples/BadRequestError' }
           }
         }
       }

@@ -1,9 +1,9 @@
 import { getBaseClassConstructorMessage } from '../model/shared/constructor-error-message.js';
 import {
+  BAD_REQUEST_ERROR,
   FOREIGN_KEY_CONSTRAINT_ERROR,
   INTERNAL_SERVER_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR
+  UNIQUE_CONSTRAINT_ERROR
 } from '../model/shared/enum/error-types.js';
 import Result from '../model/shared/result.js';
 
@@ -20,7 +20,7 @@ export default class BaseRepository {
   #getErrorType( error ) {
     switch ( error.constructor.name ) {
       case 'ValidationError': 
-        return VALIDATION_ERROR;
+        return BAD_REQUEST_ERROR;
       case 'UniqueConstraintError': 
         return UNIQUE_CONSTRAINT_ERROR;
       case 'ForeignKeyConstraintError':

@@ -65,7 +65,7 @@ router.route( '/' )
         'application/json': {
           schema: { $ref: '#/components/schemas/Error' },
           examples: {
-            error: { $ref: '#/components/examples/ValidationError' }
+            error: { $ref: '#/components/examples/BadRequestError' }
           }
         }
       }
@@ -104,14 +104,11 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Station cannot be deleted (e.g., station is operational)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Station cannot be deleted (e.g., station is operational)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            error: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }

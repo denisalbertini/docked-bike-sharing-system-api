@@ -10,10 +10,9 @@ import Employee from '../../model/models/employee.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
+  BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR,
+  UNIQUE_CONSTRAINT_ERROR
 } from '../../model/shared/enum/error-types.js';
 import { createBike, createDock, createEmployee } from '../data-factory.js';
 import { operatorToken } from '../tokens.js';
@@ -152,7 +151,7 @@ describe('/api/bikes', () => {
               .send(reqBody);
 
             expect(res.body).toStrictEqual({
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
             expect(res.status).toBe(400);
@@ -339,7 +338,7 @@ describe('/api/bikes', () => {
     describe('DELETE', () => {
       const method = 'delete';
 
-      describe('412', () => {
+      describe('400', () => {
         const bike = createBike();
         const dock = createDock({ bikeId: bike.id });
 
@@ -351,7 +350,7 @@ describe('/api/bikes', () => {
 
         const testCases = [
           {
-            description: 'Preconditions failed',
+            description: 'Invalid bike status',
             path: path(bike.id),
             expectedErrors: ['Bike is not RETIRED.', 'Bike is docked.'],
           },
@@ -362,9 +361,9 @@ describe('/api/bikes', () => {
           async ({ path, expectedErrors }) => {
             const res = await request(app)[method](path).set(headers);
 
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
           }
@@ -438,7 +437,7 @@ describe('/api/bikes', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const bike = createBike({ status: bikeStatus.AVAILABLE });
         const dock = createDock();
 
@@ -450,7 +449,7 @@ describe('/api/bikes', () => {
 
         const testCases = [
           {
-            description: 'Preconditions failed',
+            description: 'Invalid condition',
             reqBody: {
               bikeSerial: bike.bikeSerial,
               dockSerial: dock.dockSerial,
@@ -470,9 +469,9 @@ describe('/api/bikes', () => {
               .set(headers)
               .send(reqBody);
 
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
           }
@@ -629,7 +628,7 @@ describe('/api/bikes', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const bike = createBike();
         const dock = createDock();
 
@@ -641,7 +640,7 @@ describe('/api/bikes', () => {
 
         const testCases = [
           {
-            description: 'Preconditions failed',
+            description: 'Invalid status',
             reqBody: {
               employeeId: faker.string.uuid(),
               bikeSerial: bike.bikeSerial,
@@ -664,18 +663,18 @@ describe('/api/bikes', () => {
               .send(reqBody);
 
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
           }
         );
       });
 
-      describe('400', () => {
+      describe('404', () => {
         const testCases = [
           {
-            description: 'Invalid values',
+            description: 'Not found',
             reqBody: {
               employeeId: faker.string.uuid(),
               bikeSerial: 'abc',

@@ -1,4 +1,4 @@
-import { VALIDATION_ERROR } from '../../model/shared/enum/error-types.js';
+import { BAD_REQUEST_ERROR } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
 
@@ -16,7 +16,7 @@ export default class CreditCardService extends BaseService {
       errors.push( 'Invalid credit card cvv.' );
 
     if ( errors.length !== 0 )
-      return Result.failure( VALIDATION_ERROR, ...errors );
+      return Result.failure( BAD_REQUEST_ERROR, ...errors );
 
     return Result.success();
   }

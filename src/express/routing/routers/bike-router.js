@@ -73,7 +73,7 @@ router.route( '/' )
         "application/json": {
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
-            validationError: { $ref: "#/components/examples/ValidationError" }
+            BadRequestError: { $ref: "#/components/examples/BadRequestError" }
           }
         }
       }
@@ -146,7 +146,7 @@ router.route( '/:id' )
         "application/json": {
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
-            validationError: { $ref: "#/components/examples/ValidationError" }
+            BadRequestError: { $ref: "#/components/examples/BadRequestError" }
           }
         }
       }
@@ -194,14 +194,11 @@ router.route( '/:id' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Bike cannot be deleted (e.g., bike has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Bike cannot be deleted (e.g., bike has an invalid status)',
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/Error" },
-          examples: {
-            preconditionFailedError: { $ref: "#/components/examples/PreconditionFailedError" }
-          }
+          schema: { $ref: "#/components/schemas/Error" }
         }
       }
     }
@@ -245,14 +242,11 @@ router.route( '/admission' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Bike cannot be admitted (e.g., bike has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Bike cannot be admitted (e.g., bike has an invalid status)',
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/Error" },
-          examples: {
-            preconditionFailedError: { $ref: "#/components/examples/PreconditionFailedError" }
-          }
+          schema: { $ref: "#/components/schemas/Error" }
         }
       }
     }
@@ -296,14 +290,11 @@ router.route( '/removal' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Bike cannot be removed (e.g., bike has an invalid status)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Bike cannot be removed (e.g., bike has an invalid status)',
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/Error" },
-          examples: {
-            preconditionFailedError: { $ref: "#/components/examples/PreconditionFailedError" }
-          }
+          schema: { $ref: "#/components/schemas/Error" }
         }
       }
     }

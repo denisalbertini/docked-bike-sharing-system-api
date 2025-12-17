@@ -30,14 +30,11 @@ router.route( '/' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Rental cannot be created (e.g., biker is already renting)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Rental cannot be created (e.g., biker is already renting)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            error: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }
@@ -66,14 +63,11 @@ router.route( '/return' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Bike cannot be returned (e.g., bike is not rented)',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Bike cannot be returned (e.g., bike is not rented)',
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/Error' },
-          examples: {
-            error: { $ref: '#/components/examples/PreconditionFailedError' }
-          }
+          schema: { $ref: '#/components/schemas/Error' }
         }
       }
     }

@@ -7,7 +7,7 @@ import Dock from '../../model/models/dock.js';
 import Employee from '../../model/models/employee.js';
 import Station from '../../model/models/station.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import { PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
+import { BAD_REQUEST_ERROR } from '../../model/shared/enum/error-types.js';
 import { createDock, createEmployee, createStation } from '../data-factory.js';
 import { operatorToken } from '../tokens.js';
 import truncateAllTables from '../truncate-tables.js';
@@ -245,7 +245,7 @@ describe('/api/docks', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const employee = createEmployee('86322094009');
         const station = createStation();
 
@@ -320,12 +320,12 @@ describe('/api/docks', () => {
             .send(reqBody);
 
           expect(res.body).toStrictEqual({
-            errorType: PRECONDITION_FAILED_ERROR,
+            errorType: BAD_REQUEST_ERROR,
             errors: expect.arrayContaining([
               'Dock is not OPERATIONAL, UNDER_MAINTENANCE.',
             ]),
           });
-          expect(res.status).toBe(412);
+          expect(res.status).toBe(400);
         });
       });
 
@@ -426,7 +426,7 @@ describe('/api/docks', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const employee = createEmployee('14214698045');
 
         const occupiedDock = createDock({
@@ -457,12 +457,12 @@ describe('/api/docks', () => {
             .send(reqBody);
 
           expect(res.body).toStrictEqual({
-            errorType: PRECONDITION_FAILED_ERROR,
+            errorType: BAD_REQUEST_ERROR,
             errors: expect.arrayContaining([
               'Dock is not OPERATIONAL, AVAILABLE, MAINTENANCE_REQUESTED, UNDER_MAINTENANCE, DECOMMISSIONED.',
             ]),
           });
-          expect(res.status).toBe(412);
+          expect(res.status).toBe(400);
         });
       });
 

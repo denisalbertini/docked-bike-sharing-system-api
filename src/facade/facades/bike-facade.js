@@ -1,5 +1,5 @@
 import bikeStatus from '../../model/shared/enum/bike-status.js';
-import { NOT_FOUND_ERROR, PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types.js';
+import { BAD_REQUEST_ERROR, NOT_FOUND_ERROR } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
 
@@ -23,7 +23,7 @@ export default class BikeFacade extends BaseFacade {
     // Checks if the bike is docked
     const bikeDockedResult = await this.#dockService.findByBikeId( bikeId );
     if ( bikeDockedResult.isSuccess ) failures.push(
-      Result.failure( PRECONDITION_FAILED_ERROR, 'Bike is docked.' )
+      Result.failure( BAD_REQUEST_ERROR, 'Bike is docked.' )
     );
     else if ( bikeDockedResult.errorType !== NOT_FOUND_ERROR )
       return bikeDockedResult;

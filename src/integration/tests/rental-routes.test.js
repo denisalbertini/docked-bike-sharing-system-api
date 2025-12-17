@@ -10,7 +10,7 @@ import Rental from '../../model/models/rental.js';
 import Station from '../../model/models/station.js';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
-import { PRECONDITION_FAILED_ERROR } from '../../model/shared/enum/error-types';
+import { BAD_REQUEST_ERROR } from '../../model/shared/enum/error-types';
 import {
   createBike,
   createBiker,
@@ -32,7 +32,7 @@ describe('/api/rentals', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const creditCard = createCreditCard();
         const biker = createBiker(creditCard.id, { cpf: '97375827052' });
         const bike = createBike();
@@ -52,7 +52,7 @@ describe('/api/rentals', () => {
 
         const testCases = [
           {
-            description: 'Preconditions failed',
+            description: 'Invalid status',
             reqBody: {
               bikerId: biker.id,
               bikeSerial: bike.bikeSerial,
@@ -75,10 +75,10 @@ describe('/api/rentals', () => {
               .send(reqBody);
 
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
           }
         );
       });
@@ -200,7 +200,7 @@ describe('/api/rentals', () => {
     describe('POST', () => {
       const method = 'post';
 
-      describe('412', () => {
+      describe('400', () => {
         const bike = createBike();
         const dock = createDock();
 
@@ -212,7 +212,7 @@ describe('/api/rentals', () => {
 
         const testCases = [
           {
-            description: 'Preconditions failed',
+            description: 'Invalid status',
             reqBody: {
               bikeSerial: bike.bikeSerial,
               dockSerial: dock.dockSerial,
@@ -230,10 +230,10 @@ describe('/api/rentals', () => {
               .send(reqBody);
 
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
           }
         );
       });

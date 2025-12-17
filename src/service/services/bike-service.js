@@ -1,7 +1,7 @@
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import {
-    NOT_FOUND_ERROR,
-    PRECONDITION_FAILED_ERROR
+    BAD_REQUEST_ERROR,
+    NOT_FOUND_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -25,7 +25,7 @@ export default class BikeService extends BaseService {
 
     if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
-        PRECONDITION_FAILED_ERROR, 
+        BAD_REQUEST_ERROR, 
         `Bike is not ${ status.join( ', ' )}.`
       );
 
@@ -37,7 +37,7 @@ export default class BikeService extends BaseService {
 
     if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
-        PRECONDITION_FAILED_ERROR, 
+        BAD_REQUEST_ERROR, 
         `Bike is not ${ status.join( ', ' )}.`
       );
 
@@ -58,7 +58,7 @@ export default class BikeService extends BaseService {
         return Result.success( bikeStatus.RETIRED );
       default:
         return Result.failure(
-          VALIDATION_ERROR, 
+          BAD_REQUEST_ERROR, 
           'Action not supported.'
         );
     }

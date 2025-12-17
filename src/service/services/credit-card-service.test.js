@@ -32,7 +32,7 @@ describe('CreditCardService', () => {
       const result = creditCardService.validate(invalidData);
 
       expect(result.isFailure).toBe(true);
-      expect(result.errorType).toBe('VALIDATION_ERROR');
+      expect(result.errorType).toBe('BAD_REQUEST_ERROR');
       expect(result.errors).toContain('Invalid credit card number.');
     });
 

@@ -5,8 +5,8 @@ import app from '../../express/app.js';
 import Employee from '../../model/models/employee.js';
 import employeeRole from '../../model/shared/enum/employee-role.js';
 import {
-  NOT_FOUND_ERROR,
-  VALIDATION_ERROR,
+    BAD_REQUEST_ERROR,
+    NOT_FOUND_ERROR,
 } from '../../model/shared/enum/error-types.js';
 import { createEmployee } from '../data-factory.js';
 import { adminToken } from '../tokens.js';
@@ -95,7 +95,7 @@ describe('/api/employees', () => {
               role: employee.role,
             },
             expectedResBody: {
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: [
                 'Validation isValidCpf on cpf failed',
                 'Validation isValidBirthDate on birthDate failed',
@@ -281,7 +281,7 @@ describe('/api/employees', () => {
               birthDate: invalidEmployee.birthDate,
             },
             expectedResBody: {
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: [
                 'Validation isValidBirthDate on birthDate failed',
                 'Validation is on name failed',

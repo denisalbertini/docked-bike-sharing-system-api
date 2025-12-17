@@ -1,8 +1,7 @@
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-    NOT_FOUND_ERROR,
-    PRECONDITION_FAILED_ERROR,
-    VALIDATION_ERROR
+    BAD_REQUEST_ERROR,
+    NOT_FOUND_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -26,7 +25,7 @@ export default class DockService extends BaseService {
 
     if ( findResult.isSuccess && !status.includes( findResult.value.status ) )
       return Result.failure(
-        PRECONDITION_FAILED_ERROR, 
+        BAD_REQUEST_ERROR, 
         `Dock is not ${ status.join( ', ' ) }.`
       );
 
@@ -40,7 +39,7 @@ export default class DockService extends BaseService {
       case 'RETIRE':
         return Result.success( dockStatus.DECOMMISSIONED );
       default:
-        return Result.failure( VALIDATION_ERROR, 'Action not supported.' );
+        return Result.failure( BAD_REQUEST_ERROR, 'Action not supported.' );
     }
   }
 

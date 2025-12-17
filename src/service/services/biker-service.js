@@ -5,11 +5,10 @@ import { ACCESS, EMAIL_VERIFICATION } from '../../model/shared/enum/auth-purpose
 import status from '../../model/shared/enum/biker-status.js';
 import {
     AUTHENTICATION_ERROR,
+    BAD_REQUEST_ERROR,
     FORBIDDEN_ERROR,
     INTERNAL_SERVER_ERROR,
-    NOT_FOUND_ERROR,
-    PRECONDITION_FAILED_ERROR,
-    VALIDATION_ERROR
+    NOT_FOUND_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseService from '../base-service.js';
@@ -33,7 +32,7 @@ export default class BikerService extends BaseService {
       errors.push( 'Passwords do not match.' );
 
     if ( errors.length > 0 ) return Result.failure(
-      VALIDATION_ERROR, ...errors
+      BAD_REQUEST_ERROR, ...errors
     );
 
     return Result.success();
@@ -88,7 +87,7 @@ export default class BikerService extends BaseService {
 
     const biker = findResult.value;
     if ( biker.status !== status.PENDING )
-      return Result.failure( PRECONDITION_FAILED_ERROR, 'Account not pending.' );
+      return Result.failure( BAD_REQUEST_ERROR, 'Account not pending.' );
 
     return await this.updateById( id, { status: status.ACTIVE } );
   }
@@ -138,7 +137,7 @@ export default class BikerService extends BaseService {
     ) errors.push( 'Passwords do not match' );
 
     if ( errors.length > 0 ) return Result.failure(
-      VALIDATION_ERROR, ...errors
+      BAD_REQUEST_ERROR, ...errors
     );
 
     return Result.success();

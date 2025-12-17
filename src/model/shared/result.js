@@ -1,10 +1,9 @@
 import {
+  BAD_REQUEST_ERROR,
   FOREIGN_KEY_CONSTRAINT_ERROR,
   INTERNAL_SERVER_ERROR,
   NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR
+  UNIQUE_CONSTRAINT_ERROR
 } from './enum/error-types.js';
 
 const constructorErrorMessage =
@@ -61,11 +60,10 @@ export default class Result {
     }
 
     const errorType = 
-      errorTypes.find( t => t === VALIDATION_ERROR ) ?? 
+      errorTypes.find( t => t === BAD_REQUEST_ERROR ) ?? 
       errorTypes.find( t => t === NOT_FOUND_ERROR ) ?? 
       errorTypes.find( t => t === UNIQUE_CONSTRAINT_ERROR ) ?? 
       errorTypes.find( t => t === FOREIGN_KEY_CONSTRAINT_ERROR ) ?? 
-      errorTypes.find( t => t === PRECONDITION_FAILED_ERROR ) ?? 
       INTERNAL_SERVER_ERROR;
 
     return Result.failure( errorType, ...errors );

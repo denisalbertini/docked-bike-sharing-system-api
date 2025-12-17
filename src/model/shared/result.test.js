@@ -1,11 +1,10 @@
 import { describe, expect, test } from '@jest/globals';
 import {
+  BAD_REQUEST_ERROR,
   FOREIGN_KEY_CONSTRAINT_ERROR,
   INTERNAL_SERVER_ERROR,
   NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR,
+  UNIQUE_CONSTRAINT_ERROR
 } from './enum/error-types.js';
 import Result from './result.js';
 
@@ -44,13 +43,13 @@ describe('Result', () => {
   describe('Failure Result', () => {
     test('should create failure result with single error', () => {
       const error = 'Something went wrong';
-      const result = Result.failure(VALIDATION_ERROR, error);
+      const result = Result.failure(BAD_REQUEST_ERROR, error);
 
       expect(result.isSuccess).toBe(false);
       expect(result.isFailure).toBe(true);
       expect(result.value).toBeNull();
       expect(result.errors).toEqual([error]);
-      expect(result.errorType).toBe(VALIDATION_ERROR);
+      expect(result.errorType).toBe(BAD_REQUEST_ERROR);
     });
 
     test('should create failure result with multiple errors', () => {
@@ -66,17 +65,17 @@ describe('Result', () => {
   });
 
   describe('Merge Failures', () => {
-    test('should merge multiple failures and prioritize VALIDATION_ERROR', () => {
+    test('should merge multiple failures and prioritize BAD_REQUEST_ERROR', () => {
       const failures = [
         Result.failure(INTERNAL_SERVER_ERROR, 'Internal error'),
-        Result.failure(VALIDATION_ERROR, 'Validation failed'),
+        Result.failure(BAD_REQUEST_ERROR, 'Validation failed'),
         Result.failure(NOT_FOUND_ERROR, 'Not found'),
       ];
 
       const merged = Result.mergeFailures(failures);
 
       expect(merged.isFailure).toBe(true);
-      expect(merged.errorType).toBe(VALIDATION_ERROR);
+      expect(merged.errorType).toBe(BAD_REQUEST_ERROR);
       expect(merged.errors).toEqual([
         'Internal error',
         'Validation failed',
@@ -84,7 +83,7 @@ describe('Result', () => {
       ]);
     });
 
-    test('should prioritize NOT_FOUND_ERROR when no VALIDATION_ERROR present', () => {
+    test('should prioritize NOT_FOUND_ERROR when no BAD_REQUEST_ERROR present', () => {
       const failures = [
         Result.failure(UNIQUE_CONSTRAINT_ERROR, 'Duplicate'),
         Result.failure(NOT_FOUND_ERROR, 'Missing resource'),
@@ -98,7 +97,7 @@ describe('Result', () => {
 
     test('should prioritize UNIQUE_CONSTRAINT_ERROR appropriately', () => {
       const failures = [
-        Result.failure(PRECONDITION_FAILED_ERROR, 'Precondition failed'),
+        Result.failure(FOREIGN_KEY_CONSTRAINT_ERROR, 'Precondition failed'),
         Result.failure(UNIQUE_CONSTRAINT_ERROR, 'Duplicate entry'),
       ];
 
@@ -123,7 +122,7 @@ describe('Result', () => {
 
     test('should maintain error order from multiple failures', () => {
       const failures = [
-        Result.failure(VALIDATION_ERROR, 'First error'),
+        Result.failure(BAD_REQUEST_ERROR, 'First error'),
         Result.failure(NOT_FOUND_ERROR, 'Second error'),
         Result.failure(UNIQUE_CONSTRAINT_ERROR, 'Third error'),
       ];
@@ -154,7 +153,7 @@ describe('Result', () => {
     });
 
     test('should not allow modification of failure result properties', () => {
-      const result = Result.failure(VALIDATION_ERROR, 'error');
+      const result = Result.failure(BAD_REQUEST_ERROR, 'error');
 
       expect(() => {
         result.value = 'modified';

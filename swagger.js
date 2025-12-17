@@ -783,9 +783,9 @@ const doc = {
           errors: ['Records not found.'],
         },
       },
-      ValidationError: {
+      BadRequestError: {
         value: {
-          errorType: errorTypes.VALIDATION_ERROR,
+          errorType: errorTypes.BAD_REQUEST_ERROR,
           errors: [
             'Validation is on entity.field failed.',
             'Validation len on entity.anotherField failed.',
@@ -798,12 +798,6 @@ const doc = {
           errors: [
             'duplicating key value violates unique constraint "entity_field_key"',
           ],
-        },
-      },
-      PreconditionFailedError: {
-        value: {
-          errorType: errorTypes.PRECONDITION_FAILED_ERROR,
-          errors: ['Instance is not STATUS'],
         },
       },
     },

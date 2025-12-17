@@ -19,11 +19,10 @@ import {
 import bikerStatus from '../../model/shared/enum/biker-status.js';
 import {
   AUTHENTICATION_ERROR,
+  BAD_REQUEST_ERROR,
   FORBIDDEN_ERROR,
   NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR,
+  UNIQUE_CONSTRAINT_ERROR
 } from '../../model/shared/enum/error-types';
 import {
   createBiker,
@@ -187,7 +186,7 @@ describe('/api/bikers', () => {
             const res = await request(app)[method](path).send(reqBody);
 
             expect(res.body).toStrictEqual({
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
             expect(res.status).toBe(400);
@@ -480,7 +479,7 @@ describe('/api/bikers', () => {
               .set(headers);
 
             expect(res.body).toStrictEqual({
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
             expect(res.status).toBe(400);
@@ -642,7 +641,7 @@ describe('/api/bikers', () => {
     describe('GET', () => {
       const method = 'get';
 
-      describe('412', () => {
+      describe('400', () => {
         const creditCard = createCreditCard();
         const biker = createBiker(creditCard.id, {
           status: bikerStatus.ACTIVE,
@@ -668,10 +667,10 @@ describe('/api/bikers', () => {
           const res = await request(app)[method](path);
 
           expect(res.body).toStrictEqual({
-            errorType: PRECONDITION_FAILED_ERROR,
+            errorType: BAD_REQUEST_ERROR,
             errors: ['Account not pending.'],
           });
-          expect(res.status).toBe(412);
+          expect(res.status).toBe(400);
         });
       });
 

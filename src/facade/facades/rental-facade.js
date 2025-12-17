@@ -2,9 +2,9 @@ import { BaseError } from 'sequelize';
 import bikeStatus from '../../model/shared/enum/bike-status.js';
 import dockStatus from '../../model/shared/enum/dock-status.js';
 import {
-  INTERNAL_SERVER_ERROR,
-  NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR
+    BAD_REQUEST_ERROR,
+    INTERNAL_SERVER_ERROR,
+    NOT_FOUND_ERROR
 } from '../../model/shared/enum/error-types.js';
 import Result from '../../model/shared/result.js';
 import BaseFacade from '../base-facade.js';
@@ -48,7 +48,7 @@ export default class RentalFacade extends BaseFacade {
     const bikerRentingResult =
       await this._modelService.findUnfinishedByBikerId( bikerId );
     if ( bikerRentingResult.isSuccess ) failures.push(
-      Result.failure( PRECONDITION_FAILED_ERROR, 'Biker is already renting.' )
+      Result.failure( BAD_REQUEST_ERROR, 'Biker is already renting.' )
     );
     else if ( bikerRentingResult.errorType !== NOT_FOUND_ERROR )
       failures.push( bikerRentingResult );

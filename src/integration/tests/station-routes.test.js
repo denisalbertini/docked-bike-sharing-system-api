@@ -5,10 +5,9 @@ import app from '../../express/app.js';
 import Dock from '../../model/models/dock.js';
 import Station from '../../model/models/station.js';
 import {
+  BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
-  PRECONDITION_FAILED_ERROR,
-  UNIQUE_CONSTRAINT_ERROR,
-  VALIDATION_ERROR,
+  UNIQUE_CONSTRAINT_ERROR
 } from '../../model/shared/enum/error-types.js';
 import { createDock, createStation } from '../data-factory.js';
 import { adminToken } from '../tokens.js';
@@ -130,7 +129,7 @@ describe('/api/stations', () => {
               location: invalidStation.location,
             },
             expectedResBody: {
-              errorType: VALIDATION_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: [
                 'Validation is on stationSerial failed',
                 'Validation len on name failed',
@@ -200,7 +199,7 @@ describe('/api/stations', () => {
     describe('DELETE', () => {
       const method = 'delete';
 
-      describe('412', () => {
+      describe('400', () => {
         const station = createStation();
         const dock = createDock({ stationId: station.id });
 
@@ -224,10 +223,10 @@ describe('/api/stations', () => {
             const res = await request(app)[method](path).set(headers);
 
             expect(res.body).toStrictEqual({
-              errorType: PRECONDITION_FAILED_ERROR,
+              errorType: BAD_REQUEST_ERROR,
               errors: expectedErrors,
             });
-            expect(res.status).toBe(412);
+            expect(res.status).toBe(400);
           }
         );
       });

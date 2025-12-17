@@ -44,7 +44,7 @@ router.route( '/' )
         "application/json": {
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
-            error: { $ref: "#/components/examples/ValidationError" }
+            error: { $ref: "#/components/examples/BadRequestError" }
           }
         }
       }
@@ -90,14 +90,11 @@ router.route( '/:id/confirm' )
         }
       }
     }
-    #swagger.responses[412] = {
-      description: 'Precondition Failed - Account is not pending',
+    #swagger.responses[400] = {
+      description: 'Bad Request - Account is not pending',
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/Error" },
-          examples: {
-            error: { $ref: "#/components/examples/PreconditionFailedError" }
-          }
+          schema: { $ref: "#/components/schemas/Error" }
         }
       }
     }
@@ -194,7 +191,7 @@ router.route( '/:id' )
         "application/json": {
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
-            error: { $ref: "#/components/examples/ValidationError" }
+            error: { $ref: "#/components/examples/BadRequestError" }
           }
         }
       }
@@ -242,7 +239,7 @@ router.route( '/:id/credit-cards' )
         "application/json": {
           schema: { $ref: "#/components/schemas/Error" },
           examples: {
-            error: { $ref: "#/components/examples/ValidationError" }
+            error: { $ref: "#/components/examples/BadRequestError" }
           }
         }
       }

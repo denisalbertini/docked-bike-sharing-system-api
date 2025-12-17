@@ -1,9 +1,9 @@
-import BaseFacade from '../base-facade.js';
-import Result from '../../model/shared/result.js';
 import {
-  NOT_FOUND_ERROR, 
-  PRECONDITION_FAILED_ERROR
+    BAD_REQUEST_ERROR,
+    NOT_FOUND_ERROR
 } from '../../model/shared/enum/error-types.js';
+import Result from '../../model/shared/result.js';
+import BaseFacade from '../base-facade.js';
 
 export default class StationFacade extends BaseFacade {
   #dockService;
@@ -19,7 +19,7 @@ export default class StationFacade extends BaseFacade {
       stationId
     );
     if ( findDockResult.isSuccess ) return Result.failure(
-      PRECONDITION_FAILED_ERROR, 'There are docks on the station.'
+      BAD_REQUEST_ERROR, 'There are docks on the station.'
     );
     if ( findDockResult.errorType !== NOT_FOUND_ERROR ) return findDockResult;
 
