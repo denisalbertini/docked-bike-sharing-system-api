@@ -19,6 +19,6 @@ console.log( 'Connection has been established successfully.' );
 
 initDefinitions( sequelize );
 
-// await sequelize.sync( { force: true } );
+await sequelize.sync();
 
 export default sequelize;
