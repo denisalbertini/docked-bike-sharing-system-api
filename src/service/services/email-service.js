@@ -5,11 +5,11 @@ import Result from '../../model/shared/result.js';
 export default class EmailService {
   #createTransporter() {
     return nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 587,
       auth: {
-        user: process.env.ETHERIAL_EMAIL_USER,
-        pass: process.env.ETHERIAL_EMAIL_PASS,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
       },
     });
   }
@@ -18,7 +18,7 @@ export default class EmailService {
     try {
       const transporter = this.#createTransporter();
 
-      const confirmationUrl = `http://localhost:3000/api/bikers/${bikerId}/email-confirmation?token=${token}`;
+      const confirmationUrl = `http://${process.env.DOMAIN || 'localhost'}:3000/api/bikers/${bikerId}/email-confirmation?token=${token}`;
 
       const mailOptions = {
         from: '"Bike Sharing System" <noreply@bssapp.com>',
