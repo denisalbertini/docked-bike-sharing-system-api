@@ -50,8 +50,8 @@ $ npm test
 
 ## Documentation
 
-The documentation is live served at `/api/spec`. Moreover it can be found at `swagger-output.json`.
+The documentation is live served at `/api/specs`. Moreover it can be found at `swagger-output.json`.
 
 ## Replacing the database
 
-To replace the database you have to **write a new environment variable with the desired connection url** and update the `src/sequelize/sequelize.js` file by changing the first parameter of the `new Sequelize` object.
+To replace the database you have to **write a new environment variable with the desired connection url** and update the `src/sequelize/sequelize.js` file by changing the first parameter of the `new Sequelize` constructor.
