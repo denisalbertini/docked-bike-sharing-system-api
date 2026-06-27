@@ -1,4 +1,4 @@
-# Description
+# Docked Bike Sharing System API
 
 A robust, scalable, and well-tested RESTful API for managing a Docked Bike Sharing System. Built with Node.js, Express.js, and Sequelize ORM, this API provides all the necessary endpoints for users to rent, return and manage bikes docked at designated docking stations.
 
@@ -50,7 +50,7 @@ $ npm test
 
 ## Documentation
 
-The documentation is live served at `/api/specs`. Moreover it can be found at `swagger-output.json`.
+The documentation is live served at `/api/specs`. Moreover, it can be found at `swagger-output.json`.
 
 ## Replacing the database
 

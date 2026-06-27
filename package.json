@@ -1,31 +1,18 @@
 {
-  "name": "docked-bike-sharing-system-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "dotenvx run -f .env.dev -f .env -- cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "dev": "dotenvx run -f .env.dev -f .env -- nodemon src/index.js",
-    "swagger": "node swagger.js"
+    "test": "dotenvx run -f .env.dev -f .env -- cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
+    "swagger": "node swagger.js",
+    "prepare": "husky"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/denis-albertini/docked-bike-sharing-system-api.git"
-  },
-  "keywords": [],
-  "author": "Denis Albertini",
-  "license": "",
-  "type": "module",
-  "bugs": {
-    "url": "https://github.com/denis-albertini/docked-bike-sharing-system-api/issues"
-  },
-  "homepage": "https://github.com/denis-albertini/docked-bike-sharing-system-api#readme",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.51.0",
     "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "express-openapi-validator": "^5.6.0",
+    "husky": "^9.1.7",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.6",
     "pg": "^8.16.3",
